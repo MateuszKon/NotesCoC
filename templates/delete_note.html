@@ -1,0 +1,13 @@
+{% extends "base_create.html" %}
+
+{% block form %}
+    <h2>Confirm note deletion</h2>
+    <form action="{{ submit_callback }}" method="post" id="noteform">
+        <input type="hidden" name="_method" value="DELETE">
+        <input readonly type="text" placeholder="Enter the Note Name" name="title"
+               value="{{title}}">
+        <textarea readonly name="content" form="noteform"
+                  placeholder="Enter Note Content Here or Create Note"
+                  rows="10">{{content}}</textarea>
+        <input type="submit" class="option danger" value="Delete Note">
+{% endblock %}

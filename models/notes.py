@@ -19,14 +19,6 @@ class NoteModel(db.Model):
     def find_by_id(cls, note_id: int) -> "NoteModel":
         return cls.query.filter_by(id=note_id).one()
 
-    def save_to_db(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def delete_from_db(self):
-        db.session.delete(self)
-        db.session.commit()
-
     @classmethod
     def get_all(cls) -> List["NoteModel"]:
         return cls.query.all()

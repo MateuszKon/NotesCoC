@@ -26,10 +26,9 @@ class NoteRoutes:
             )
             note.save_to_db()
             return redirect(url_for('home'))
-        else:
-            return cls._render_write_note(
-                submit_callback=url_for('new_note')
-            )
+        return cls._render_write_note(
+            submit_callback=url_for('new_note')
+        )
 
     @classmethod
     def edit_note(cls, note_id):
@@ -39,12 +38,11 @@ class NoteRoutes:
             note.content = request.form["content"]
             note.save_to_db()
             return redirect(url_for('home'))
-        else:
-            return cls._render_write_note(
-                submit_callback=url_for('edit_note', note_id=note_id),
-                title=note.title,
-                content=note.content,
-            )
+        return cls._render_write_note(
+            submit_callback=url_for('edit_note', note_id=note_id),
+            title=note.title,
+            content=note.content,
+        )
 
     @classmethod
     def delete_note(cls, note_id: int):
@@ -52,10 +50,9 @@ class NoteRoutes:
         if request.method in ["DELETE", "POST"]:
             note.delete_from_db()
             return redirect(url_for('home'))
-        else:
-            return render_template(
-                'delete_note.html',
-                submit_callback=url_for('delete_note', note_id=note_id),
-                title=note.title,
-                content=note.content,
-            )
+        return render_template(
+            'delete_note.html',
+            submit_callback=url_for('delete_note', note_id=note_id),
+            title=note.title,
+            content=note.content,
+        )

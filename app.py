@@ -3,6 +3,7 @@ import os
 from flask import Flask
 from flask_migrate import Migrate
 
+import a_env_import  # forces using load_dotenv before project imports
 from db import db
 from ma import ma
 from routes.home import HomeRoutes
@@ -11,9 +12,8 @@ from routes.persons import PersonRoutes
 
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URI")
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.config["PROPAGATE_EXCEPTIONS"] = True
+app.config.from_object("default_config")
+app.config.from_envvar("APPLICATION_SETTINGS")
 app.secret_key = os.environ.get("APP_SECRET_KEY")
 
 migrate = Migrate(app, db)

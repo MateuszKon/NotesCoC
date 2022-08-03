@@ -1,6 +1,7 @@
 import os
 
 from flask import Flask
+from flask_migrate import Migrate
 
 from db import db
 from ma import ma
@@ -14,6 +15,9 @@ app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URI")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["PROPAGATE_EXCEPTIONS"] = True
 app.secret_key = os.environ.get("APP_SECRET_KEY")
+
+migrate = Migrate(app, db)
+db.init_app(app)
 
 
 @app.before_first_request
@@ -47,6 +51,5 @@ app.add_url_rule("/person/<string:name>",
 
 
 if __name__ == "__main__":
-    db.init_app(app)
     ma.init_app(app)
     app.run(port=5001, debug=True)

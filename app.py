@@ -31,7 +31,7 @@ app.add_url_rule("/home", view_func=HomeRoutes.home)
 
 # Note routes
 app.add_url_rule("/new_note",
-                 view_func=NoteRoutes.new_note,
+                 view_func=NoteRoutes.edit_note,
                  methods=["GET", "POST"],
                  )
 app.add_url_rule("/note/<int:note_id>/edit",

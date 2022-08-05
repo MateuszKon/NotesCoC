@@ -1,15 +1,38 @@
-from typing import List
+from typing import List, Set
+
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import relationship
 
 from db import db
+from models.persons_notes import persons_notes
 
 
 class NoteModel(db.Model):
 
     __tablename__ = "notes"
 
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(80))
-    content = db.Column(db.String(1000))
+    id = Column(Integer, primary_key=True)
+    title = Column(String(80))
+    content = Column(String(1000))
+    persons_visibility = relationship(
+        "PersonModel",
+        secondary=persons_notes,
+        back_populates="notes_visible",
+        lazy="dynamic",
+        collection_class=set,
+    )
+
+    def add_persons_visibility(self, persons: Set["PersonModel"]):
+        persons = {
+            person for person in persons if not person.is_note_visible(self.id)
+        }
+        self.persons_visibility.extend(persons)
+
+    def remove_persons_visibility(self, persons: Set["PersonModel"]):
+        for person in persons:
+            self.persons_visibility.remove(person)
+        # persons = [ person for person in persons if person.is_note_visible() ]
+        # self.person_visibility.
 
     @classmethod
     def empty_note(cls):

@@ -1,14 +1,35 @@
+from typing import List
+
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import relationship
+
 from db import db
+from models.notes import NoteModel
+from models.persons_notes import persons_notes
 
 
 class PersonModel(db.Model):
     __tablename__ = "persons"
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), nullable=False, unique=True)
+    name = Column(String(80), primary_key=True)
+    notes_visible = relationship(
+        "NoteModel",
+        secondary=persons_notes,
+        back_populates="persons_visibility",
+        lazy="dynamic",
+        collection_class=set,
+    )
+
+    def is_note_visible(self, note_id: int):
+        return bool(self.notes_visible.filter(
+            NoteModel.id == note_id).one_or_none())
 
     @classmethod
     def find_by_name(cls, name: str, allow_none=False):
         if allow_none:
             return cls.query.filter_by(name=name).one_or_none()
         return cls.query.filter_by(name=name).one()
+
+    @classmethod
+    def get_all(cls) -> List["PersonModel"]:
+        return cls.query.all()

@@ -1,6 +1,6 @@
 from typing import List, Set
 
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, text
 from sqlalchemy.orm import relationship
 
 from db import db
@@ -31,8 +31,6 @@ class NoteModel(db.Model):
     def remove_persons_visibility(self, persons: Set["PersonModel"]):
         for person in persons:
             self.persons_visibility.remove(person)
-        # persons = [ person for person in persons if person.is_note_visible() ]
-        # self.person_visibility.
 
     @classmethod
     def empty_note(cls):
@@ -45,3 +43,11 @@ class NoteModel(db.Model):
     @classmethod
     def get_all(cls) -> List["NoteModel"]:
         return cls.query.all()
+
+    @classmethod
+    def get_all_visible(cls, person_name: str = None) -> List["NoteModel"]:
+        if person_name is None:
+            return cls.get_all()
+        return cls.query.join(NoteModel.persons_visibility).filter_by(
+            name=person_name
+        )

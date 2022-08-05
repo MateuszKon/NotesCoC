@@ -27,35 +27,6 @@ class NoteRoutes:
             persons_visibility=persons_visibility,
         )
 
-    # @classmethod
-    # def new_note(cls):
-    #     all_visibility_persons = PersonModel.get_all()
-    #     if request.method == "POST":
-    #         note = NoteModel(
-    #             title=request.form["title"],
-    #             content=request.form["content"],
-    #         )
-    #
-    #         visibility_previously = {
-    #             person.name: request.form[f"vis_previous_{person.name}"]
-    #             for person in all_visibility_persons
-    #         }
-    #         visibility_names_on = [
-    #             key[len("visibility_"):] for key in request.form.keys() if
-    #             "visibility_" in key
-    #         ]
-    #         print(visibility_previously)
-    #         print(visibility_names_on)
-    #
-    #         for person_name in visibility_names_on:
-    #             print(request.form[f"visibility_{person_name}"])
-    #         note.save_to_db()
-    #         return redirect(url_for('home'))
-    #     return cls._render_write_note(
-    #         submit_callback=url_for('new_note'),
-    #         persons_visibility=all_visibility_persons,
-    #     )
-
     @classmethod
     def edit_note(cls, note_id=None):
         all_visibility_persons = PersonModel.get_all()

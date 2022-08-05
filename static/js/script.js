@@ -29,3 +29,35 @@ function toggleSettings(){
     }
 
 }
+
+// Set a Cookie
+function setCookie(cName, cValue, expDays) {
+        document.cookie = cName + "=" + cValue;
+}
+// Apply setCookie
+// setCookie('username', username);
+
+// Get a Cookie
+function getCookie(cName) {
+      const name = cName + "=";
+      const cDecoded = decodeURIComponent(document.cookie); //to be careful
+      const cArr = cDecoded .split('; ');
+      let res;
+      cArr.forEach(val => {
+          if (val.indexOf(name) === 0) res = val.substring(name.length);
+      })
+      return res;
+}
+
+function deleteCookie(cName) {
+    document.cookie = cName + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
+}
+
+function setVisibilityCookie() {
+    let vis = document.getElementById("visibility_selection").value
+    if (vis == "all") {
+        deleteCookie("visibility_selection")
+    } else {
+        setCookie("visibility_selection", vis)
+    }
+}

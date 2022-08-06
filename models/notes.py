@@ -50,4 +50,4 @@ class NoteModel(db.Model):
             return cls.get_all()
         return cls.query.join(NoteModel.persons_visibility).filter_by(
             name=person_name
-        )
+        ).all()

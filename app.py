@@ -27,7 +27,10 @@ def create_tables():
 
 # Home routes
 app.add_url_rule("/", view_func=HomeRoutes.index)
-app.add_url_rule("/home", view_func=HomeRoutes.home)
+app.add_url_rule("/home",
+                 view_func=HomeRoutes.home,
+                 methods=["GET", "POST"],
+                 )
 
 # Note routes
 app.add_url_rule("/new_note",
@@ -38,6 +41,7 @@ app.add_url_rule("/note/<int:note_id>/edit",
                  view_func=NoteRoutes.edit_note,
                  methods=["GET", "POST"],
                  )
+
 app.add_url_rule("/note/<int:note_id>/delete",
                  view_func=NoteRoutes.delete_note,
                  methods=["GET", "POST", "DELETE"],

@@ -33,10 +33,6 @@ class NoteModel(db.Model):
             self.persons_visibility.remove(person)
 
     @classmethod
-    def empty_note(cls):
-        return cls(id=None, title="", content="")
-
-    @classmethod
     def find_by_id(cls, note_id: int) -> "NoteModel":
         return cls.query.filter_by(id=note_id).one()
 

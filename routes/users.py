@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, render_template
 
 from models.users import RegisterUser
 from schemas.users import RegisterUserSchema
@@ -12,6 +12,11 @@ class UserRegister:
     @classmethod
     def register_user(cls, registration_hash: str):
         pass
+        return render_template(
+            'register.html',
+            person_name="Ralph",
+            register_hash=registration_hash,
+        )
 
     @classmethod
     def add_registration_record(cls):

@@ -11,7 +11,10 @@ class UserRegister:
 
     @classmethod
     def register_user(cls, registration_hash: str):
-        pass
+        if request.method == "POST":
+            print(request.form["username"])
+            print(request.form["new-password"])
+            print(request.form["confirm-password"])
         return render_template(
             'register.html',
             person_name="Ralph",

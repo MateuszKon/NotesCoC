@@ -7,6 +7,7 @@
 
     <link rel="stylesheet" href="{{ url_for('static',filename='css/style.css') }}">
     <script src="{{ url_for('static',filename='js/script.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsSHA/2.0.2/sha.js"></script>
     <title>Notes | Register</title>
 </head>
 
@@ -21,12 +22,15 @@
         <form
                 action="{{ url_for('register_user',registration_hash=register_hash) }}"
                 method="post" id="register_form">
-            <input type="text" placeholder="Enter username" name="username" required>
+            <input type="text" placeholder="Enter username" name="username"
+                   autocomplete="username" required>
             <input type="password" placeholder="Enter password"
-                   name="password" id="password1" required>
+                   name="new-password" id="new-password"
+                   autocomplete="new-password" required>
             <input type="password" placeholder="Confirm password"
-                   name="confirm_password" id="password2" required>
-            <input type="submit" value="Register user">
+                   name="confirm-password" id="confirm-password"
+                   autocomplete="confirm-password" required>
+            <input type="submit" onclick="mySubmit(this)" value="Register user">
             <script src="{{ url_for('static',filename='js/register.js') }}"></script>
         </form>
     </div>

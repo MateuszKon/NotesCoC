@@ -9,7 +9,7 @@ from ma import ma
 from routes.home import HomeRoutes
 from routes.notes import NoteRoutes
 from routes.persons import PersonRoutes
-from routes.users import UserRegister
+from routes.users import UserRegister, UserLogin, User
 
 app = Flask(__name__)
 app.config.from_object("default_config")
@@ -54,6 +54,7 @@ app.add_url_rule("/person/<string:name>",
                  )
 
 # User routes
+app.add_url_rule("/users", view_func=User.get_all)
 app.add_url_rule("/register/form/<string:registration_hash>",
                  view_func=UserRegister.register_user,
                  methods=["GET", "POST"],
@@ -64,6 +65,10 @@ app.add_url_rule("/register/new",
                  )
 app.add_url_rule("/register/get_all",
                  view_func=UserRegister.get_registration_records,
+                 )
+app.add_url_rule("/login",
+                 view_func=UserLogin.login_user,
+                 methods=["GET", "POST"],
                  )
 
 if __name__ == "__main__":

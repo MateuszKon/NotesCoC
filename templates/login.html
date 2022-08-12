@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="{{ url_for('static',filename='css/style.css') }}">
     <script src="{{ url_for('static',filename='js/script.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsSHA/2.0.2/sha.js"></script>
-    <title>Notes | Register</title>
+    <title>Notes | Login</title>
 </head>
 
 <body>
@@ -18,21 +18,18 @@
         </a>
     </nav>
     <div class="col main" id="col">
-        <h1>Register as {{ person_name }}</h1>
-        <form onsubmit="mySubmit(this)"
-                action="{{ url_for('register_user',registration_hash=register_hash) }}"
-                method="post" id="register_form">
+        <h1>Login</h1>
+        <form onsubmit="myLogin(this)"
+                action="{{ url_for('login_user', next=next) }}"
+                method="post" id="login_form">
             <input type="text" placeholder="Enter username" name="username"
                    autocomplete="username" required>
             <input type="password" placeholder="Enter password"
-                   name="new-password" id="new-password"
-                   autocomplete="new-password" required>
-            <input type="password" placeholder="Confirm password"
-                   name="confirm-password" id="confirm-password"
-                   autocomplete="new-password" required>
+                   name="current-password" id="current-password"
+                   autocomplete="current-password" required>
             <input type="submit"
-                   value="Register user">
-            <script src="{{ url_for('static',filename='js/register.js') }}"></script>
+                   value="Login user">
+            <script src="{{ url_for('static',filename='js/login.js') }}"></script>
         </form>
     </div>
 

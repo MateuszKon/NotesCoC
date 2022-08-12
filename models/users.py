@@ -9,7 +9,7 @@ from db import db
 from libs.random import uuid_gen
 
 
-class User(db.Model):
+class UserModel(db.Model):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True)
@@ -18,6 +18,15 @@ class User(db.Model):
     person_name = Column(String(80), ForeignKey('persons.name'))
 
     person = relationship("PersonModel", uselist=False)
+
+    def __init__(self, login: str, password: str, person_name: str):
+        self.login = login
+        self.person_name = person_name
+        self.set_password(password)
+
+    @classmethod
+    def get_by_login(cls, username: str) -> "UserModel":
+        return cls.query.filter_by(login=username).one_or_none()
 
     def set_password(self, password: str):
         if isinstance(password, str):
@@ -30,8 +39,12 @@ class User(db.Model):
         password = bytes(self.password, 'utf8')
         return bcrypt.hashpw(passwd_to_check, password) == password
 
+    @classmethod
+    def get_all(cls) -> List["UserModel"]:
+        return cls.query.all()
 
-class RegisterUser(db.Model):
+
+class RegisterUserModel(db.Model):
     __tablename__ = "register_users"
 
     id = Column(Integer, primary_key=True)
@@ -47,5 +60,9 @@ class RegisterUser(db.Model):
         )
 
     @classmethod
-    def get_all(cls) -> List["RegisterUser"]:
+    def get_all(cls) -> List["RegisterUserModel"]:
         return cls.query.all()
+
+    @classmethod
+    def get_by_hash(cls, register_hash: str) -> "RegisterUserModel":
+        return cls.query.filter_by(hash=register_hash).one_or_none()

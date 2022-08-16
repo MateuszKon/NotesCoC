@@ -1,6 +1,7 @@
 import os
 
 from flask import Flask
+from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 
 import a_env_import  # forces using load_dotenv before project imports
@@ -12,10 +13,10 @@ from routes.persons import PersonRoutes
 from routes.users import UserRegister, UserLogin, User
 
 app = Flask(__name__)
-app.config.from_object("default_config")
-app.config.from_envvar("APPLICATION_SETTINGS")
+app.config.from_object("default_config.Config")
+app.config.from_object(os.environ.get("APPLICATION_SETTINGS"))
 app.secret_key = os.environ.get("APP_SECRET_KEY")
-
+jwt = JWTManager(app)
 migrate = Migrate(app, db)
 db.init_app(app)
 

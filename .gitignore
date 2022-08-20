@@ -131,4 +131,3 @@ dmypy.json
 # Custom
 /db.db
 /.pylintrc
-/config.py

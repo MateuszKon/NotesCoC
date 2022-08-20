@@ -13,7 +13,7 @@ from routes.persons import PersonRoutes
 from routes.users import UserRegister, UserLogin, User
 
 app = Flask(__name__)
-app.config.from_object("default_config.Config")
+app.config.from_object("config.Config")
 app.config.from_object(os.environ.get("APPLICATION_SETTINGS"))
 app.secret_key = os.environ.get("APP_SECRET_KEY")
 jwt = JWTManager(app)

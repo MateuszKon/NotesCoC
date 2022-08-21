@@ -1,4 +1,6 @@
-from flask import request, render_template, url_for
+from flask import request, render_template, url_for, jsonify, make_response, \
+    redirect
+from flask_jwt_extended import set_access_cookies
 
 from models.users import RegisterUserModel, UserModel
 from schemas.users import UserSchema, RegisterUserSchema
@@ -58,7 +60,12 @@ class UserLogin:
             password = request.form['current-password']
             user_obj = UserModel.get_by_login(username)
             if user_obj and password and user_obj.check_password(password):
-                return {"mesage": "Logged in."}
+                access_token = user_obj.create_authorisation_tokens()
+                response = make_response(
+                    redirect(request.args.get('next', '/home'))
+                )
+                set_access_cookies(response, access_token)
+                return response
             return {"message": INVALID_CREDENTIALS}, 404
         return render_template(
             'login.html',

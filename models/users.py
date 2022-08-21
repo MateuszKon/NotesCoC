@@ -2,6 +2,7 @@ from typing import List
 
 import bcrypt
 from flask import url_for
+from flask_jwt_extended import create_access_token
 from sqlalchemy import String, Integer, Column, ForeignKey
 from sqlalchemy.orm import relationship
 
@@ -42,6 +43,14 @@ class UserModel(db.Model):
     @classmethod
     def get_all(cls) -> List["UserModel"]:
         return cls.query.all()
+
+    def create_authorisation_tokens(self) -> str:
+        additional_claims = {"scope": self.person_name}
+        access_token = create_access_token(
+            identity=self.id,
+            additional_claims=additional_claims,
+        )
+        return access_token
 
 
 class RegisterUserModel(db.Model):

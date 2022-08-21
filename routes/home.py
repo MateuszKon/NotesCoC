@@ -1,5 +1,6 @@
-from flask import render_template, redirect, url_for, request, make_response
+from flask import render_template, redirect, url_for, request
 
+from libs.jwt_functions import jwt_required_with_redirect
 from models.notes import NoteModel
 from models.persons import PersonModel
 
@@ -11,6 +12,7 @@ class HomeRoutes:
         return redirect(url_for("home"))
 
     @classmethod
+    @jwt_required_with_redirect()
     def home(cls):
         visibility_selection = request.cookies.get("visibility_selection")
         notes = NoteModel.get_all_visible(visibility_selection)

@@ -21,5 +21,6 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
         model = UserModel
         dump_only = ("id",)
         load_only = ("password",)
+        exclude = ("admin",)
         include_fk = True
         load_instance = True

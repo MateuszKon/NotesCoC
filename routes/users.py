@@ -1,7 +1,7 @@
-from flask import request, render_template, url_for, jsonify, make_response, \
-    redirect
+from flask import request, render_template, make_response, redirect, jsonify
 from flask_jwt_extended import set_access_cookies
 
+from libs.jwt_functions import jwt_required_with_redirect
 from models.users import RegisterUserModel, UserModel
 from schemas.users import UserSchema, RegisterUserSchema
 
@@ -37,10 +37,8 @@ class UserRegister:
 
     @classmethod
     def add_registration_record(cls):
-        print(request.json)
         user_register: RegisterUserModel = register_user_schema.load(request.json)
         user_register.save_to_db()
-        print(user_register)
         return register_user_schema.dump(user_register), 201
 
     @classmethod
@@ -56,26 +54,45 @@ class UserLogin:
     @classmethod
     def login_user(cls):
         if request.method == "POST":
-            username = request.form['username']
-            password = request.form['current-password']
+            content_type = request.headers.get("Content-Type")
+
+            username, password = cls._get_credentials(content_type)
+
             user_obj = UserModel.get_by_login(username)
             if user_obj and password and user_obj.check_password(password):
                 access_token = user_obj.create_authorisation_tokens()
-                response = make_response(
-                    redirect(request.args.get('next', '/home'))
-                )
-                set_access_cookies(response, access_token)
-                return response
+                return cls._prepare_login_response(access_token, content_type)
             return {"message": INVALID_CREDENTIALS}, 404
+
         return render_template(
             'login.html',
             next=request.args.get('next', None),
         )
 
+    @classmethod
+    def _get_credentials(cls, content_type):
+        if content_type == "application/json":
+            username = request.json["username"]
+            password = request.json["current-password"]
+        else:
+            username = request.form["username"]
+            password = request.form["current-password"]
+        return username, password
+
+    @classmethod
+    def _prepare_login_response(cls, access_token, content_type):
+        if content_type == "application/json":
+            return jsonify({"access_token": access_token}), 200
+
+        response = make_response(redirect(request.args.get('next', '/home')))
+        set_access_cookies(response, access_token)
+        return response
+
 
 class User:
 
     @classmethod
+    @jwt_required_with_redirect(admin=True)
     def get_all(cls):
         return {'users': user_schema.dump(
             UserModel.get_all(),

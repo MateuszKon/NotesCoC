@@ -8,6 +8,7 @@ import a_env_import  # forces using load_dotenv before project imports
 from db import db
 from libs.jwt_functions import token_expired_redirection_callback
 from ma import ma
+from models.users import UserModel
 from routes.home import HomeRoutes
 from routes.notes import NoteRoutes
 from routes.persons import PersonRoutes
@@ -25,9 +26,15 @@ db.init_app(app)
 jwt.expired_token_loader(token_expired_redirection_callback)
 
 
+# @app.before_first_request
+# def create_tables():
+#     db.create_all()
 @app.before_first_request
-def create_tables():
-    db.create_all()
+def create_admin_user():
+    UserModel.create_single_admin_user(
+        os.environ.get("USERADMIN_LOGIN"),
+        os.environ.get("USERADMIN_PASSWORD"),
+    )
 
 
 # Home routes

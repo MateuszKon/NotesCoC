@@ -1,9 +1,9 @@
-from typing import List
+from typing import List, Union
 
 import bcrypt
 from flask import url_for
 from flask_jwt_extended import create_access_token
-from sqlalchemy import String, Integer, Column, ForeignKey
+from sqlalchemy import String, Integer, Column, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 
 from db import db
@@ -17,10 +17,16 @@ class UserModel(db.Model):
     login = Column(String(80), nullable=False, unique=True)
     password = Column(String(60), nullable=False)
     person_name = Column(String(80), ForeignKey('persons.name'))
+    admin = Column(Boolean, default=False)
 
     person = relationship("PersonModel", uselist=False)
 
-    def __init__(self, login: str, password: str, person_name: str):
+    def __init__(
+            self,
+            login: str,
+            password: str,
+            person_name: Union[str, None]
+    ):
         self.login = login
         self.person_name = person_name
         self.set_password(password)
@@ -46,11 +52,20 @@ class UserModel(db.Model):
 
     def create_authorisation_tokens(self) -> str:
         additional_claims = {"scope": self.person_name}
+        if self.admin:
+            additional_claims["admin"] = True
         access_token = create_access_token(
             identity=self.id,
             additional_claims=additional_claims,
         )
         return access_token
+
+    @classmethod
+    def create_single_admin_user(cls, login: str, password: str):
+        if cls.query.filter_by(admin=True).one_or_none() is None:
+            user = cls(login, password, person_name=None)
+            user.admin = True
+            user.save_to_db()
 
 
 class RegisterUserModel(db.Model):

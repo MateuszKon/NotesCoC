@@ -6,6 +6,7 @@ from flask_migrate import Migrate
 
 import a_env_import  # forces using load_dotenv before project imports
 from db import db
+from libs.jwt_functions import token_expired_redirection_callback
 from ma import ma
 from routes.home import HomeRoutes
 from routes.notes import NoteRoutes
@@ -19,6 +20,9 @@ app.secret_key = os.environ.get("APP_SECRET_KEY")
 jwt = JWTManager(app)
 migrate = Migrate(app, db)
 db.init_app(app)
+
+
+jwt.expired_token_loader(token_expired_redirection_callback)
 
 
 @app.before_first_request

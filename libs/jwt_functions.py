@@ -2,10 +2,21 @@ from functools import wraps
 from typing import Any
 
 from flask import current_app, redirect, request, url_for
+from flask.typing import ResponseReturnValue
 from flask_jwt_extended import verify_jwt_in_request
 from flask_jwt_extended.exceptions import UserClaimsVerificationError
 from flask_jwt_extended.exceptions import NoAuthorizationError
 from flask_jwt_extended.view_decorators import LocationType
+
+
+def token_not_valid(next_url: str = None) -> ResponseReturnValue:
+    """Action on token not existing or expired
+
+    :param next_url: path of original request (to be redirected after
+    login)
+    :return: redirect response
+    """
+    return redirect(url_for("login_user", next=next_url))
 
 
 def jwt_required_with_redirect(
@@ -40,7 +51,7 @@ def jwt_required_with_redirect(
                     verify_type
                 )
             except NoAuthorizationError:
-                return redirect(url_for("login_user", next=request.path))
+                return token_not_valid(request.path)
 
             verify_jwt_admin_claim(jwt_header, jwt_data, admin)
             return current_app.ensure_sync(fun)(*args, **kwargs)
@@ -54,3 +65,10 @@ def verify_jwt_admin_claim(jwt_header: dict, jwt_data: dict, admin: bool):
     if admin and jwt_data.get("admin") is None:
         error_msg = "User admin claim verification failed"
         raise UserClaimsVerificationError(error_msg, jwt_header, jwt_data)
+
+
+def token_expired_redirection_callback(
+        jwt_header: dict,
+        jwt_data: dict
+) -> ResponseReturnValue:
+    return token_not_valid(request.path)

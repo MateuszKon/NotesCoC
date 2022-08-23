@@ -4,7 +4,7 @@ from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 
-import a_env_import  # forces using load_dotenv before project imports
+from libs.env_import import load_dotenv
 from db import db
 from libs.jwt_functions import token_expired_redirection_callback
 from ma import ma
@@ -26,9 +26,6 @@ db.init_app(app)
 jwt.expired_token_loader(token_expired_redirection_callback)
 
 
-# @app.before_first_request
-# def create_tables():
-#     db.create_all()
 @app.before_first_request
 def create_admin_user():
     UserModel.create_single_admin_user(
@@ -64,6 +61,7 @@ app.add_url_rule("/person/<string:name>",
                  view_func=PersonRoutes.person,
                  methods=["GET", "POST", "PUT", "DELETE"],
                  )
+app.add_url_rule("/persons", view_func=PersonRoutes.persons)
 
 # User routes
 app.add_url_rule("/users", view_func=User.get_all)

@@ -186,7 +186,6 @@ nav a:hover{
     box-shadow: var(--box-shadow-light);
     width: 850px;
     margin: auto;
-    min-height: 50vh;
     word-wrap: break-word;
     font-family: var(--note-font);
 }

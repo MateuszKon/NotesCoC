@@ -36,12 +36,14 @@ class UserRegister:
         )
 
     @classmethod
+    @jwt_required_with_redirect(admin=True)
     def add_registration_record(cls):
         user_register: RegisterUserModel = register_user_schema.load(request.json)
         user_register.save_to_db()
         return register_user_schema.dump(user_register), 201
 
     @classmethod
+    @jwt_required_with_redirect(admin=True)
     def get_registration_records(cls):
         return {"registers": register_user_schema.dump(
             RegisterUserModel.get_all(),

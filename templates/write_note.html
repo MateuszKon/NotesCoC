@@ -11,6 +11,7 @@
         {% for person in persons_visibility %}
         <input type="hidden" name="{{ 'vis_previous_' ~ person.name }}"
                value="{{ person.is_note_visible(note.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
         <label for="{{ 'visibility_' ~ person.name }}" class="pure-checkbox">
             <input id="{{ 'visibility_' ~ person.name }}"
                    type="checkbox"

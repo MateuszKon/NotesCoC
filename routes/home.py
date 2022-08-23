@@ -1,4 +1,5 @@
 from flask import render_template, redirect, url_for, request
+from flask_jwt_extended import get_jwt
 
 from libs.jwt_functions import jwt_required_with_redirect
 from models.notes import NoteModel
@@ -14,9 +15,11 @@ class HomeRoutes:
     @classmethod
     @jwt_required_with_redirect()
     def home(cls):
+        jwt_data = get_jwt()
         visibility_selection = request.cookies.get("visibility_selection")
         notes = NoteModel.get_all_visible(visibility_selection)
         persons = PersonModel.get_all()
+        search = ""
         if request.method == "POST":
             search = request.form["search"]
             search_words = search.split(" ")
@@ -31,15 +34,11 @@ class HomeRoutes:
                 notes_searching -= notes_to_remove_from_search
             notes = list(notes_filtered)
 
-            return render_template(
-                "index.html",
-                notes=notes,
-                persons=persons,
-                search=search,
-            )
-
         return render_template(
             "index.html",
             notes=notes,
             persons=persons,
+            search=search,
+            csrf_token=jwt_data.get("csrf"),
+            admin=jwt_data.get("admin"),
         )

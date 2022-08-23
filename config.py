@@ -10,6 +10,7 @@ class Config:
     JWT_SECRET_KEY = os.environ["JWT_SECRET_KEY"]
     JWT_TOKEN_LOCATION = ["cookies", "headers"]
     JWT_COOKIE_SECURE = True
+    JWT_CSRF_CHECK_FORM = True
     JWT_BLACKLIST_ENABLED = True
     JWT_BLACKLIST_TOKEN_CHECKS = ["access",]
 

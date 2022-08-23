@@ -4,7 +4,7 @@ from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 
-from libs.env_import import load_dotenv
+import libs.env_import
 from db import db
 from libs.jwt_functions import token_expired_redirection_callback
 from ma import ma

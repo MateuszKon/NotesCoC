@@ -1,8 +1,8 @@
 from libs.path import get_project_directory
-from tests.unit.base_unit_test import BaseUnitTest
+from tests.base_test import BaseTest
 
 
-class TestPathGeneration(BaseUnitTest):
+class TestPathGeneration(BaseTest):
 
     def test_generating_project_directory_path(self):
         path = get_project_directory()

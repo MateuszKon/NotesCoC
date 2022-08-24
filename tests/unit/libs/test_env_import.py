@@ -1,10 +1,10 @@
 import os
 
 from libs.path import get_project_directory
-from tests.unit.base_unit_test import BaseUnitTest
+from tests.base_test import BaseTest
 
 
-class TestEnvImport(BaseUnitTest):
+class TestEnvImport(BaseTest):
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -16,7 +16,6 @@ class TestEnvImport(BaseUnitTest):
         cls.env_list = env_list
 
     def test_all_env_variables_exist(self):
-        import libs.env_import
         for env in self.env_list:
             self.assertIsNotNone(
                 os.environ.get(env),

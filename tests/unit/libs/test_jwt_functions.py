@@ -3,10 +3,10 @@ from unittest.mock import MagicMock
 from flask_jwt_extended.exceptions import UserClaimsVerificationError
 
 from libs.jwt_functions import verify_jwt_admin_claim
-from tests.unit.base_unit_test import BaseUnitTest
+from tests.base_test import BaseTest
 
 
-class TestAdminClaims(BaseUnitTest):
+class TestAdminClaims(BaseTest):
 
     def test_checking_not_admin_raises_error(self):
         jwt_data = MagicMock(spec=dict)

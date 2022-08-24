@@ -21,6 +21,7 @@ class NoteRoutes:
             persons_visibility=None,
             csrf_token=None,
     ):
+        print(csrf_token)
         if note is None:
             note = NoteModel()
         return render_template(
@@ -32,7 +33,7 @@ class NoteRoutes:
         )
 
     @classmethod
-    @jwt_required_with_redirect()
+    @jwt_required_with_redirect(admin=True)
     def edit_note(cls, note_id=None):
         jwt_data = get_jwt()
         all_visibility_persons = list()

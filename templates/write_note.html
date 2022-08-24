@@ -3,6 +3,7 @@
 {% block form %}
     <h2>Write note</h2>
     <form action="{{ submit_callback }}" method="post" id="noteform">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
         <input type="text" placeholder="Enter the Note Name" name="title"
                value="{{ note.title|d('', true) }}">
         <textarea name="content" form="noteform"
@@ -11,7 +12,6 @@
         {% for person in persons_visibility %}
         <input type="hidden" name="{{ 'vis_previous_' ~ person.name }}"
                value="{{ person.is_note_visible(note.id) }}">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
         <label for="{{ 'visibility_' ~ person.name }}" class="pure-checkbox">
             <input id="{{ 'visibility_' ~ person.name }}"
                    type="checkbox"

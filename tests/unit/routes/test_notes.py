@@ -5,7 +5,6 @@ from tests.unit.routes.base_unit_routes_test import BaseTestUnitRoutes
 
 class TestVisibilityNotes(BaseTestUnitRoutes):
 
-    # TODO: something is wrong in test or function
     def test_adding_and_removing_visibility(self):
         persons = [
             PersonModel(name="person1"),
@@ -17,9 +16,9 @@ class TestVisibilityNotes(BaseTestUnitRoutes):
             "vis_previous_person1": "False",
             "visibility_person1": "True",
             "vis_previous_person2": "True",
-            "visibility_person2": "False",
+            # "visibility_person2": "False",
             "vis_previous_person3": "False",
-            "visibility_person3": "False",
+            # "visibility_person3": "False",
             "vis_previous_person4": "True",
             "visibility_person4": "True",
         }
@@ -30,9 +29,11 @@ class TestVisibilityNotes(BaseTestUnitRoutes):
                 persons,
                 state_dictionary,
             )
-            print("ON " + " ".join([
-                person.name for person in persons_on
-            ]))
-            print("OFF " " ".join([
-                person.name for person in persons_off
-            ]))
+            self.assertIn(persons[0], persons_on,
+                          "First person was switched to visible!")
+            self.assertEqual(len(persons_on), 1,
+                             "Only one person is switched to on!")
+            self.assertIn(persons[1], persons_off,
+                          "Second person was switched to invisible!")
+            self.assertEqual(len(persons_off), 1,
+                             "Only one person is switched to off!")

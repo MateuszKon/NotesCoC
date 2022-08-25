@@ -1,6 +1,6 @@
 from typing import List, Set
 
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, text
 from sqlalchemy.orm import relationship
 
 from db import db
@@ -31,6 +31,10 @@ class NoteModel(db.Model):
     def remove_persons_visibility(self, persons: Set["PersonModel"]):
         for person in persons:
             self.persons_visibility.remove(person)
+
+    @classmethod
+    def empty_note(cls):
+        return cls(id=None, title="", content="")
 
     @classmethod
     def find_by_id(cls, note_id: int) -> "NoteModel":

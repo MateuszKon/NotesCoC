@@ -3,7 +3,6 @@
 {% block form %}
     <h2>Write note</h2>
     <form action="{{ submit_callback }}" method="post" id="noteform">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
         <input type="text" placeholder="Enter the Note Name" name="title"
                value="{{ note.title|d('', true) }}">
         <textarea name="content" form="noteform"
@@ -18,9 +17,9 @@
                    style="float: left; margin-top: 5px;"
                    name="{{ 'visibility_' ~ person.name }}"
                    {% if person.is_note_visible(note.id) is true %}
-                   value="True" Checked
+                   value="1" Checked
                    {% else %}
-                   value="True"
+                   value="1"
                    {% endif %}
             >{{person.name}}
         </label>

@@ -1,25 +1,22 @@
 {% extends "base.html" %}
 {% block title%}<title>Notes | Home</title>{% endblock %}
 {% block side %}
-{% if admin %}
-    <br>
-    <a href="{{ url_for('edit_note') }}" class="buttonlike">+ Create a new note</a>
-    <br><br>
-    <label for="visibility_selection">Change visibility:</label>
-    <select name="visibility_selection" id="visibility_selection"
-            onchange="setVisibilityCookie()">
-        <option value="all">all</option>
-        {% for person in persons %}
-        <option value="{{person.name}}">{{person.name}}</option>
-        {% endfor %}
-        <script>(function() {
-        document.getElementById('visibility_selection').value =
-            getCookie('visibility_selection');
-        })();</script>
-    </select>
-{% endif %}
+<h1>My Notebooks:</h1>
+<a href="{{ url_for('edit_note') }}" class="buttonlike">+ Create a new note</a>
+<br><br>
+<label for="visibility_selection">Change visibility:</label>
+<select name="visibility_selection" id="visibility_selection"
+        onchange="setVisibilityCookie()">
+    <option value="all">all</option>
+    {% for person in persons %}
+    <option value="{{person.name}}">{{person.name}}</option>
+    {% endfor %}
+    <script>(function() {
+	document.getElementById('visibility_selection').value =
+	    getCookie('visibility_selection');
+    })();</script>
+</select>
 <form action="{{ url_for('home') }}" method="post" id="search_form">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
     <input type="text" placeholder="Find note" name="search"
            value="{{ search }}">
     <input type="submit" value="Search">
@@ -28,12 +25,10 @@
 {% block main %}
 {% for note in notes %}
 <p id="title {{note.id}}" class="title-field">{{note.title}}
-    {% if admin %}
-        <a href="{{ url_for('edit_note', note_id=note.id) }}" class="option">Edit
-        </a>
-        <a href="{{ url_for('delete_note', note_id=note.id) }}"
-           class="option danger">Delete</a>
-    {% endif %}
+    <a href="{{ url_for('edit_note', note_id=note.id) }}" class="option">Edit
+    </a>
+    <a href="{{ url_for('delete_note', note_id=note.id) }}"
+       class="option danger">Delete</a>
 </p>
 <p id="content {{note.id}}" class="content">{{note.content}}</p>
 <br>

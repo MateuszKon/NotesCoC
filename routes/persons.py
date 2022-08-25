@@ -1,6 +1,5 @@
 from flask import request
 
-from libs.jwt_functions import jwt_required_with_redirect
 from models.persons import PersonModel
 from schemas.persons import PersonSchema
 
@@ -18,7 +17,6 @@ person_schema = PersonSchema()
 class PersonRoutes:
 
     @classmethod
-    @jwt_required_with_redirect(admin=True)
     def person(cls, name: str):
         person_ = PersonModel.find_by_name(name, allow_none=True)
         if request.method == "POST":
@@ -47,9 +45,3 @@ class PersonRoutes:
         if person_ is None:
             return {"message": PERSON_DOESNT_EXIST.format(name)}, 400
         return person_schema.dump(person_), 200
-
-    @classmethod
-    @jwt_required_with_redirect(admin=True)
-    def persons(cls):
-        return {"persons": person_schema.dump(PersonModel.get_all(),
-                                              many=True)}, 200

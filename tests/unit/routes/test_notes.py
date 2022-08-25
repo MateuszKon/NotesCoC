@@ -37,3 +37,37 @@ class TestVisibilityNotes(BaseTestUnitRoutes):
                           "Second person was switched to invisible!")
             self.assertEqual(len(persons_off), 1,
                              "Only one person is switched to off!")
+
+    def test_visibility_from_form_send_with_false_value_previous_true(self):
+        persons = [
+            PersonModel(name="person1"),
+        ]
+        state_dictionary = {
+            "vis_previous_person1": "True",
+            "visibility_person1": "False",
+        }
+        with self.app_context():
+            for person in persons:
+                person.save_to_db()
+            with self.assertRaises(ValueError):
+                NoteRoutes._visibility_changing_list(
+                    persons,
+                    state_dictionary,
+                )
+
+    def test_visibility_from_form_send_with_false_value_previous_false(self):
+        persons = [
+            PersonModel(name="person1"),
+        ]
+        state_dictionary = {
+            "vis_previous_person1": "False",
+            "visibility_person1": "False",
+        }
+        with self.app_context():
+            for person in persons:
+                person.save_to_db()
+            with self.assertRaises(ValueError):
+                NoteRoutes._visibility_changing_list(
+                    persons,
+                    state_dictionary,
+                )

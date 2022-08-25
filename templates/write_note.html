@@ -18,9 +18,9 @@
                    style="float: left; margin-top: 5px;"
                    name="{{ 'visibility_' ~ person.name }}"
                    {% if person.is_note_visible(note.id) is true %}
-                   value="1" Checked
+                   value="True" Checked
                    {% else %}
-                   value="1"
+                   value="True"
                    {% endif %}
             >{{person.name}}
         </label>

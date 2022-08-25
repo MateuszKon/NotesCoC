@@ -108,6 +108,12 @@ class NoteRoutes:
             key[len("visibility_"):] for key in form_dict.keys() if
             "visibility_" in key
         }
+        for key in visibility_names_on:
+            if form_dict["visibility_" + key].lower() != "true":
+                raise ValueError(
+                    f"Value of form 'visibility_{key}' was different that "
+                    f"'True' ({form_dict['visibility_' + key]})"
+                )
 
         persons_to_on = {
             PersonModel.find_by_name(name) for name in visibility_names_on

@@ -63,7 +63,7 @@ class TestUserModel(BaseTestUnitModels):
     @patch("models.users.bcrypt.hashpw")
     def test_user_saving_when_person_not_exist(self, mock_hashing):
         # Mocking for faster testing (password is not needed, but we need
-        # fresh user
+        # fresh user)
         mock_hashing.return_value = "aaa".encode("utf8")
         self.user = UserModel(
             self.user_login,
@@ -74,4 +74,22 @@ class TestUserModel(BaseTestUnitModels):
             with self.assertRaises(IntegrityError):
                 self.user.save_to_db()
 
-
+    @patch("models.users.bcrypt.hashpw")
+    def test_user_accessing_person_by_relationship(self, mock_hashing):
+        # Mocking for faster testing (password is not needed, but we need
+        # fresh user)
+        mock_hashing.return_value = "aaa".encode("utf8")
+        self.user = UserModel(
+            self.user_login,
+            self.user_password,
+            self.users_person_name
+        )
+        person = PersonModel(name=self.users_person_name)
+        with self.app_context():
+            person.save_to_db()
+            self.user.save_to_db()
+            self.assertEqual(
+                self.user.person.name,
+                person.name,
+                "Persons name is different when accessing by relationship!"
+            )

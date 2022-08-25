@@ -13,7 +13,7 @@ class TestAdminClaims(BaseTest):
         jwt_data.get = MagicMock(return_value=None)
         with self.assertRaises(UserClaimsVerificationError):
             verify_jwt_admin_claim(
-                jwt_header=dict(),
+                jwt_header={},
                 jwt_data=jwt_data,
                 admin=True,
             )
@@ -23,7 +23,7 @@ class TestAdminClaims(BaseTest):
         jwt_data = MagicMock(spec=dict)
         jwt_data.get = MagicMock(return_value="True")
         verify_jwt_admin_claim(
-            jwt_header=dict(),
+            jwt_header={},
             jwt_data=jwt_data,
             admin=True,
         )

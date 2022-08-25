@@ -6,7 +6,7 @@ from app import app
 from db import db
 
 
-class BaseTestUnitRoutes(BaseTest):
+class BaseTestUnitDatabase(BaseTest):
 
     @classmethod
     def setUpClass(cls):

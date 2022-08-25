@@ -1,9 +1,9 @@
 from models.notes import NoteModel
 from models.persons import PersonModel
-from tests.unit.models.base_unit_models_test import BaseTestUnitModels
+from tests.unit.base_unit_database_test import BaseTestUnitDatabase
 
 
-class TestNoteModelPersonsVisibility(BaseTestUnitModels):
+class TestNoteModelPersonsVisibility(BaseTestUnitDatabase):
 
     def setUp(self) -> None:
         super().setUp()

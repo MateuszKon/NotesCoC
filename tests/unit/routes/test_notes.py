@@ -1,9 +1,9 @@
 from models.persons import PersonModel
 from routes.notes import NoteRoutes
-from tests.unit.routes.base_unit_routes_test import BaseTestUnitRoutes
+from tests.unit.base_unit_database_test import BaseTestUnitDatabase
 
 
-class TestVisibilityNotes(BaseTestUnitRoutes):
+class TestVisibilityNotes(BaseTestUnitDatabase):
 
     def test_adding_and_removing_visibility(self):
         persons = [

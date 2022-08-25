@@ -1,8 +1,8 @@
 from models.notes import NoteModel
-from tests.unit.models.base_unit_models_test import BaseTestUnitModels
+from tests.unit.base_unit_database_test import BaseTestUnitDatabase
 
 
-class TestNoteModel(BaseTestUnitModels):
+class TestNoteModel(BaseTestUnitDatabase):
 
     def setUp(self) -> None:
         self.note_title = "test_title"

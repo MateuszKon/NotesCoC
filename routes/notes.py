@@ -36,7 +36,7 @@ class NoteRoutes:
     @jwt_required_with_redirect(admin=True)
     def edit_note(cls, note_id=None):
         jwt_data = get_jwt()
-        all_visibility_persons = list()
+        all_visibility_persons = []
         if jwt_data.get("admin"):
             all_visibility_persons = PersonModel.get_all()
 

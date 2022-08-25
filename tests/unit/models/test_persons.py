@@ -1,10 +1,10 @@
 from sqlalchemy.exc import NoResultFound
 
 from models.persons import PersonModel
-from tests.unit.models.base_unit_models_test import BaseTestUnitModels
+from tests.unit.base_unit_database_test import BaseTestUnitDatabase
 
 
-class TestPersonModel(BaseTestUnitModels):
+class TestPersonModel(BaseTestUnitDatabase):
 
     def test_find_by_name_allow_none_true(self):
         with self.app_context():

@@ -1,6 +1,6 @@
 from typing import List, Set
 
-from sqlalchemy import Column, Integer, String, text
+from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
 
 from db import db

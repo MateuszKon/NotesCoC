@@ -6,10 +6,10 @@ from sqlalchemy.exc import IntegrityError
 
 from models.persons import PersonModel
 from models.users import UserModel
-from tests.unit.models.base_unit_models_test import BaseTestUnitModels, db
+from tests.unit.base_unit_database_test import BaseTestUnitDatabase
 
 
-class TestUserModel(BaseTestUnitModels):
+class TestUserModel(BaseTestUnitDatabase):
 
     @classmethod
     def setUpClass(cls) -> None:

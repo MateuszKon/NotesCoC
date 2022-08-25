@@ -4,7 +4,7 @@ from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 
-import libs.env_import
+import libs.env_import  # Import for loading .env file before other imports
 from db import db
 from libs.jwt_functions import token_expired_redirection_callback
 from ma import ma

@@ -14,9 +14,20 @@
 
 <body>
     <nav>
-        <a href="/home">
-            <h1>Notes</h1>
-        </a>
+        <div class="center-me">
+            <a href="/home">
+                <h1>Notes</h1>
+            </a>
+        </div>
+        <div style="float:right">
+            <form align="right" name="logout" method="post"
+                  action="{{ url_for('logout_user') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                <label class="logoutLblPos">
+                    <input name="submit2" type="submit" id="submit2" value="log out">
+                </label>
+            </form>
+        </div>
     </nav>
     <div class="row" id="row">
         <div class="sidebar">

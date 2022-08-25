@@ -1,4 +1,5 @@
-from flask import request, render_template, make_response, redirect, jsonify
+from flask import request, render_template, make_response, redirect, jsonify, \
+    url_for
 from flask_jwt_extended import set_access_cookies, get_jwt
 
 from blocklist import add_to_blocklist
@@ -80,10 +81,7 @@ class UserLogin:
             access_jti = jwt_data["jti"]
             access_exp = jwt_data["exp"]
             add_to_blocklist(access_jti, access_exp)
-            return render_template(
-                'login.html',
-                next=None,
-            )
+            return redirect(url_for("login_user"))
 
     @classmethod
     def _get_credentials(cls, content_type):

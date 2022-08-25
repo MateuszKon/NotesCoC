@@ -1,10 +1,8 @@
 from typing import List, Tuple, Set
 
 from flask import request, render_template, redirect, url_for
-from flask_jwt_extended import get_jwt
 from sqlalchemy.exc import NoResultFound
 
-from libs.jwt_functions import jwt_required_with_redirect
 from models.notes import NoteModel
 from models.persons import PersonModel
 
@@ -19,9 +17,7 @@ class NoteRoutes:
             submit_callback,
             note=None,
             persons_visibility=None,
-            csrf_token=None,
     ):
-        print(csrf_token)
         if note is None:
             note = NoteModel()
         return render_template(
@@ -29,17 +25,11 @@ class NoteRoutes:
             submit_callback=submit_callback,
             note=note,
             persons_visibility=persons_visibility,
-            csrf_token=csrf_token,
         )
 
     @classmethod
-    @jwt_required_with_redirect(admin=True)
     def edit_note(cls, note_id=None):
-        jwt_data = get_jwt()
-        all_visibility_persons = []
-        if jwt_data.get("admin"):
-            all_visibility_persons = PersonModel.get_all()
-
+        all_visibility_persons = PersonModel.get_all()
         if note_id is None:
             note = NoteModel()
         else:
@@ -51,7 +41,7 @@ class NoteRoutes:
         if request.method == "POST":
             note.title = request.form["title"]
             note.content = request.form["content"]
-            persons_to_on, persons_to_off = cls._visibility_changing_list(
+            persons_to_on, persons_to_off = cls.visibility_changing_list(
                 all_visibility_persons,
                 request.form
             )
@@ -63,13 +53,10 @@ class NoteRoutes:
             submit_callback=url_for('edit_note', note_id=note_id),
             note=note,
             persons_visibility=all_visibility_persons,
-            csrf_token=jwt_data.get("csrf"),
         )
 
     @classmethod
-    @jwt_required_with_redirect(admin=True)
     def delete_note(cls, note_id: int):
-        jwt_data = get_jwt()
         note = NoteModel.find_by_id(note_id)
         if request.method in ["DELETE", "POST"]:
             note.delete_from_db()
@@ -79,11 +66,10 @@ class NoteRoutes:
             submit_callback=url_for('delete_note', note_id=note_id),
             title=note.title,
             content=note.content,
-            csrf_token=jwt_data.get("csrf"),
         )
 
     @classmethod
-    def _visibility_changing_list(
+    def visibility_changing_list(
             cls,
             all_persons: List["PersonModel"],
             form_dict: dict,
@@ -100,7 +86,7 @@ class NoteRoutes:
 
         visibility_previously = {
             person.name:
-                cls._bool_from_string(form_dict[f"vis_previous_{person.name}"])
+                cls.bool_from_string(form_dict[f"vis_previous_{person.name}"])
             for person in all_persons
         }
 
@@ -108,12 +94,6 @@ class NoteRoutes:
             key[len("visibility_"):] for key in form_dict.keys() if
             "visibility_" in key
         }
-        for key in visibility_names_on:
-            if form_dict["visibility_" + key].lower() != "true":
-                raise ValueError(
-                    f"Value of form 'visibility_{key}' was different that "
-                    f"'True' ({form_dict['visibility_' + key]})"
-                )
 
         persons_to_on = {
             PersonModel.find_by_name(name) for name in visibility_names_on
@@ -127,5 +107,5 @@ class NoteRoutes:
         return persons_to_on, persons_to_off
 
     @staticmethod
-    def _bool_from_string(text: str) -> bool:
+    def bool_from_string(text: str) -> bool:
         return text.lower() == "true"

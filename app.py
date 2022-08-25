@@ -1,43 +1,28 @@
 import os
 
 from flask import Flask
-from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 
-import libs.env_import  # Import for loading .env file before other imports
-from blocklist import BLOCKLIST
+import a_env_import  # forces using load_dotenv before project imports
 from db import db
-from libs.jwt_functions import token_expired_redirection_callback
 from ma import ma
-from models.users import UserModel
 from routes.home import HomeRoutes
 from routes.notes import NoteRoutes
 from routes.persons import PersonRoutes
-from routes.users import UserRegister, UserLogin, User
+
 
 app = Flask(__name__)
-app.config.from_object("config.Config")
-app.config.from_object(os.environ.get("APPLICATION_SETTINGS"))
+app.config.from_object("default_config")
+app.config.from_envvar("APPLICATION_SETTINGS")
 app.secret_key = os.environ.get("APP_SECRET_KEY")
-jwt = JWTManager(app)
+
 migrate = Migrate(app, db)
 db.init_app(app)
 
 
-jwt.expired_token_loader(token_expired_redirection_callback)
-
-
 @app.before_first_request
-def create_admin_user():
-    UserModel.create_single_admin_user(
-        os.environ.get("USERADMIN_LOGIN"),
-        os.environ.get("USERADMIN_PASSWORD"),
-    )
-
-
-@jwt.token_in_blocklist_loader
-def check_if_token_in_blocklist(jwt_header, jwt_payload):
-    return jwt_payload["jti"] in BLOCKLIST
+def create_tables():
+    db.create_all()
 
 
 # Home routes
@@ -67,29 +52,7 @@ app.add_url_rule("/person/<string:name>",
                  view_func=PersonRoutes.person,
                  methods=["GET", "POST", "PUT", "DELETE"],
                  )
-app.add_url_rule("/persons", view_func=PersonRoutes.persons)
 
-# User routes
-app.add_url_rule("/users", view_func=User.get_all)
-app.add_url_rule("/register/form/<string:registration_hash>",
-                 view_func=UserRegister.register_user,
-                 methods=["GET", "POST"],
-                 )
-app.add_url_rule("/register/new",
-                 view_func=UserRegister.add_registration_record,
-                 methods=["POST"],
-                 )
-app.add_url_rule("/register/get_all",
-                 view_func=UserRegister.get_registration_records,
-                 )
-app.add_url_rule("/login",
-                 view_func=UserLogin.login_user,
-                 methods=["GET", "POST"],
-                 )
-app.add_url_rule("/logout",
-                 view_func=UserLogin.logout_user,
-                 methods=["POST"],
-                 )
 
 if __name__ == "__main__":
     ma.init_app(app)

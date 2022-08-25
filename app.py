@@ -22,6 +22,7 @@ app.secret_key = os.environ.get("APP_SECRET_KEY")
 jwt = JWTManager(app)
 migrate = Migrate(app, db)
 db.init_app(app)
+ma.init_app(app)
 
 
 jwt.expired_token_loader(token_expired_redirection_callback)
@@ -92,5 +93,4 @@ app.add_url_rule("/logout",
                  )
 
 if __name__ == "__main__":
-    ma.init_app(app)
     app.run(port=5001, debug=True)

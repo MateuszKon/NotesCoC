@@ -4,6 +4,7 @@
     <h2>Confirm note deletion</h2>
     <form action="{{ submit_callback }}" method="post" id="noteform">
         <input type="hidden" name="_method" value="DELETE">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
         <input readonly type="text" placeholder="Enter the Note Name" name="title"
                value="{{title}}">
         <textarea readonly name="content" form="noteform"

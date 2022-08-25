@@ -4,7 +4,7 @@ import os
 
 class Config:
     DEBUG = False
-    SQLALCHEMY_DATABASE_URI = "sqlite:///data.db"
+    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     PROPAGATE_EXCEPTIONS = True
     SECRET_KEY = os.environ["APP_SECRET_KEY"]
@@ -19,4 +19,5 @@ class Config:
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URI", "sqlite:///data.db")
+    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL",
+                                             "sqlite:///data.db")

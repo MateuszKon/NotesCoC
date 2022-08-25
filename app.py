@@ -5,6 +5,7 @@ from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 
 import libs.env_import  # Import for loading .env file before other imports
+from blocklist import BLOCKLIST
 from db import db
 from libs.jwt_functions import token_expired_redirection_callback
 from ma import ma
@@ -32,6 +33,11 @@ def create_admin_user():
         os.environ.get("USERADMIN_LOGIN"),
         os.environ.get("USERADMIN_PASSWORD"),
     )
+
+
+@jwt.token_in_blocklist_loader
+def check_if_token_in_blocklist(jwt_header, jwt_payload):
+    return jwt_payload["jti"] in BLOCKLIST
 
 
 # Home routes
@@ -79,6 +85,10 @@ app.add_url_rule("/register/get_all",
 app.add_url_rule("/login",
                  view_func=UserLogin.login_user,
                  methods=["GET", "POST"],
+                 )
+app.add_url_rule("/logout",
+                 view_func=UserLogin.logout_user,
+                 methods=["POST"],
                  )
 
 if __name__ == "__main__":

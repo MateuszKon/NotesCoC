@@ -1,6 +1,7 @@
 from flask import request, render_template, make_response, redirect, jsonify
-from flask_jwt_extended import set_access_cookies
+from flask_jwt_extended import set_access_cookies, get_jwt
 
+from blocklist import add_to_blocklist
 from libs.jwt_functions import jwt_required_with_redirect
 from models.users import RegisterUserModel, UserModel
 from schemas.users import UserSchema, RegisterUserSchema
@@ -70,6 +71,19 @@ class UserLogin:
             'login.html',
             next=request.args.get('next', None),
         )
+
+    @classmethod
+    @jwt_required_with_redirect()
+    def logout_user(cls):
+        if request.method == "POST":
+            jwt_data = get_jwt()
+            access_jti = jwt_data["jti"]
+            access_exp = jwt_data["exp"]
+            add_to_blocklist(access_jti, access_exp)
+            return render_template(
+                'login.html',
+                next=None,
+            )
 
     @classmethod
     def _get_credentials(cls, content_type):

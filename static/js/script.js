@@ -53,11 +53,12 @@ function deleteCookie(cName) {
     document.cookie = cName + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC";
 }
 
-function setVisibilityCookie() {
-    let vis = document.getElementById("visibility_selection").value
+function setVisibilityCookie(name) {
+    let vis = name;
     if (vis == "all") {
         deleteCookie("visibility_selection")
     } else {
         setCookie("visibility_selection", vis)
     }
+
 }

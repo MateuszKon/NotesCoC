@@ -16,19 +16,23 @@ class HomeRoutes:
     @jwt_required_with_redirect()
     def home(cls):
         jwt_data = get_jwt()
-        visibility_selection = request.cookies.get("visibility_selection")
+        if jwt_data.get("admin"):
+            visibility_selection = request.cookies.get("visibility_selection")
+        else:
+            visibility_selection = jwt_data.get("scope")
         notes = NoteModel.get_all_visible(visibility_selection)
         persons = PersonModel.get_all()
         search = ""
         if request.method == "POST":
             search = request.form["search"]
-            search_words = search.split(" ")
+            search_words = search.lower().split(" ")
             notes_searching = set(notes)
             notes_filtered = set()
             for word in search_words:
                 notes_to_remove_from_search = set()
                 for note in notes_searching:
-                    if word in note.title or word in note.content:
+                    if word in note.title.lower() or\
+                            word in note.content.lower():
                         notes_filtered.add(note)
                         notes_to_remove_from_search.add(note)
                 notes_searching -= notes_to_remove_from_search

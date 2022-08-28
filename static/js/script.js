@@ -62,3 +62,17 @@ function setVisibilityCookie(name) {
     }
 
 }
+
+function expandNotes() {
+    let collection = document.getElementsByClassName("note-header");
+    for (var i = 0; i < collection.length; i++){
+        collection[i].classList.add('show');
+    }
+}
+
+function collapseNotes() {
+    let collection = document.getElementsByClassName("note-header");
+    for (var i = 0; i < collection.length; i++){
+        collection[i].classList.remove('show');
+    }
+}

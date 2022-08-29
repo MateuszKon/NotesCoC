@@ -4,6 +4,8 @@ from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
 
 from db import db
+from models.notes_subjects import notes_subjects
+# from models.persons import PersonModel
 from models.persons_notes import persons_notes
 
 
@@ -18,6 +20,13 @@ class NoteModel(db.Model):
         "PersonModel",
         secondary=persons_notes,
         back_populates="notes_visible",
+        lazy="dynamic",
+        collection_class=set,
+    )
+    subjects = relationship(
+        "SubjectModel",
+        secondary=notes_subjects,
+        back_populates="notes",
         lazy="dynamic",
         collection_class=set,
     )

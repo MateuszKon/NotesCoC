@@ -13,7 +13,10 @@ from models.users import UserModel
 from routes.home import HomeRoutes
 from routes.notes import NoteRoutes
 from routes.persons import PersonRoutes
+from routes.subjects import SubjectRoutes
+from routes.subjects_categories import SubjectCategoryRoutes
 from routes.users import UserRegister, UserLogin, User
+
 
 app = Flask(__name__)
 app.config.from_object("config.Config")
@@ -91,6 +94,16 @@ app.add_url_rule("/logout",
                  view_func=UserLogin.logout_user,
                  methods=["POST"],
                  )
+
+# Subjects routes
+app.add_url_rule("/subjects", view_func=SubjectRoutes.subjects)
+app.add_url_rule("/subject_category/<string:name>",
+                 view_func=SubjectCategoryRoutes.subject_category,
+                 methods=["GET", "POST", "PUT", "DELETE"],
+                 )
+app.add_url_rule("/subject_categories",
+                 view_func=SubjectCategoryRoutes.subject_categories)
+
 
 if __name__ == "__main__":
     app.run(port=5001, debug=True)

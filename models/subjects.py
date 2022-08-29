@@ -28,5 +28,11 @@ class SubjectModel(db.Model):
     )
 
     @classmethod
+    def find_by_name(cls, name: str,  allow_none=False) -> "SubjectModel":
+        if allow_none:
+            return cls.query.filter_by(name=name).one_or_none()
+        return cls.query.filter_by(name=name).one()
+
+    @classmethod
     def get_all(cls) -> List["SubjectModel"]:
         return cls.query.all()

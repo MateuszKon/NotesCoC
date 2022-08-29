@@ -5,6 +5,7 @@ from flask_jwt_extended import get_jwt
 from sqlalchemy.exc import NoResultFound
 
 from libs.jwt_functions import jwt_required_with_redirect
+from models import SubjectModel
 from models.notes import NoteModel
 from models.persons import PersonModel
 
@@ -20,8 +21,10 @@ class NoteRoutes:
             note=None,
             persons_visibility=None,
             csrf_token=None,
+            persons=None,
+            admin=None,
+            subjects=None,
     ):
-        print(csrf_token)
         if note is None:
             note = NoteModel()
         return render_template(
@@ -30,6 +33,9 @@ class NoteRoutes:
             note=note,
             persons_visibility=persons_visibility,
             csrf_token=csrf_token,
+            persons=persons,
+            admin=admin,
+            subjects=subjects,
         )
 
     @classmethod
@@ -59,11 +65,15 @@ class NoteRoutes:
             note.remove_persons_visibility(persons_to_off)
             note.save_to_db()
             return redirect(url_for('home'))
+        subjects = SubjectModel.get_all()
         return cls._render_write_note(
             submit_callback=url_for('edit_note', note_id=note_id),
             note=note,
             persons_visibility=all_visibility_persons,
             csrf_token=jwt_data.get("csrf"),
+            persons=all_visibility_persons,
+            admin=jwt_data.get("admin"),
+            subjects=subjects,
         )
 
     @classmethod

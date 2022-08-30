@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Set
 
 from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
@@ -36,3 +36,10 @@ class SubjectModel(db.Model):
     @classmethod
     def get_all(cls) -> List["SubjectModel"]:
         return cls.query.all()
+
+    def add_categories(self, categories: Set["SubjectCategoryModel"]):
+        self.categories.extend(categories)
+
+    def remove_categories(self, categories: Set["SubjectCategoryModel"]):
+        for category in categories:
+            self.categories.remove(category)

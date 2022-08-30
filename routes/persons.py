@@ -29,6 +29,7 @@ class PersonRoutes:
             return {"message": PERSON_ADDED.format(name)}, 201
 
         if request.method == "PUT":
+            print(request.json)
             new_person = person_schema.load(request.json)
             if person_:
                 person_.name = new_person.name

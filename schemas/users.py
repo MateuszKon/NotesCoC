@@ -1,5 +1,6 @@
 from marshmallow import fields
 
+from db import db
 from ma import ma
 from models.users import UserModel, RegisterUserModel
 
@@ -24,3 +25,4 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
         exclude = ("admin",)
         include_fk = True
         load_instance = True
+        sqla_session = db.session

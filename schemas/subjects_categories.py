@@ -1,11 +1,11 @@
 from db import db
 from ma import ma
-from models.persons import PersonModel
+from models.subjects_categories import SubjectCategoryModel
 
 
-class PersonSchema(ma.SQLAlchemyAutoSchema):
+class SubjectCategorySchema(ma.SQLAlchemyAutoSchema):
     class Meta:
-        model = PersonModel
+        model = SubjectCategoryModel
         # load_only = (,)
         # dump_only = ("id",)
         load_instance = True

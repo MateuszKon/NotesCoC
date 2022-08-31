@@ -31,8 +31,12 @@ class HomeRoutes:
             for word in search_words:
                 notes_to_remove_from_search = set()
                 for note in notes_searching:
-                    if word in note.title.lower() or\
-                            word in note.content.lower():
+                    if any(
+                            word in note_word.lower() for note_word in
+                            note.get_subjects_and_categories_words()
+                    )\
+                            or word in note.title.lower()\
+                            or word in note.content.lower():
                         notes_filtered.add(note)
                         notes_to_remove_from_search.add(note)
                 notes_searching -= notes_to_remove_from_search

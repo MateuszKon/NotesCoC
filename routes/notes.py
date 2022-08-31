@@ -1,3 +1,4 @@
+import re
 from typing import List, Tuple, Set
 
 from flask import request, render_template, redirect, url_for
@@ -5,6 +6,7 @@ from flask_jwt_extended import get_jwt
 from sqlalchemy.exc import NoResultFound
 
 from libs.jwt_functions import jwt_required_with_redirect
+from models import SubjectModel
 from models.notes import NoteModel
 from models.persons import PersonModel
 
@@ -20,8 +22,11 @@ class NoteRoutes:
             note=None,
             persons_visibility=None,
             csrf_token=None,
+            persons=None,
+            admin=None,
+            subjects=None,
+            note_subjects=None,
     ):
-        print(csrf_token)
         if note is None:
             note = NoteModel()
         return render_template(
@@ -30,6 +35,10 @@ class NoteRoutes:
             note=note,
             persons_visibility=persons_visibility,
             csrf_token=csrf_token,
+            persons=persons,
+            admin=admin,
+            subjects=subjects,
+            note_subjects=note_subjects,
         )
 
     @classmethod
@@ -37,6 +46,8 @@ class NoteRoutes:
     def edit_note(cls, note_id=None):
         jwt_data = get_jwt()
         all_visibility_persons = []
+        all_subjects = SubjectModel.get_all()
+
         if jwt_data.get("admin"):
             all_visibility_persons = PersonModel.get_all()
 
@@ -47,16 +58,29 @@ class NoteRoutes:
                 note = NoteModel.find_by_id(note_id)
             except NoResultFound:
                 return {"message": NOTE_ID_ERROR}, 404
-
+        note_subjects = note.subjects.all()
         if request.method == "POST":
+            # title and content:
             note.title = request.form["title"]
             note.content = request.form["content"]
+
+            # persons visibility:
             persons_to_on, persons_to_off = cls._visibility_changing_list(
                 all_visibility_persons,
                 request.form
             )
             note.add_persons_visibility(persons_to_on)
             note.remove_persons_visibility(persons_to_off)
+
+            # subjects:
+            subjects_to_add, subjects_to_remove = cls._subjects_changing_list(
+                note_subjects,
+                request.form,
+                all_subjects,
+            )
+            note.add_subjects(subjects_to_add)
+            note.remove_subjects(subjects_to_remove)
+
             note.save_to_db()
             return redirect(url_for('home'))
         return cls._render_write_note(
@@ -64,6 +88,10 @@ class NoteRoutes:
             note=note,
             persons_visibility=all_visibility_persons,
             csrf_token=jwt_data.get("csrf"),
+            persons=all_visibility_persons,
+            admin=jwt_data.get("admin"),
+            subjects=[subject.name for subject in all_subjects],
+            note_subjects=note_subjects,
         )
 
     @classmethod
@@ -129,3 +157,34 @@ class NoteRoutes:
     @staticmethod
     def _bool_from_string(text: str) -> bool:
         return text.lower() == "true"
+
+    @classmethod
+    def _subjects_changing_list(
+            cls,
+            current_subjects: List["SubjectModel"],
+            new_subjects: dict,
+            all_subjects: List["SubjectModel"],
+    ):
+        current_subjects_names = {
+            subject.name for subject in current_subjects
+        }
+        valid_new_subjects = {
+            new_subjects[key] for key in new_subjects.keys() if
+            re.match(r"\Asubject\d+\Z", key) and
+            new_subjects[key] not in ['none', 'new']
+        }
+
+        all_subjects_dictionary = {
+            subject.name: subject for subject in all_subjects
+        }
+
+        subjects_to_add = {
+            all_subjects_dictionary[name] for name in
+            valid_new_subjects - current_subjects_names
+        }
+        subjects_to_remove = {
+            all_subjects_dictionary[name] for name in
+            current_subjects_names - valid_new_subjects
+        }
+
+        return subjects_to_add, subjects_to_remove

@@ -41,6 +41,13 @@ class NoteModel(db.Model):
         for person in persons:
             self.persons_visibility.remove(person)
 
+    def add_subjects(self, subjects: Set["SubjectModel"]):
+        self.subjects.extend(subjects)
+
+    def remove_subjects(self, subjects: Set["SubjectModel"]):
+        for subject in subjects:
+            self.subjects.remove(subject)
+
     @classmethod
     def find_by_id(cls, note_id: int) -> "NoteModel":
         return cls.query.filter_by(id=note_id).one()

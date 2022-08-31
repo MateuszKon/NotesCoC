@@ -33,16 +33,13 @@
     {% endfor %}
 
     <div class="mt-2" id="subjects-selection-div">
-        <div id="subject_div0">
-            <select class="form-select form-select-sm mb-3" aria-label=".form-select-lg example" name="subject0"
-                id="subject0" form="noteform" onchange="chooseSubject(event)">
-                <option value="none" selected>Choose subject</option>
-                <option value="new">New</option>
-                {% for subject in subjects %}
-                <option value="{{subject.name}}">{{subject.name}}"</option>
-                {% endfor %}
-            </select>
-        </div>
+        <script>
+            subjectsGenerator = new FormSubjectSelector({{ subjects | tojson }});
+            {% for selected_subject in note_subjects %}
+            subjectsGenerator.createSelector('{{ selected_subject.name }}', subjectsGenerator.changeSubject);
+            {% endfor %}
+            subjectsGenerator.createSelector('none', subjectsGenerator.chooseSubject);
+        </script>
     </div>
 
 

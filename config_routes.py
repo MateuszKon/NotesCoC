@@ -10,9 +10,9 @@ from routes.subjects_categories import SubjectCategoryRoutes, CategoryOfSubject
 from routes.users import UserRegister, UserLogin, User
 
 
-def add_all_url_rules(app: Flask):
+def configure_routing(app: Flask):
     # Configure all classes (inject interfaces implementation
-    HomeRoutes.config(RequestData, HomeLogic)
+
     # NoteRoutes.config()
     # PersonRoutes.config()
     # UserRegister.config()
@@ -22,12 +22,11 @@ def add_all_url_rules(app: Flask):
     # CategoryOfSubject.config()
 
     # Home routes
+    # /
+    # /home
+    HomeRoutes.config(app, RequestData, HomeLogic)
 
-    app.add_url_rule("/", view_func=HomeRoutes.index)
-    app.add_url_rule("/home",
-                     view_func=HomeRoutes.home,
-                     methods=["GET", "POST"],
-                     )
+
 
     # Note routes
     app.add_url_rule("/new_note",

@@ -10,7 +10,7 @@ from db import db
 from libs.jwt_functions import token_expired_redirection_callback
 from ma import ma
 from models.users import UserModel
-from config_routes import add_all_url_rules
+from config_routes import configure_routing
 
 
 app = Flask(__name__)
@@ -39,7 +39,7 @@ def check_if_token_in_blocklist(jwt_header, jwt_payload):
     return jwt_payload["jti"] in BLOCKLIST
 
 
-add_all_url_rules(app)
+configure_routing(app)
 
 
 if __name__ == "__main__":

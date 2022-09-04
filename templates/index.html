@@ -1,6 +1,27 @@
 {% extends "base.html" %}
 {% block title%}<title>Notes | Home</title>{% endblock %}
 
+{% block navigation %}
+            <li class="nav-item mx-2">
+                <a class="nav-link dropdown-toggle"
+                   data-bs-toggle="dropdown"
+                   aria-expanded="false">Expand</a>
+                <ul class="nav-item dropdown dropdown-menu">
+                    <li>
+                        <a class="dropdown-item" id="expand-notes"
+                           onclick="expandNotes()">
+                            Expand All
+                        </a>
+                        <a class="dropdown-item" id="collapse-notes"
+                           onclick="collapseNotes()">
+                            Collapse All
+                        </a>
+                    </li>
+                </ul>
+            </li>
+{% endblock %}
+
+
 {% block main %}
 <div class="accordion" id="accordion-notes">
     {% for note in notes %}

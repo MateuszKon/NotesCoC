@@ -12,4 +12,3 @@ class IHomeRoute(ABC):
     @abstractmethod
     def render_home_page_filtered(cls, data: dict) -> str:
         pass
-

@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, render_template
 
 from libs.jwt_functions import jwt_required_with_redirect
 from models.subjects import SubjectModel
@@ -49,5 +49,11 @@ class SubjectRoutes:
     @classmethod
     @jwt_required_with_redirect(admin=True)
     def subjects(cls):
-        return {"subjects": subject_schema.dump(SubjectModel.get_all(),
-                                                many=True)}, 200
+        if request.content_type == "application/json":
+            return {"subjects": subject_schema.dump(SubjectModel.get_all(),
+                                                    many=True)}, 200
+        subjects = SubjectModel.get_all()
+        return render_template(
+            'subjects.html',
+            subjects=subjects,
+        )

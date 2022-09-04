@@ -7,13 +7,14 @@
     <title>Document</title>
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css">
-    <!-- Code injected by live-server <link rel="stylesheet" href="{{ url_for('static',filename='css/style.css') }}"> -->
+    <link rel="stylesheet"
+          href="{{ url_for('static',filename='css/style.css') }}">
     <script src="{{ url_for('static',filename='js/script.js') }}"></script>
     {% block title%}{% endblock %}
     {% block script%}{% endblock %}
 </head>
 
-<body>
+<body class="">
 <main>
 
     <nav class="navbar navbar-expand-sm navbar-dark bg-dark"
@@ -92,28 +93,25 @@
                             document.getElementById('visibility-all').classList.remove('active');
                         }
                         })();
+
+
                     </script>
                     {% endfor %}
                 </ul>
             </li>
             {% endif %}
             <li class="nav-item mx-2">
-                <a class="nav-link dropdown-toggle"
-                   data-bs-toggle="dropdown"
-                   aria-expanded="false">Expand</a>
-                <ul class="nav-item dropdown dropdown-menu">
-                    <li>
-                        <a class="dropdown-item" id="expand-notes"
-                           onclick="expandNotes()">
-                            Expand All
-                        </a>
-                        <a class="dropdown-item" id="collapse-notes"
-                           onclick="collapseNotes()">
-                            Collapse All
-                        </a>
-                    </li>
-                </ul>
+                <a class="nav-link" href="{{ url_for('subjects') }}">
+                    Tematy
+                </a>
             </li>
+            <li class="nav-item mx-2">
+                <a class="nav-link" href="{{ url_for('subject_categories') }}">
+                    Kategorie
+                </a>
+            </li>
+            {% block navigation %}
+            {% endblock %}
         </ul>
 
         <form class="navbar-nav ms-auto mb-2 d-inline-flex" name="logout"
@@ -128,7 +126,7 @@
         </form>
     </nav>
 
-    <div class="container mt-4 ">
+    <div class="container mt-4">
         {% block main %}
         {% endblock %}
 

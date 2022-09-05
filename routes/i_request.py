@@ -19,13 +19,13 @@ class ResponseData:
     def __init__(
             self,
             template: str = None,
-            requested_data: dict = None,
+            resource: dict = None,
             **kwargs,
     ):
         self.template = template
-        if requested_data is None:
-            requested_data = {}
-        self.requested_data = requested_data
+        if resource is None:
+            resource = {}
+        self.resource = resource
         self.kwargs = kwargs
 
 

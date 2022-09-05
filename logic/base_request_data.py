@@ -72,7 +72,7 @@ class BaseRequestData(IRequestData):
     @classmethod
     def prepare_json_response(cls, response_data: ResponseData):
         status_code = response_data.kwargs.get("status_code", 200)
-        return jsonify(response_data.requested_data), status_code
+        return jsonify(response_data.resource), status_code
 
     @classmethod
     def prepare_html_response(
@@ -81,9 +81,10 @@ class BaseRequestData(IRequestData):
             response_data: ResponseData
     ) -> str:
         common_data = cls.prepare_common_data(data)
+
         return render_template(
             response_data.template,
-            **response_data.requested_data,
+            resource=jsonify(response_data.resource),
             **common_data,
             **response_data.kwargs,
         )

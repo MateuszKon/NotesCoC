@@ -1,8 +1,12 @@
 from typing import List, Set
 
-from models import NoteModel, PersonModel
+from models import NoteModel
 from routes.home import IHomeRouteLogic
 from routes.i_request import RequestData, ResponseData
+from schemas.notes import NoteSchema
+
+
+note_schema = NoteSchema()
 
 
 class HomeLogic(IHomeRouteLogic):
@@ -41,6 +45,7 @@ class HomeLogic(IHomeRouteLogic):
             notes: List[NoteModel],
             search: str = "",
     ):
+        print(note_schema.dump(notes, many=True))
         return ResponseData(
             template="index.html",
             notes=notes,

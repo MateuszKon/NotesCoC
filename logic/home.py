@@ -34,24 +34,17 @@ class HomeLogic(IHomeRouteLogic):
         return cls._home_page_data(
             search=search_string,
             notes=list(notes_filtered),
-            **common_data
         )
 
     @staticmethod
     def _home_page_data(
             notes: List[NoteModel],
-            persons: List[PersonModel],
             search: str = "",
-            csrf_token: str = None,
-            admin: str = None,
     ):
         return ResponseData(
             template="index.html",
             notes=notes,
             search=search,
-            persons=persons,
-            csrf_token=csrf_token,
-            admin=admin,
         )
 
     @classmethod
@@ -62,9 +55,6 @@ class HomeLogic(IHomeRouteLogic):
             visibility_selection = data.get("scope")
         return {
             "notes": NoteModel.get_all_visible(visibility_selection),
-            "persons": PersonModel.get_all(),
-            "csrf_token": data.get("jwt_csrf"),
-            "admin": data.get("jwt_admin")
         }
 
     @staticmethod

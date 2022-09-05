@@ -1,20 +1,25 @@
 from typing import List, Set
 
-from flask import render_template
-
-from logic.interfaces.i_home_routes import IHomeRoute
 from models import NoteModel, PersonModel
+from routes.home import IHomeRouteLogic
+from routes.i_request import RequestData, ResponseData
 
 
-class HomeLogic(IHomeRoute):
+class HomeLogic(IHomeRouteLogic):
 
     @classmethod
-    def render_home_page(cls, data: dict) -> str:
+    def render_home_page(
+            cls,
+            data: RequestData
+    ) -> ResponseData:
         common_data = cls._prepare_common_data(data)
-        return cls._render_page_html(**common_data)
+        return cls._home_page_data(**common_data)
 
     @classmethod
-    def render_home_page_filtered(cls, data: dict) -> str:
+    def render_home_page_filtered(
+            cls,
+            data: RequestData,
+    ) -> ResponseData:
         common_data = cls._prepare_common_data(data)
 
         search_string = data["search"]
@@ -26,26 +31,25 @@ class HomeLogic(IHomeRoute):
             search_words,
         )
 
-        return cls._render_page_html(
+        return cls._home_page_data(
             search=search_string,
             notes=list(notes_filtered),
             **common_data
         )
 
-    @classmethod
-    def _render_page_html(
-            cls,
+    @staticmethod
+    def _home_page_data(
             notes: List[NoteModel],
             persons: List[PersonModel],
             search: str = "",
             csrf_token: str = None,
             admin: str = None,
     ):
-        return render_template(
-            "index.html",
+        return ResponseData(
+            template="index.html",
             notes=notes,
-            persons=persons,
             search=search,
+            persons=persons,
             csrf_token=csrf_token,
             admin=admin,
         )
@@ -63,13 +67,12 @@ class HomeLogic(IHomeRoute):
             "admin": data.get("jwt_admin")
         }
 
-    @classmethod
-    def _prepare_words_for_search(cls, search_text: str) -> List[str]:
+    @staticmethod
+    def _prepare_words_for_search(search_text: str) -> List[str]:
         return search_text.lower().split(" ")
 
-    @classmethod
+    @staticmethod
     def _filter_notes_with_words(
-            cls,
             notes: Set[NoteModel],
             words: List[str]
     ) -> Set[NoteModel]:

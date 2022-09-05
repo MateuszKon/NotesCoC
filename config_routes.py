@@ -1,7 +1,7 @@
 from flask import Flask
 
-from logic.base_request_data import RequestData
-from logic.home_request import HomeLogic
+from logic.base_request_data import BaseRequestData
+from logic.home import HomeLogic
 from routes.home import HomeRoutes
 from routes.notes import NoteRoutes
 from routes.persons import PersonRoutes
@@ -24,7 +24,7 @@ def configure_routing(app: Flask):
     # Home routes
     # /
     # /home
-    HomeRoutes.config(app, RequestData, HomeLogic)
+    HomeRoutes.config(app, BaseRequestData, HomeLogic)
 
 
 

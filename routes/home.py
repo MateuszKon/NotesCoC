@@ -1,30 +1,48 @@
+from abc import abstractmethod
 from typing import Type
 
 from flask import redirect, url_for, request, Flask
 
 from libs.jwt_functions import jwt_required_with_redirect
-from logic.interfaces.i_home_routes import IHomeRoute
-from logic.interfaces.i_request_data import IRequestDataHandler
+from routes.base_route import BaseRoute, request_logic
+from routes.i_request import IRequestData, IRequestLogic, RequestData
 
 
-class HomeRoutes:
+class IHomeRouteLogic(IRequestLogic):
 
-    data_handler:  Type[IRequestDataHandler] = None
-    logic: Type[IHomeRoute] = None
+    @classmethod
+    @abstractmethod
+    def render_home_page(
+            cls,
+            data: RequestData
+    ) -> RequestData:
+        pass
+
+    @classmethod
+    @abstractmethod
+    def render_home_page_filtered(
+            cls,
+            data: RequestData
+    ) -> RequestData:
+        pass
+
+
+class HomeRoutes(BaseRoute):
+
+    logic: Type[IHomeRouteLogic]
 
     @classmethod
     def config(
             cls,
             app: Flask,
-            data: Type[IRequestDataHandler],
-            logic: Type[IHomeRoute],
+            data: Type[IRequestData],
+            logic: Type[IHomeRouteLogic],
     ):
-        cls.data_handler = data
-        cls.logic = logic
-        app.add_url_rule("/", view_func=HomeRoutes.index)
+        super().config(app, data, logic)
+        app.add_url_rule("/", view_func=cls.index)
         app.add_url_rule(
             "/home",
-            view_func=HomeRoutes.home,
+            view_func=cls.home,
             methods=["GET", "POST"],
         )
 
@@ -34,9 +52,8 @@ class HomeRoutes:
 
     @classmethod
     @jwt_required_with_redirect()
-    def home(cls):
-        data = cls.data_handler.get_request_data()
-
+    @request_logic
+    def home(cls, data):
         if request.method == "POST":
             return cls.logic.render_home_page_filtered(data)
 

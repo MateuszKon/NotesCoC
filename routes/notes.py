@@ -5,8 +5,8 @@ from flask import request, Response, Flask
 
 from libs.jwt_functions import jwt_required_with_redirect
 from routes.base_route import BaseRoute, request_logic
-from routes.i_request import IRequestLogic, RequestData, ResponseData, \
-    IRequestData
+from routes.i_request import IRequestLogic, RequestPayload, ResponseData, \
+    IRequestData, RequestData
 
 
 class INoteRouteLogic(IRequestLogic):

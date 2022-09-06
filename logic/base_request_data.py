@@ -6,8 +6,8 @@ from flask_jwt_extended import get_jwt
 from models import PersonModel
 from routes.i_request import (
     IRequestData,
-    RequestData,
-    ResponseData,
+    RequestPayload,
+    ResponseData, ContextData, RequestData,
 )
 
 
@@ -15,23 +15,25 @@ class BaseRequestData(IRequestData):
 
     @classmethod
     def get_request_data(cls) -> RequestData:
-        data = RequestData()
+        data = RequestPayload()
         data.update(cls.get_form_data())  # data from form
-        data.update(cls.get_header_data())  # data from header
         data.update(cls.get_json_data())  # data from json body
-        data.update(cls.get_cookies_data())  # data from cookies
-        data.update(cls.get_jwt_data())  # data from jwt token
-        return data
+
+        context_data = ContextData()
+        context_data.update(cls.get_header_data())  # data from header
+        context_data.update(cls.get_cookies_data())  # data from cookies
+        context_data.update(cls.get_jwt_data())  # data from jwt token
+        return RequestData(data, context_data)
 
     @classmethod
     def serialize_response(
             cls,
-            data: RequestData,
+            context_data: ContextData,
             response_data: ResponseData,
     ) -> Union[Tuple[Response, int], str]:
-        if data["requested_type"] == "application/json":
+        if context_data["requested_type"] == "application/json":
             return cls.prepare_json_response(response_data)
-        return cls.prepare_html_response(data, response_data)
+        return cls.prepare_html_response(context_data, response_data)
 
     @classmethod
     def get_form_data(cls):
@@ -61,13 +63,13 @@ class BaseRequestData(IRequestData):
         return {'jwt_' + key: jwt_data[key] for key in needed_keys}
 
     @classmethod
-    def prepare_common_data(cls, data: RequestData):
-        common_data = {"csrf_token": data.get("jwt_csrf")}
-        if data.get("jwt_admin"):
+    def prepare_common_data(cls, context_data: ContextData):
+        common_data = {"csrf_token": context_data.get("jwt_csrf")}
+        if context_data.get("jwt_admin"):
             common_data.update(
                 {
                     "persons": PersonModel.get_all(),
-                    "admin": data.get("jwt_admin"),
+                    "admin": context_data.get("jwt_admin"),
                 }
             )
         return common_data
@@ -80,10 +82,10 @@ class BaseRequestData(IRequestData):
     @classmethod
     def prepare_html_response(
             cls,
-            data: RequestData,
+            context_data: ContextData,
             response_data: ResponseData
     ) -> str:
-        common_data = cls.prepare_common_data(data)
+        common_data = cls.prepare_common_data(context_data)
 
         return render_template(
             response_data.template,

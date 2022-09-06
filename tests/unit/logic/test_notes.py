@@ -1,6 +1,6 @@
 from models.persons import PersonModel
 from logic.notes import NoteLogic
-from routes.i_request import RequestData
+from routes.i_request import RequestPayload
 from tests.unit.base_unit_database_test import BaseTestUnitDatabase
 
 
@@ -13,7 +13,7 @@ class TestVisibilityNotes(BaseTestUnitDatabase):
             PersonModel(name="person3"),
             PersonModel(name="person4"),
         ]
-        state_dictionary = RequestData({
+        state_dictionary = RequestPayload({
             "vis_previous_person1": "False",
             "visibility_person1": "True",
             "vis_previous_person2": "True",
@@ -43,7 +43,7 @@ class TestVisibilityNotes(BaseTestUnitDatabase):
         persons = [
             PersonModel(name="person1"),
         ]
-        state_dictionary = RequestData({
+        state_dictionary = RequestPayload({
             "vis_previous_person1": "True",
             "visibility_person1": "False",
         })
@@ -60,7 +60,7 @@ class TestVisibilityNotes(BaseTestUnitDatabase):
         persons = [
             PersonModel(name="person1"),
         ]
-        state_dictionary = RequestData({
+        state_dictionary = RequestPayload({
             "vis_previous_person1": "False",
             "visibility_person1": "False",
         })

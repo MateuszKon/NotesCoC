@@ -2,13 +2,7 @@ from flask import request
 
 from libs.jwt_functions import jwt_required_with_redirect
 from models.persons import PersonModel
-from routes.resource_mixin import ResourceMixin
 from schemas.persons import PersonSchema
-
-
-class PersonRoutess(ResourceMixin):
-    resource_url_name: str = 'person'
-    resources_url_name: str = 'persons'
 
 
 PERSON_ALREADY_EXIST = "Person {} already exist!"
@@ -35,7 +29,6 @@ class PersonRoutes:
             return {"message": PERSON_ADDED.format(name)}, 201
 
         if request.method == "PUT":
-            print(request.json)
             new_person = person_schema.load(request.json)
             if person_:
                 person_.name = new_person.name

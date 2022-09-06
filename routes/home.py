@@ -5,7 +5,7 @@ from flask import redirect, url_for, request, Flask, Response
 
 from libs.jwt_functions import jwt_required_with_redirect
 from routes.base_route import BaseRoute, request_logic
-from routes.i_request import IRequestData, IRequestLogic, RequestData, \
+from routes.i_request import IRequestData, IRequestLogic, RequestPayload, \
     ResponseData
 
 
@@ -15,7 +15,7 @@ class IHomeRouteLogic(IRequestLogic):
     @abstractmethod
     def render_home_page(
             cls,
-            data: RequestData
+            data: RequestPayload
     ) -> ResponseData:
         pass
 
@@ -23,7 +23,7 @@ class IHomeRouteLogic(IRequestLogic):
     @abstractmethod
     def render_home_page_filtered(
             cls,
-            data: RequestData
+            data: RequestPayload
     ) -> ResponseData:
         pass
 
@@ -54,7 +54,7 @@ class HomeRoutes(BaseRoute):
     @classmethod
     @jwt_required_with_redirect()
     @request_logic
-    def home(cls, data: RequestData) -> Union[Response, ResponseData]:
+    def home(cls, data: RequestPayload) -> Union[Response, ResponseData]:
         if request.method == "POST":
             return cls.logic.render_home_page_filtered(data)
 

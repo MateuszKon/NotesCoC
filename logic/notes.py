@@ -1,12 +1,12 @@
 import re
 from typing import List, Tuple, Set
 
-from flask import request, redirect, url_for, Response
+from flask import redirect, url_for, Response
 
 from models import SubjectModel
 from models.notes import NoteModel
 from models.persons import PersonModel
-from routes.i_request import RequestData, ResponseData
+from routes.i_request import RequestPayload, ResponseData, RequestData
 from routes.notes import INoteRouteLogic
 from schemas.notes import (
     NoteSchema,
@@ -34,7 +34,7 @@ class NoteLogic(INoteRouteLogic):
 
         all_subjects = SubjectModel.get_all()
 
-        note_schema_ = cls._get_note_schema(data.get("jwt_admin"))
+        note_schema_ = cls._get_note_schema(data.context.get("jwt_admin"))
 
         return ResponseData(
             'write_note.html',
@@ -60,14 +60,14 @@ class NoteLogic(INoteRouteLogic):
             note = NoteModel.find_by_id(note_id)
 
         # title and content:
-        note.title = request.form["title"]
-        note.content = request.form["content"]
+        note.title = data.data["title"]
+        note.content = data.data["content"]
 
         # persons visibility:
-        cls._change_note_visibility(note, data)
+        cls._change_note_visibility(note, data.data)
 
         # subjects:
-        cls._change_note_subjects(note, data)
+        cls._change_note_subjects(note, data.data)
 
         note.save_to_db()
         return redirect(url_for('home'))
@@ -80,7 +80,7 @@ class NoteLogic(INoteRouteLogic):
     ) -> ResponseData:
         note = NoteModel.find_by_id(note_id)
 
-        note_schema_ = cls._get_note_schema(data.get("jwt_admin"))
+        note_schema_ = cls._get_note_schema(data.context.get("jwt_admin"))
 
         return ResponseData(
             'delete_note.html',
@@ -99,7 +99,7 @@ class NoteLogic(INoteRouteLogic):
         return redirect(url_for('home'))
 
     @classmethod
-    def _change_note_visibility(cls, note: NoteModel, data: RequestData):
+    def _change_note_visibility(cls, note: NoteModel, data: RequestPayload):
         persons_to_on, persons_to_off = cls._visibility_changing_list(
             PersonModel.get_all(),
             data,
@@ -108,7 +108,7 @@ class NoteLogic(INoteRouteLogic):
         note.remove_persons_visibility(persons_to_off)
 
     @classmethod
-    def _change_note_subjects(cls, note: NoteModel, data: RequestData):
+    def _change_note_subjects(cls, note: NoteModel, data: RequestPayload):
         subjects_to_add, subjects_to_remove = cls._subjects_changing_list(
             note.subjects.all(),
             data,
@@ -121,7 +121,7 @@ class NoteLogic(INoteRouteLogic):
     def _visibility_changing_list(
             cls,
             all_persons: List["PersonModel"],
-            data: RequestData,
+            data: RequestPayload,
     ) -> Tuple[Set["PersonModel"], Set["PersonModel"]]:
         """Prepare sets of persons to add/remove visibility.
 
@@ -169,7 +169,7 @@ class NoteLogic(INoteRouteLogic):
     def _subjects_changing_list(
             cls,
             current_subjects: List["SubjectModel"],
-            data: RequestData,
+            data: RequestPayload,
             all_subjects: List["SubjectModel"],
     ):
         current_subjects_names = {

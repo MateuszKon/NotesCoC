@@ -1,5 +1,7 @@
 from typing import List, Set
 
+from flask import jsonify
+
 from models import NoteModel
 from routes.home import IHomeRouteLogic
 from routes.i_request import RequestData, ResponseData
@@ -45,10 +47,9 @@ class HomeLogic(IHomeRouteLogic):
             notes: List[NoteModel],
             search: str = "",
     ):
-        print(note_schema.dump(notes, many=True))
         return ResponseData(
             template="index.html",
-            notes=notes,
+            resource=note_schema.dump(notes, many=True),
             search=search,
         )
 

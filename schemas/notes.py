@@ -4,6 +4,7 @@ from db import db
 from ma import ma
 from models.notes import NoteModel
 from schemas.persons import PersonSchema
+from schemas.subjects import SubjectSchema
 
 
 class NoteSchema(ma.SQLAlchemyAutoSchema):
@@ -16,3 +17,4 @@ class NoteSchema(ma.SQLAlchemyAutoSchema):
         sqla_session = db.session
 
     persons_visibility = fields.Nested(PersonSchema(many=True, only=('name',)))
+    subjects = fields.Nested(SubjectSchema(many=True, only=('name',)))

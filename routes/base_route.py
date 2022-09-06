@@ -29,8 +29,8 @@ def request_logic(fun):
 
         result: Union[Response, ResponseData] = fun(cls, data, *args, **kwargs)
 
-        if isinstance(result, Response):
-            return result
-        return cls.data.serialize_response(data, result)
+        if isinstance(result, ResponseData):
+            return cls.data.serialize_response(data, result)
+        return result
 
     return wrapper

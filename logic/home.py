@@ -5,11 +5,7 @@ from flask import jsonify
 from models import NoteModel
 from routes.home import IHomeRouteLogic
 from routes.i_request import RequestData, ResponseData
-from schemas.notes import NoteSchema
-
-
-note_schema_admin = NoteSchema()
-note_schema = NoteSchema(exclude=('persons_visibility',))
+from schemas.notes import note_schema, note_schema_without_visibility
 
 
 class HomeLogic(IHomeRouteLogic):
@@ -50,7 +46,8 @@ class HomeLogic(IHomeRouteLogic):
             notes: List[NoteModel],
             search: str = "",
     ):
-        schema = note_schema_admin if data.get('jwt_admin') else note_schema
+        schema = note_schema if data.get('jwt_admin') else \
+            note_schema_without_visibility
         resource = schema.dump(notes, many=True)
         return ResponseData(
             template="index.html",

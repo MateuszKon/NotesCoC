@@ -18,3 +18,7 @@ class NoteSchema(ma.SQLAlchemyAutoSchema):
 
     persons_visibility = fields.Nested(PersonSchema(many=True, only=('name',)))
     subjects = fields.Nested(SubjectSchema(many=True, only=('name',)))
+
+
+note_schema = NoteSchema()
+note_schema_without_visibility = NoteSchema(exclude=('persons_visibility',))

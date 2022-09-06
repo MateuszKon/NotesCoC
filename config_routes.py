@@ -2,6 +2,7 @@ from flask import Flask
 
 from logic.base_request_data import BaseRequestData
 from logic.home import HomeLogic
+from logic.notes import NoteLogic
 from routes.home import HomeRoutes
 from routes.notes import NoteRoutes
 from routes.persons import PersonRoutes
@@ -11,37 +12,18 @@ from routes.users import UserRegister, UserLogin, User
 
 
 def configure_routing(app: Flask):
-    # Configure all classes (inject interfaces implementation
-
-    # NoteRoutes.config()
-    # PersonRoutes.config()
-    # UserRegister.config()
-    # UserLogin.config()
-    # SubjectRoutes.config()
-    # SubjectCategoryRoutes.config()
-    # CategoryOfSubject.config()
+    # Configure all classes (inject interfaces implementation)
 
     # Home routes:
     # /
     # /home
     HomeRoutes.config(app, BaseRequestData, HomeLogic)
 
-
-
-    # Note routes
-    app.add_url_rule("/new_note",
-                     view_func=NoteRoutes.edit_note,
-                     methods=["GET", "POST"],
-                     )
-    app.add_url_rule("/note/<int:note_id>/edit",
-                     view_func=NoteRoutes.edit_note,
-                     methods=["GET", "POST"],
-                     )
-
-    app.add_url_rule("/note/<int:note_id>/delete",
-                     view_func=NoteRoutes.delete_note,
-                     methods=["GET", "POST", "DELETE"],
-                     )
+    # Note routes:
+    # /new_note
+    # /note/<int:note_id>/edit
+    # /note/<int:note_id>/delete
+    NoteRoutes.config(app, BaseRequestData, NoteLogic)
 
     # Person routes
     app.add_url_rule("/person/<string:name>",

@@ -2,9 +2,8 @@ from flask import request, render_template
 
 from libs.jwt_functions import jwt_required_with_redirect
 from models.subjects import SubjectModel
-from schemas.subjects import SubjectSchema
+from schemas.subjects import subject_schema
 
-subject_schema = SubjectSchema()
 
 SUBJECT_ALREADY_EXIST = "Subject {} already exist!"
 SUBJECT_ADDED = "Subject {} added."

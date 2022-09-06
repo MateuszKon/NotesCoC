@@ -1,11 +1,12 @@
 from abc import abstractmethod
-from typing import Type
+from typing import Type, Union
 
-from flask import redirect, url_for, request, Flask
+from flask import redirect, url_for, request, Flask, Response
 
 from libs.jwt_functions import jwt_required_with_redirect
 from routes.base_route import BaseRoute, request_logic
-from routes.i_request import IRequestData, IRequestLogic, RequestData
+from routes.i_request import IRequestData, IRequestLogic, RequestData, \
+    ResponseData
 
 
 class IHomeRouteLogic(IRequestLogic):
@@ -15,7 +16,7 @@ class IHomeRouteLogic(IRequestLogic):
     def render_home_page(
             cls,
             data: RequestData
-    ) -> RequestData:
+    ) -> ResponseData:
         pass
 
     @classmethod
@@ -23,7 +24,7 @@ class IHomeRouteLogic(IRequestLogic):
     def render_home_page_filtered(
             cls,
             data: RequestData
-    ) -> RequestData:
+    ) -> ResponseData:
         pass
 
 
@@ -53,7 +54,7 @@ class HomeRoutes(BaseRoute):
     @classmethod
     @jwt_required_with_redirect()
     @request_logic
-    def home(cls, data):
+    def home(cls, data: RequestData) -> Union[Response, ResponseData]:
         if request.method == "POST":
             return cls.logic.render_home_page_filtered(data)
 

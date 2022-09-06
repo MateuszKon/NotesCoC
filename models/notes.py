@@ -50,7 +50,7 @@ class NoteModel(db.Model):
 
     @classmethod
     def find_by_id(cls, note_id: int) -> "NoteModel":
-        return cls.query.filter_by(id=note_id).one()
+        return cls.query.filter_by(id=note_id).first_or_404()
 
     @classmethod
     def get_all(cls) -> List["NoteModel"]:

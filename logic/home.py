@@ -8,7 +8,8 @@ from routes.i_request import RequestData, ResponseData
 from schemas.notes import NoteSchema
 
 
-note_schema = NoteSchema()
+note_schema_admin = NoteSchema()
+note_schema = NoteSchema(exclude=('persons_visibility',))
 
 
 class HomeLogic(IHomeRouteLogic):
@@ -19,7 +20,7 @@ class HomeLogic(IHomeRouteLogic):
             data: RequestData
     ) -> ResponseData:
         common_data = cls._prepare_common_data(data)
-        return cls._home_page_data(**common_data)
+        return cls._home_page_data(data=data, **common_data)
 
     @classmethod
     def render_home_page_filtered(
@@ -38,18 +39,22 @@ class HomeLogic(IHomeRouteLogic):
         )
 
         return cls._home_page_data(
+            data=data,
             search=search_string,
             notes=list(notes_filtered),
         )
 
     @staticmethod
     def _home_page_data(
+            data: RequestData,
             notes: List[NoteModel],
             search: str = "",
     ):
+        schema = note_schema_admin if data.get('jwt_admin') else note_schema
+        resource = schema.dump(notes, many=True)
         return ResponseData(
             template="index.html",
-            resource=note_schema.dump(notes, many=True),
+            resource=resource,
             search=search,
         )
 

@@ -21,7 +21,7 @@ def configure_routing(app: Flask):
     # SubjectCategoryRoutes.config()
     # CategoryOfSubject.config()
 
-    # Home routes
+    # Home routes:
     # /
     # /home
     HomeRoutes.config(app, BaseRequestData, HomeLogic)

@@ -8,29 +8,25 @@ from routes.i_request import IRequestData, IRequestLogic, ResponseData
 
 class BaseRoute:
 
-    data:  Type[IRequestData] = None
-    logic: Type[IRequestLogic] = None
-
-    @classmethod
-    def config(
-            cls,
+    def __init__(
+            self,
             app: Flask,
             data: Type[IRequestData],
             logic: Type[IRequestLogic],
     ):
-        cls.data = data
-        cls.logic = logic
+        self.data = data
+        self.logic = logic
 
 
 def request_logic(fun):
     @wraps(fun)
-    def wrapper(cls: Type[BaseRoute], *args, **kwargs):
-        data = cls.data.get_request_data()
+    def wrapper(self: BaseRoute, *args, **kwargs):
+        data = self.data.get_request_data()
 
-        result: Union[Response, ResponseData] = fun(cls, data, *args, **kwargs)
+        result: Union[Response, ResponseData] = fun(self, data, *args, **kwargs)
 
         if isinstance(result, ResponseData):
-            return cls.data.serialize_response(data.context, result)
+            return self.data.serialize_response(data.context, result)
         return result
 
     return wrapper

@@ -6,7 +6,7 @@ from routes.resource_mixin import ResourceMixin
 from schemas.persons import PersonSchema
 
 
-class PersonRoutess(ResourceMixin):
+class PersonRoutes(ResourceMixin):
     resource_url_name: str = 'person'
     resources_url_name: str = 'persons'
 
@@ -21,7 +21,7 @@ PERSON_DELETED = "Person {} deleted."
 person_schema = PersonSchema()
 
 
-class PersonRoutes:
+class PersonRoutes_:
 
     @classmethod
     @jwt_required_with_redirect(admin=True)

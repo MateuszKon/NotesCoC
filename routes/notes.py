@@ -52,54 +52,51 @@ class NoteRoutes(BaseRoute):
 
     logic: Type[INoteRouteLogic]
 
-    @classmethod
-    def config(
-            cls,
+    def __init__(
+            self,
             app: Flask,
             data: Type[IRequestData],
             logic: Type[INoteRouteLogic],
     ):
-        super().config(app, data, logic)
+        super().__init__(app, data, logic)
         app.add_url_rule(
             "/new_note",
-            view_func=cls.edit_note,
+            view_func=self.edit_note,
             methods=["GET", "POST"],
         )
         app.add_url_rule(
             "/note/<int:note_id>/edit",
-            view_func=cls.edit_note,
+            view_func=self.edit_note,
             methods=["GET", "POST"],
         )
         app.add_url_rule(
             "/note/<int:note_id>/delete",
-            view_func=cls.delete_note,
+            view_func=self.delete_note,
             methods=["GET", "POST", "DELETE"],
         )
 
-    @classmethod
     @jwt_required_with_redirect(admin=True)
     @request_logic
     def edit_note(
-            cls,
+            self,
             data: RequestData,
             note_id: int = None,
     ) -> Union[Response, ResponseData]:
         if request.method == "POST":
-            return cls.logic.save_note(data, note_id=note_id)
+            return self.logic.save_note(data, note_id=note_id)
 
         # request.method == "GET"
-        return cls.logic.render_edit_note(data, note_id=note_id)
+        return self.logic.render_edit_note(data, note_id=note_id)
 
-    @classmethod
     @jwt_required_with_redirect(admin=True)
     @request_logic
     def delete_note(
-            cls,
+            self,
             data: RequestData,
             note_id: int
     ) -> Union[Response, ResponseData]:
         if request.method in ["DELETE", "POST"]:
-            return cls.logic.delete_note(data, note_id=note_id)
+            return self.logic.delete_note(data, note_id=note_id)
 
         # request.method == "GET"
-        return cls.logic.render_delete_note_confirmation(data, note_id=note_id)
+        return self.logic.render_delete_note_confirmation(data, note_id=note_id)

@@ -32,31 +32,28 @@ class HomeRoutes(BaseRoute):
 
     logic: Type[IHomeRouteLogic]
 
-    @classmethod
-    def config(
-            cls,
+    def __init__(
+            self,
             app: Flask,
             data: Type[IRequestData],
             logic: Type[IHomeRouteLogic],
     ):
-        super().config(app, data, logic)
-        app.add_url_rule("/", view_func=cls.index)
+        super().__init__(app, data, logic)
+        app.add_url_rule("/", view_func=self.index)
         app.add_url_rule(
             "/home",
-            view_func=cls.home,
+            view_func=self.home,
             methods=["GET", "POST"],
         )
 
-    @classmethod
-    def index(cls):
+    def index(self):
         return redirect(url_for("home"))
 
-    @classmethod
     @jwt_required_with_redirect()
     @request_logic
-    def home(cls, data: RequestPayload) -> Union[Response, ResponseData]:
+    def home(self, data: RequestPayload) -> Union[Response, ResponseData]:
         if request.method == "POST":
-            return cls.logic.render_home_page_filtered(data)
+            return self.logic.render_home_page_filtered(data)
 
         # request.method == "GET"
-        return cls.logic.render_home_page(data)
+        return self.logic.render_home_page(data)

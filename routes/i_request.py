@@ -88,5 +88,5 @@ class IRequestData(ABC):
         pass
 
 
-class IRequestLogic(ABC):
+class IRequestLogic:
     pass

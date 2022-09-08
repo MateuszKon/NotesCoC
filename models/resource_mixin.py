@@ -2,7 +2,7 @@ from db import db
 from routes.i_request import ResponseData, RequestData, IRequestLogic
 
 
-class ResourceMixinLogic(IRequestLogic, db.Model):
+class BaseResourceModel(IRequestLogic, db.Model):
     __abstract__ = True
 
     @classmethod

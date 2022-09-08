@@ -5,20 +5,20 @@ from flask import Flask, Response, request
 from libs.factories import name_factory
 from libs.jwt_functions import jwt_required_with_redirect
 from ma import ma
-from models.resource_mixin import ResourceMixinLogic
+from models.resource_mixin import BaseResourceModel
 from routes.base_route import BaseRoute, request_logic
 from routes.i_request import IRequestData, ResponseData, RequestData
 
 
 class ResourceMixin(BaseRoute):
 
-    logic: Type[ResourceMixinLogic]
+    logic: Type[BaseResourceModel]
 
     def __init__(
             self,
             app: Flask,
             data: Type[IRequestData],
-            logic: Type[ResourceMixinLogic],
+            logic: Type[BaseResourceModel],
             schema: ma.Schema,
             resource_url_name: str = None,
             resources_url_name: str = None,

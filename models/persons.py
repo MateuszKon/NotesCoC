@@ -6,10 +6,10 @@ from sqlalchemy.orm import relationship
 from db import db
 from models.notes import NoteModel
 from models.persons_notes import persons_notes
-from models.resource_mixin import ResourceMixinLogic
+from models.resource_mixin import BaseResourceModel
 
 
-class PersonModel(ResourceMixinLogic):
+class PersonModel(BaseResourceModel):
     __tablename__ = "persons"
 
     name = Column(String(80), primary_key=True)

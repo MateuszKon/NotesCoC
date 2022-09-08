@@ -5,10 +5,11 @@ from sqlalchemy.orm import relationship
 
 from db import db
 from models.notes_subjects import notes_subjects
+from models.resource_mixin import ResourceMixinLogic
 from models.subjects_categories import subjects_categories
 
 
-class SubjectModel(db.Model):
+class SubjectModel(ResourceMixinLogic):
     __tablename__ = "subjects"
 
     name = Column(String(80), primary_key=True)

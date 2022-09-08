@@ -3,13 +3,16 @@ from flask import Flask
 from logic.base_request_data import BaseRequestData
 from logic.home import HomeLogic
 from logic.notes import NoteLogic
-from models import PersonModel
+from models import PersonModel, SubjectModel
 from routes.home import HomeRoutes
 from routes.notes import NoteRoutes
 from routes.persons import PersonRoutes
+from routes.resource_mixin import ResourceMixin
 from routes.subjects import SubjectRoutes
 from routes.subjects_categories import SubjectCategoryRoutes, CategoryOfSubject
 from routes.users import UserRegister, UserLogin, User
+from schemas.persons import PersonSchema
+from schemas.subjects import SubjectSchema
 
 
 def configure_routing(app: Flask):
@@ -18,19 +21,33 @@ def configure_routing(app: Flask):
     # Home routes:
     # /
     # /home
-    h = HomeRoutes(app, BaseRequestData, HomeLogic)
-    # h.config(app, BaseRequestData, HomeLogic)
+    HomeRoutes(app, BaseRequestData, HomeLogic)
 
     # Note routes:
     # /new_note
     # /note/<int:note_id>/edit
     # /note/<int:note_id>/delete
-    n = NoteRoutes(app, BaseRequestData, NoteLogic)
-    # n.config(app, BaseRequestData, NoteLogic)
+    NoteRoutes(app, BaseRequestData, NoteLogic)
 
     # Person routes
-    p = PersonRoutes(app, BaseRequestData, PersonModel)
-    # p.config(app, BaseRequestData, PersonModel)
+    ResourceMixin(
+        app,
+        BaseRequestData,
+        PersonModel,
+        PersonSchema(),
+        resource_url_name='person',
+        resources_url_name='persons',
+    )
+    # p = PersonRoutes(app, BaseRequestData, PersonModel)
+
+    ResourceMixin(
+        app,
+        BaseRequestData,
+        SubjectModel,
+        SubjectSchema(),
+        resource_url_name='subject',
+        resources_url_name='subjects',
+    )
 
     # app.add_url_rule("/person/<string:name>",
     #                  view_func=PersonRoutes.person,
@@ -60,12 +77,12 @@ def configure_routing(app: Flask):
                      methods=["POST"],
                      )
 
-    # Subjects routes
-    app.add_url_rule("/subjects", view_func=SubjectRoutes.subjects)
-    app.add_url_rule("/subject/<string:name>",
-                     view_func=SubjectRoutes.subject,
-                     methods=["GET", "POST", "PUT", "DELETE"],
-                     )
+    # # Subjects routes
+    # app.add_url_rule("/subjects", view_func=SubjectRoutes.subjects)
+    # app.add_url_rule("/subject/<string:name>",
+    #                  view_func=SubjectRoutes.subject,
+    #                  methods=["GET", "POST", "PUT", "DELETE"],
+    #                  )
     app.add_url_rule("/subject_category/<string:name>",
                      view_func=SubjectCategoryRoutes.subject_category,
                      methods=["GET", "POST", "PUT", "DELETE"],

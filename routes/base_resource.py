@@ -5,12 +5,12 @@ from flask import Flask, Response, request
 from libs.factories import name_factory
 from libs.jwt_functions import jwt_required_with_redirect
 from ma import ma
-from models.resource_mixin import BaseResourceModel
+from models.baser_resource import BaseResourceModel
 from routes.base_route import BaseRoute, request_logic
 from routes.i_request import IRequestData, ResponseData, RequestData
 
 
-class ResourceMixin(BaseRoute):
+class BaseResourceRoute(BaseRoute):
 
     logic: Type[BaseResourceModel]
 

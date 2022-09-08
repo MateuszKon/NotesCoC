@@ -6,7 +6,7 @@ from sqlalchemy.orm import relationship
 from db import db
 from models.notes import NoteModel
 from models.persons_notes import persons_notes
-from models.resource_mixin import BaseResourceModel
+from models.baser_resource import BaseResourceModel
 
 
 class PersonModel(BaseResourceModel):

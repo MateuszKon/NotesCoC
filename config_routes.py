@@ -7,7 +7,7 @@ from models import PersonModel, SubjectModel
 from routes.home import HomeRoutes
 from routes.notes import NoteRoutes
 from routes.persons import PersonRoutes
-from routes.resource_mixin import ResourceMixin
+from routes.base_resource import BaseResourceRoute
 from routes.subjects import SubjectRoutes
 from routes.subjects_categories import SubjectCategoryRoutes, CategoryOfSubject
 from routes.users import UserRegister, UserLogin, User
@@ -30,7 +30,7 @@ def configure_routing(app: Flask):
     NoteRoutes(app, BaseRequestData, NoteLogic)
 
     # Person routes
-    ResourceMixin(
+    BaseResourceRoute(
         app,
         BaseRequestData,
         PersonModel,
@@ -40,7 +40,7 @@ def configure_routing(app: Flask):
     )
     # p = PersonRoutes(app, BaseRequestData, PersonModel)
 
-    ResourceMixin(
+    BaseResourceRoute(
         app,
         BaseRequestData,
         SubjectModel,

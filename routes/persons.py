@@ -2,11 +2,11 @@ from flask import request
 
 from libs.jwt_functions import jwt_required_with_redirect
 from models.persons import PersonModel
-from routes.resource_mixin import ResourceMixin
+from routes.base_resource import BaseResourceRoute
 from schemas.persons import PersonSchema
 
 
-class PersonRoutes(ResourceMixin):
+class PersonRoutes(BaseResourceRoute):
     resource_url_name: str = 'person'
     resources_url_name: str = 'persons'
 

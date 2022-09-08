@@ -50,12 +50,14 @@ class ResponseData:
             self,
             template: str = None,
             resource: dict = None,
+            status_code: int = None,
             **kwargs,
     ):
         self.template = template
         if resource is None:
             resource = {}
         self.resource = resource
+        self.status_code = status_code
         self.kwargs = kwargs
 
 

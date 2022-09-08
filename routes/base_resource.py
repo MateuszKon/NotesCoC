@@ -1,4 +1,4 @@
-from typing import Type, Union
+from typing import Type, Union, List
 
 from flask import Flask, Response, request
 
@@ -20,10 +20,12 @@ class BaseResourceRoute(BaseRoute):
             data: Type[IRequestData],
             logic: Type[BaseResourceModel],
             schema: ma.Schema,
+            template: str = 'base_resource.html',
             resource_url_name: str = None,
             resources_url_name: str = None,
     ):
         super().__init__(app, data, logic)
+        self.template = template
         self.resource_url_name = resource_url_name
         self.resources_url_name = resources_url_name
         self.schema = schema
@@ -51,19 +53,34 @@ class BaseResourceRoute(BaseRoute):
             data: RequestData,
             name: str,
     ) -> Union[Response, ResponseData]:
-        if request.method == "POST":
-            return self.logic.create(data, name)
         if request.method == "PUT":
             obj = self.logic.get_by_name(name, allow_none=True)
-            if obj is None:
-                obj = self.logic(name=name)
-            return obj.update(data)
+            if obj is not None:
+                return self._create_response(
+                    202,
+                    message=f"Resource {name} updated.",
+                    resource=obj.update(data),
+                )
+
+        if request.method in ["POST", "PUT"]:
+            return self._create_response(
+                201,
+                message=f"Resource {name} created.",
+                resource=self.logic.create(data, name),
+            )
+
         if request.method == "DELETE":
-            obj = self.logic.get_by_name(name, allow_none=False)
-            return obj.delete()
+            return self._create_response(
+                202,
+                message=f"Resource {name} deleted.",
+                resource=self.logic.get_by_name(name).delete(),
+            )
+
         # request.method == "GET"
-        obj = self.logic.get_by_name(name, allow_none=False)
-        return obj.read()
+        return self._create_response(
+            200,
+            resource=self.logic.get_by_name(name).read(),
+        )
 
     @name_factory
     @jwt_required_with_redirect(admin=True)
@@ -72,9 +89,33 @@ class BaseResourceRoute(BaseRoute):
             self,
             data: RequestData,
     ) -> Union[Response, ResponseData]:
-
-        return ResponseData(
-            resource={
-                'list': self.schema.dump(self.logic.list(), many=True)
-            }
+        return self._create_response(
+            200,
+            resource=self.logic.list()
         )
+
+    def _create_response(
+            self,
+            status_code: int = None,
+            message: str = None,
+            resource: Union[BaseResourceModel, List[BaseResourceModel]] = None
+    ) -> ResponseData:
+        resource_dict = self._create_resource_dict(resource)
+        if message:
+            resource_dict['message'] = message
+        return ResponseData(
+            template=self.template,
+            resource=resource_dict,
+            status_code=status_code,
+        )
+
+    def _create_resource_dict(
+            self,
+            resource: Union[BaseResourceModel, List[BaseResourceModel], None]
+    ) -> dict:
+        resource_dict = {}
+        if isinstance(resource, BaseResourceModel):
+            resource_dict = self.schema.dump(resource)
+        if isinstance(resource, list):
+            resource_dict['list'] = self.schema.dump(resource, many=True)
+        return resource_dict

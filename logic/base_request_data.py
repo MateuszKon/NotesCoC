@@ -31,7 +31,7 @@ class BaseRequestData(IRequestData):
             context_data: ContextData,
             response_data: ResponseData,
     ) -> Union[Tuple[Response, int], str]:
-        if context_data["requested_type"] == "application/json":
+        if context_data["accept"] == "application/json":
             return cls.prepare_json_response(response_data)
         return cls.prepare_html_response(context_data, response_data)
 
@@ -43,7 +43,7 @@ class BaseRequestData(IRequestData):
     def get_header_data(cls):
         return {
             "content_type": request.content_type,
-            "requested_type": request.accept_mimetypes.best,
+            "accept": request.accept_mimetypes.best,
         }
 
     @classmethod
@@ -76,7 +76,7 @@ class BaseRequestData(IRequestData):
 
     @classmethod
     def prepare_json_response(cls, response_data: ResponseData):
-        status_code = response_data.kwargs.get("status_code", 200)
+        status_code = response_data.status_code or 200
         return jsonify(response_data.resource), status_code
 
     @classmethod

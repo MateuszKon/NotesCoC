@@ -33,6 +33,7 @@ class BaseRequestData(IRequestData):
     ) -> Union[Tuple[Response, int], str]:
         if context_data["accept"] == "application/json":
             return cls.prepare_json_response(response_data)
+        print(response_data.resource)
         return cls.prepare_html_response(context_data, response_data)
 
     @classmethod

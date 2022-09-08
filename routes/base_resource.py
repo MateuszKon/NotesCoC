@@ -56,28 +56,28 @@ class BaseResourceRoute(BaseRoute):
         if request.method == "PUT":
             obj = self.logic.get_by_name(name, allow_none=True)
             if obj is not None:
-                return self._create_response(
+                return self.create_response(
                     202,
                     message=f"Resource {name} updated.",
                     resource=obj.update(data),
                 )
 
         if request.method in ["POST", "PUT"]:
-            return self._create_response(
+            return self.create_response(
                 201,
                 message=f"Resource {name} created.",
                 resource=self.logic.create(data, name),
             )
 
         if request.method == "DELETE":
-            return self._create_response(
+            return self.create_response(
                 202,
                 message=f"Resource {name} deleted.",
                 resource=self.logic.get_by_name(name).delete(),
             )
 
         # request.method == "GET"
-        return self._create_response(
+        return self.create_response(
             200,
             resource=self.logic.get_by_name(name).read(),
         )
@@ -89,12 +89,12 @@ class BaseResourceRoute(BaseRoute):
             self,
             data: RequestData,
     ) -> Union[Response, ResponseData]:
-        return self._create_response(
+        return self.create_response(
             200,
             resource=self.logic.list()
         )
 
-    def _create_response(
+    def create_response(
             self,
             status_code: int = None,
             message: str = None,

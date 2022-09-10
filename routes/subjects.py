@@ -5,6 +5,7 @@ from flask import request, Flask, Response
 from libs.factories import name_factory
 from libs.jwt_functions import jwt_required_with_redirect
 from ma import ma
+from models.base_resource import ResourceIdentifier
 from models.subjects import SubjectModel
 from routes.base_resource import BaseResourceRoute
 from routes.base_route import request_logic
@@ -25,9 +26,10 @@ class SubjectRoutes(BaseResourceRoute):
             template: str = 'base_resource.html',
             resource_url_name: str = 'subject',
             resources_url_name: str = 'subjects',
+            identifier: ResourceIdentifier = None,
     ):
         super().__init__(app, data, logic, schema, template,
-                         resource_url_name, resources_url_name)
+                         resource_url_name, resources_url_name, identifier)
         self.child_schema = child_schema
         app.add_url_rule(
             f"/{self.resource_url_name}/<string:name>/category",

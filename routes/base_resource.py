@@ -1,11 +1,11 @@
-from typing import Type, Union, List
+from typing import Type, Union, List, Tuple
 
 from flask import Flask, Response, request
 
 from libs.factories import name_factory
 from libs.jwt_functions import jwt_required_with_redirect
 from ma import ma
-from models.baser_resource import BaseResourceModel
+from models.base_resource import BaseResourceModel, ResourceIdentifier
 from routes.base_route import BaseRoute, request_logic
 from routes.i_request import IRequestData, ResponseData, RequestData
 
@@ -23,16 +23,18 @@ class BaseResourceRoute(BaseRoute):
             template: str = 'base_resource.html',
             resource_url_name: str = None,
             resources_url_name: str = None,
+            identifier: ResourceIdentifier = None
     ):
         super().__init__(app, data, logic)
         self.template = template
         self.resource_url_name = resource_url_name
         self.resources_url_name = resources_url_name
         self.schema = schema
+        self.identifier = identifier
 
         if self.resource_url_name is not None:
             app.add_url_rule(
-                f"/{self.resource_url_name}/<string:name>",
+                f"/{self.resource_url_name}/{self.identifier.type_str}",
                 view_func=self.resource(self.resource_url_name),
                 methods=["GET", "POST", "PUT", "DELETE"],
             )
@@ -51,35 +53,39 @@ class BaseResourceRoute(BaseRoute):
     def resource(
             self,
             data: RequestData,
-            name: str,
+            **kwargs,
     ) -> Union[Response, ResponseData]:
+        identifier = self.identifier.new_value(kwargs[self.identifier.key])
         if request.method == "PUT":
-            obj = self.logic.get_by_name(name, allow_none=True)
+            obj = self.logic.get_by_identifier(identifier, allow_none=True)
             if obj is not None:
                 return self.create_response(
                     202,
-                    message=f"Resource {name} updated.",
+                    message=f"Resource {identifier.value} updated.",
                     resource=obj.update(data),
                 )
 
         if request.method in ["POST", "PUT"]:
             return self.create_response(
                 201,
-                message=f"Resource {name} created.",
-                resource=self.logic.create(data, name),
+                message=f"Resource {identifier.value} created.",
+                resource=self.logic.create(
+                    identifier,
+                    data,
+                )
             )
 
         if request.method == "DELETE":
             return self.create_response(
                 202,
-                message=f"Resource {name} deleted.",
-                resource=self.logic.get_by_name(name).delete(),
+                message=f"Resource {identifier.value} deleted.",
+                resource=self.logic.get_by_identifier(identifier).delete(),
             )
 
         # request.method == "GET"
         return self.create_response(
             200,
-            resource=self.logic.get_by_name(name).read(),
+            resource=self.logic.get_by_identifier(identifier).read(),
         )
 
     @name_factory

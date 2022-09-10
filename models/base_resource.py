@@ -4,16 +4,35 @@ from db import db
 from routes.i_request import ResponseData, RequestData, IRequestLogic
 
 
+class ResourceIdentifier(object):
+
+    def __init__(self, key: str, key_type: str, value: Union[str, int] = None):
+        self.key = key
+        self.key_type = key_type
+        self.value = value
+
+    @property
+    def type_str(self):
+        return f"<{self.key_type}:{self.key}>"
+
+    @property
+    def dict(self):
+        return {self.key: self.value}
+
+    def new_value(self, value: Union[str, int]):
+        return type(self)(self.key, self.key_type, value)
+
+
 class BaseResourceModel(IRequestLogic, db.Model):
     __abstract__ = True
 
     @classmethod
     def create(
             cls,
+            identifier: ResourceIdentifier,
             data: RequestData,
-            name: str,
     ) -> 'BaseResourceModel':
-        instance = cls(name=name, **data.data)
+        instance = cls(**identifier.dict, **data.data)
         instance.save_to_db()
         return instance
 
@@ -44,11 +63,12 @@ class BaseResourceModel(IRequestLogic, db.Model):
         return cls.query.all()
 
     @classmethod
-    def get_by_name(
+    def get_by_identifier(
             cls,
-            name: str,
+            identifier: ResourceIdentifier,
             allow_none=False
     ) -> Union['BaseResourceModel', None]:
+        qs = cls.query.filter_by(**identifier.dict)
         if allow_none:
-            return cls.query.filter_by(name=name).one_or_none()
-        return cls.query.filter_by(name=name).first_or_404()
+            return qs.one_or_none()
+        return qs.first_or_404()

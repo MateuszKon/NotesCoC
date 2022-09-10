@@ -1,10 +1,16 @@
+from abc import abstractmethod
+from typing import Type, Union
+
 from flask import request, render_template, make_response, redirect, jsonify, \
-    url_for
+    url_for, Flask, Response
 from flask_jwt_extended import set_access_cookies, get_jwt
 
 from blocklist import add_to_blocklist
 from libs.jwt_functions import jwt_required_with_redirect
 from models.users import RegisterUserModel, UserModel
+from routes.base_route import BaseRoute
+from routes.i_request import IRequestLogic, IRequestData, RequestData, \
+    ResponseData
 from schemas.users import UserSchema, RegisterUserSchema
 
 INVALID_REGISTRATION_HASH = "Invalid registration hash!"
@@ -15,7 +21,69 @@ register_user_schema = RegisterUserSchema()
 user_schema = UserSchema()
 
 
-class UserRegister:
+class IUserRegisterRouteLogic(IRequestLogic):
+
+    @classmethod
+    @abstractmethod
+    def confirm_registration(
+            cls,
+            data: RequestData,
+            registration_hash: str,
+    ) -> Union[Response, ResponseData]:
+        pass
+
+    @classmethod
+    @abstractmethod
+    def render_registration_form(
+            cls,
+            data: RequestData,
+            registration_hash: str,
+    ) -> Union[Response, ResponseData]:
+        pass
+
+    @classmethod
+    @abstractmethod
+    def add_registration_record(
+            cls,
+            data: RequestData,
+    ) -> Union[Response, ResponseData]:
+        pass
+
+    @classmethod
+    @abstractmethod
+    def get_all(
+            cls,
+            data: RequestData,
+    ) -> Union[Response, ResponseData]:
+        pass
+
+
+class UserRegister(BaseRoute):
+
+    logic: Type[IUserRegisterRouteLogic]
+
+    def __init__(
+            self,
+            app: Flask,
+            data: Type[IRequestData],
+            logic: Type[IUserRegisterRouteLogic],
+    ):
+        super().__init__(app, data, logic)
+        app.add_url_rule(
+            "/new_note",
+            view_func=self.edit_note,
+            methods=["GET", "POST"],
+        )
+        app.add_url_rule(
+            "/note/<int:note_id>/edit",
+            view_func=self.edit_note,
+            methods=["GET", "POST"],
+        )
+        app.add_url_rule(
+            "/note/<int:note_id>/delete",
+            view_func=self.delete_note,
+            methods=["GET", "POST", "DELETE"],
+        )
 
     @classmethod
     def register_user(cls, registration_hash: str):
@@ -53,7 +121,7 @@ class UserRegister:
         )}, 200
 
 
-class UserLogin:
+class UserLogin(BaseRoute):
 
     @classmethod
     def login_user(cls):

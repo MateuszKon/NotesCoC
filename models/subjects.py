@@ -5,7 +5,7 @@ from sqlalchemy.orm import relationship
 
 from db import db
 from models.notes_subjects import notes_subjects
-from models.baser_resource import BaseResourceModel
+from models.base_resource import BaseResourceModel
 from models.subjects_categories import subjects_categories
 
 

@@ -8,6 +8,7 @@ from sqlalchemy.orm import relationship
 
 from db import db
 from libs.random import uuid_gen
+from models.base_resource import BaseResourceModel
 
 
 class UserModel(db.Model):
@@ -68,7 +69,7 @@ class UserModel(db.Model):
             user.save_to_db()
 
 
-class RegisterUserModel(db.Model):
+class RegisterUserModel(BaseResourceModel):
     __tablename__ = "register_users"
 
     id = Column(Integer, primary_key=True)
@@ -82,11 +83,3 @@ class RegisterUserModel(db.Model):
             registration_hash=self.hash,
             _external=True,
         )
-
-    @classmethod
-    def get_all(cls) -> List["RegisterUserModel"]:
-        return cls.query.all()
-
-    @classmethod
-    def get_by_hash(cls, register_hash: str) -> "RegisterUserModel":
-        return cls.query.filter_by(hash=register_hash).one_or_none()

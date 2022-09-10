@@ -7,17 +7,16 @@ from flask_jwt_extended import set_access_cookies, get_jwt
 
 from blocklist import add_to_blocklist
 from libs.jwt_functions import jwt_required_with_redirect
-from models.users import RegisterUserModel, UserModel
-from routes.base_route import BaseRoute
+from models.users import UserModel
+from routes.base_route import BaseRoute, request_logic
 from routes.i_request import IRequestLogic, IRequestData, RequestData, \
     ResponseData
-from schemas.users import UserSchema, RegisterUserSchema
+from schemas.users import UserSchema
 
 INVALID_REGISTRATION_HASH = "Invalid registration hash!"
 INVALID_CREDENTIALS = "Invalid username or password!"
 USERNAME_EXIST_ERROR = "Username with name {} already exist!"
 
-register_user_schema = RegisterUserSchema()
 user_schema = UserSchema()
 
 
@@ -51,9 +50,8 @@ class IUserRegisterRouteLogic(IRequestLogic):
 
     @classmethod
     @abstractmethod
-    def get_all(
+    def list(
             cls,
-            data: RequestData,
     ) -> Union[Response, ResponseData]:
         pass
 
@@ -69,56 +67,45 @@ class UserRegister(BaseRoute):
             logic: Type[IUserRegisterRouteLogic],
     ):
         super().__init__(app, data, logic)
-        app.add_url_rule(
-            "/new_note",
-            view_func=self.edit_note,
-            methods=["GET", "POST"],
-        )
-        app.add_url_rule(
-            "/note/<int:note_id>/edit",
-            view_func=self.edit_note,
-            methods=["GET", "POST"],
-        )
-        app.add_url_rule(
-            "/note/<int:note_id>/delete",
-            view_func=self.delete_note,
-            methods=["GET", "POST", "DELETE"],
-        )
+        app.add_url_rule("/register/form/<string:registration_hash>",
+                         view_func=self.register_user,
+                         methods=["GET", "POST"],
+                         )
+        app.add_url_rule("/register/new",
+                         view_func=self.add_registration_record,
+                         methods=["POST"],
+                         )
+        app.add_url_rule("/register/get_all",
+                         view_func=self.get_registration_records,
+                         )
 
-    @classmethod
-    def register_user(cls, registration_hash: str):
-        register_user = RegisterUserModel.get_by_hash(registration_hash)
-        if register_user is None:
-            return {"message": INVALID_REGISTRATION_HASH}, 404
+    @request_logic
+    def register_user(
+            self,
+            data: RequestData,
+            registration_hash: str
+    ):
         if request.method == "POST":
-            username = request.form["username"]
-            password = request.form["new-password"]
-            if UserModel.get_by_login(username):
-                return {"message": USERNAME_EXIST_ERROR.format(username)}, 400
-            new_user = UserModel(username, password, register_user.person_name)
-            new_user.save_to_db()
-            register_user.delete_from_db()
-            return {"message": "Registration complete!"}, 201
-        return render_template(
-            'register.html',
-            person_name=register_user.person_name,
-            register_hash=registration_hash,
-        )
+            return self.logic.confirm_registration(data, registration_hash)
 
-    @classmethod
-    @jwt_required_with_redirect(admin=True)
-    def add_registration_record(cls):
-        user_register: RegisterUserModel = register_user_schema.load(request.json)
-        user_register.save_to_db()
-        return register_user_schema.dump(user_register), 201
+        # request.method == "GET"
+        return self.logic.render_registration_form(data, registration_hash)
 
-    @classmethod
     @jwt_required_with_redirect(admin=True)
-    def get_registration_records(cls):
-        return {"registers": register_user_schema.dump(
-            RegisterUserModel.get_all(),
-            many=True
-        )}, 200
+    @request_logic
+    def add_registration_record(
+            self,
+            data: RequestData,
+    ):
+        return self.logic.add_registration_record(data)
+
+    @jwt_required_with_redirect(admin=True)
+    @request_logic
+    def get_registration_records(
+            self,
+            data: RequestData,
+    ):
+        return self.logic.list()
 
 
 class UserLogin(BaseRoute):

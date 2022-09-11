@@ -1,21 +1,14 @@
 from abc import abstractmethod
 from typing import Type, Union
 
-from flask import request, render_template, make_response, redirect, jsonify, \
-    url_for, Flask, Response
-from flask_jwt_extended import set_access_cookies, get_jwt
+from flask import request, Flask, Response
 
-from blocklist import add_to_blocklist
 from libs.jwt_functions import jwt_required_with_redirect
 from models.users import UserModel
 from routes.base_route import BaseRoute, request_logic
 from routes.i_request import IRequestLogic, IRequestData, RequestData, \
     ResponseData
 from schemas.users import UserSchema
-
-INVALID_REGISTRATION_HASH = "Invalid registration hash!"
-INVALID_CREDENTIALS = "Invalid username or password!"
-USERNAME_EXIST_ERROR = "Username with name {} already exist!"
 
 user_schema = UserSchema()
 
@@ -57,7 +50,6 @@ class IUserRegisterRouteLogic(IRequestLogic):
 
 
 class UserRegister(BaseRoute):
-
     logic: Type[IUserRegisterRouteLogic]
 
     def __init__(
@@ -108,54 +100,68 @@ class UserRegister(BaseRoute):
         return self.logic.list()
 
 
+class IUserLoginRouteLogic(IRequestLogic):
+
+    @classmethod
+    @abstractmethod
+    def render_login(
+            cls,
+            data: RequestData,
+    ) -> Union[Response, ResponseData]:
+        pass
+
+    @classmethod
+    @abstractmethod
+    def login_user(
+            cls,
+            data: RequestData,
+    ) -> Union[Response, ResponseData]:
+        pass
+
+    @classmethod
+    @abstractmethod
+    def logout_user(
+            cls,
+            data: RequestData,
+    ) -> Union[Response, ResponseData]:
+        pass
+
+
 class UserLogin(BaseRoute):
+    logic: Type[IUserLoginRouteLogic]
 
-    @classmethod
-    def login_user(cls):
+    def __init__(
+            self,
+            app: Flask,
+            data: Type[IRequestData],
+            logic: Type[IUserLoginRouteLogic],
+    ):
+        super().__init__(app, data, logic)
+        app.add_url_rule("/login",
+                         view_func=self.login_user,
+                         methods=["GET", "POST"],
+                         )
+        app.add_url_rule("/logout",
+                         view_func=self.logout_user,
+                         methods=["POST"],
+                         )
+
+    @request_logic
+    def login_user(
+            self,
+            data: RequestData,
+    ):
         if request.method == "POST":
-            content_type = request.headers.get("Content-Type")
+            return self.logic.login_user(data)
+        return self.logic.render_login(data)
 
-            username, password = cls._get_credentials(content_type)
-
-            user_obj = UserModel.get_by_login(username)
-            if user_obj and password and user_obj.check_password(password):
-                access_token = user_obj.create_authorisation_tokens()
-                return cls._prepare_login_response(access_token, content_type)
-            return {"message": INVALID_CREDENTIALS}, 404
-
-        return render_template(
-            'login.html',
-            next=request.args.get('next', None),
-        )
-
-    @classmethod
     @jwt_required_with_redirect()
-    def logout_user(cls):
-        if request.method == "POST":
-            jwt_data = get_jwt()
-            access_jti = jwt_data["jti"]
-            access_exp = jwt_data["exp"]
-            add_to_blocklist(access_jti, access_exp)
-            return redirect(url_for("login_user"))
-
-    @classmethod
-    def _get_credentials(cls, content_type):
-        if content_type == "application/json":
-            username = request.json["username"]
-            password = request.json["current-password"]
-        else:
-            username = request.form["username"]
-            password = request.form["current-password"]
-        return username, password
-
-    @classmethod
-    def _prepare_login_response(cls, access_token, content_type):
-        if content_type == "application/json":
-            return jsonify({"access_token": access_token}), 200
-
-        response = make_response(redirect(request.args.get('next', '/home')))
-        set_access_cookies(response, access_token)
-        return response
+    @request_logic
+    def logout_user(
+            self,
+            data: RequestData,
+    ):
+        return self.logic.logout_user(data)
 
 
 class User:

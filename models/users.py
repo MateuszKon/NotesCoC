@@ -11,7 +11,7 @@ from libs.random import uuid_gen
 from models.base_resource import BaseResourceModel
 
 
-class UserModel(db.Model):
+class UserModel(BaseResourceModel):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True)

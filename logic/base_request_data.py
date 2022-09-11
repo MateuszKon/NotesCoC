@@ -1,6 +1,7 @@
 from typing import Union, Tuple
 
-from flask import Response, request, jsonify, render_template
+from flask import Response, redirect, request, jsonify, render_template, \
+    make_response
 from flask_jwt_extended import get_jwt
 
 from models import PersonModel
@@ -30,10 +31,11 @@ class BaseRequestData(IRequestData):
             cls,
             context_data: ContextData,
             response_data: ResponseData,
-    ) -> Union[Tuple[Response, int], str]:
+    ) -> Union[Tuple[Response, int], str, Response]:
         if context_data["accept"] == "application/json":
             return cls.prepare_json_response(response_data)
-        print(response_data.resource)
+        if response_data.is_redirect:
+            return cls.prepare_redirect_response(context_data, response_data)
         return cls.prepare_html_response(context_data, response_data)
 
     @classmethod
@@ -45,6 +47,7 @@ class BaseRequestData(IRequestData):
         return {
             "content_type": request.content_type,
             "accept": request.accept_mimetypes.best,
+            "args": request.args,
         }
 
     @classmethod
@@ -59,8 +62,11 @@ class BaseRequestData(IRequestData):
 
     @classmethod
     def get_jwt_data(cls):
-        jwt_data = get_jwt()
-        needed_keys = jwt_data.keys() & {'csrf', 'admin', 'scope'}
+        try:
+            jwt_data = get_jwt()
+        except RuntimeError:
+            jwt_data = {}
+        needed_keys = jwt_data.keys() & {'csrf', 'admin', 'scope', 'jti', 'exp'}
         return {'jwt_' + key: jwt_data[key] for key in needed_keys}
 
     @classmethod
@@ -85,12 +91,34 @@ class BaseRequestData(IRequestData):
             cls,
             context_data: ContextData,
             response_data: ResponseData
-    ) -> str:
+    ) -> Response:
         common_data = cls.prepare_common_data(context_data)
-
-        return render_template(
+        response = make_response(render_template(
             response_data.template,
             resource=response_data.resource,
             **common_data,
             **response_data.kwargs,
-        )
+        ))
+        response = cls._set_cookies(response, response_data)
+        return response
+
+    @classmethod
+    def prepare_redirect_response(
+            cls,
+            context_data,
+            response_data
+    ) -> Response:
+        response = make_response(redirect(
+            response_data.kwargs['redirect']
+        ))
+        response = cls._set_cookies(response, response_data)
+        return response
+
+    @classmethod
+    def _set_cookies(
+            cls,
+            response: Response,
+            response_data: ResponseData) -> Response:
+        for cookie in response_data.cookies:
+            response = cookie.set_cookie(response)
+        return response

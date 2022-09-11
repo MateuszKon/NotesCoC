@@ -3,6 +3,7 @@ from flask import Flask
 from logic.base_request_data import BaseRequestData
 from logic.home import HomeLogic
 from logic.notes import NoteLogic
+from logic.user_login import UserLoginLogic
 from logic.user_register import UserRegisterLogic
 from models import PersonModel, SubjectModel, SubjectCategoryModel
 from models.base_resource import ResourceIdentifier
@@ -65,18 +66,20 @@ def configure_routing(app: Flask):
     )
 
     # User routes
+    # /register/form/<string:registration_hash>
+    # /register/new
+    # /register/get_all
     UserRegister(
         app,
         BaseRequestData,
         UserRegisterLogic,
     )
+    # /login
+    # /logout
+    UserLogin(
+        app,
+        BaseRequestData,
+        UserLoginLogic,
+    )
 
     app.add_url_rule("/users", view_func=User.get_all)
-    app.add_url_rule("/login",
-                     view_func=UserLogin.login_user,
-                     methods=["GET", "POST"],
-                     )
-    app.add_url_rule("/logout",
-                     view_func=UserLogin.logout_user,
-                     methods=["POST"],
-                     )

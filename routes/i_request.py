@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Union, Tuple
+from typing import Union, Tuple, List
 
 from flask import Response
 
@@ -41,6 +41,20 @@ class RequestData(dict):
         return default
 
 
+class Cookie:
+
+    def __init__(
+            self,
+            key: str,
+            value: str,
+    ):
+        self.key = key
+        self.value = value
+
+    def set_cookie(self, response: Response) -> Response:
+        response.set_cookie(self.key, self.value)
+
+
 class ResponseData:
     """
     Object for response preparation in IRequest.serialize_response
@@ -51,6 +65,7 @@ class ResponseData:
             template: str = None,
             resource: dict = None,
             status_code: int = None,
+            cookies: List[Cookie] = None,
             **kwargs,
     ):
         self.template = template
@@ -58,7 +73,12 @@ class ResponseData:
             resource = {}
         self.resource = resource
         self.status_code = status_code
+        self.cookies = cookies or []
         self.kwargs = kwargs
+
+    @property
+    def is_redirect(self):
+        return 'redirect' in self.kwargs
 
 
 class IRequestData(ABC):
@@ -75,7 +95,7 @@ class IRequestData(ABC):
             cls,
             context_data: ContextData,
             response_data: ResponseData,
-    ) -> Union[Tuple[Response, int], str]:
+    ) -> Union[Tuple[Response, int], str, Response]:
         """
         Preparing response based on Content-Type of a request and parameters.
 

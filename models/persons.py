@@ -6,9 +6,10 @@ from sqlalchemy.orm import relationship
 from db import db
 from models.notes import NoteModel
 from models.persons_notes import persons_notes
+from models.base_resource import BaseResourceModel
 
 
-class PersonModel(db.Model):
+class PersonModel(BaseResourceModel):
     __tablename__ = "persons"
 
     name = Column(String(80), primary_key=True)

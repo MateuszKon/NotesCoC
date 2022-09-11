@@ -56,9 +56,9 @@ function deleteCookie(cName) {
 function setVisibilityCookie(name) {
     let vis = name;
     if (vis == "all") {
-        deleteCookie("visibility_selection")
+        deleteCookie("admin_visibility")
     } else {
-        setCookie("visibility_selection", vis)
+        setCookie("admin_visibility", vis)
     }
 
 }

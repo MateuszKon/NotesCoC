@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title%}<title>Notes | Resource</title>{% endblock %}
+
+{% block main %}
+
+    {% macro dump_dict(d) -%}
+    <ul>
+    {%- for key, value in d.items() %}
+        <li>{{ key }}:
+        {%- if value.children %}
+            {%- for child in value.children %}
+                {{ dump_dict(child) }}
+            {%- endfor %}
+        {%- endif %}
+        {%- if value is string or value is number %}
+            {{ value }}
+        {%- elif value is iterable %}
+            {%- for element in value %}
+                {{ dump_dict(element) }}
+            {%- endfor %}
+        {%- endif %}
+        </li>
+    {%- endfor %}
+    </ul>
+{%- endmacro %}
+
+
+
+{{ dump_dict(resource) }}
+
+{% endblock %}

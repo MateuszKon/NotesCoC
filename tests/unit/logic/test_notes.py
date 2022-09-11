@@ -1,5 +1,6 @@
 from models.persons import PersonModel
-from routes.notes import NoteRoutes
+from logic.notes import NoteLogic
+from routes.i_request import RequestPayload
 from tests.unit.base_unit_database_test import BaseTestUnitDatabase
 
 
@@ -12,7 +13,7 @@ class TestVisibilityNotes(BaseTestUnitDatabase):
             PersonModel(name="person3"),
             PersonModel(name="person4"),
         ]
-        state_dictionary = {
+        state_dictionary = RequestPayload({
             "vis_previous_person1": "False",
             "visibility_person1": "True",
             "vis_previous_person2": "True",
@@ -21,11 +22,11 @@ class TestVisibilityNotes(BaseTestUnitDatabase):
             # "visibility_person3": "False",
             "vis_previous_person4": "True",
             "visibility_person4": "True",
-        }
+        })
         with self.app_context():
             for person in persons:
                 person.save_to_db()
-            persons_on, persons_off = NoteRoutes._visibility_changing_list(
+            persons_on, persons_off = NoteLogic._visibility_changing_list(
                 persons,
                 state_dictionary,
             )
@@ -42,15 +43,15 @@ class TestVisibilityNotes(BaseTestUnitDatabase):
         persons = [
             PersonModel(name="person1"),
         ]
-        state_dictionary = {
+        state_dictionary = RequestPayload({
             "vis_previous_person1": "True",
             "visibility_person1": "False",
-        }
+        })
         with self.app_context():
             for person in persons:
                 person.save_to_db()
             with self.assertRaises(ValueError):
-                NoteRoutes._visibility_changing_list(
+                NoteLogic._visibility_changing_list(
                     persons,
                     state_dictionary,
                 )
@@ -59,15 +60,15 @@ class TestVisibilityNotes(BaseTestUnitDatabase):
         persons = [
             PersonModel(name="person1"),
         ]
-        state_dictionary = {
+        state_dictionary = RequestPayload({
             "vis_previous_person1": "False",
             "visibility_person1": "False",
-        }
+        })
         with self.app_context():
             for person in persons:
                 person.save_to_db()
             with self.assertRaises(ValueError):
-                NoteRoutes._visibility_changing_list(
+                NoteLogic._visibility_changing_list(
                     persons,
                     state_dictionary,
                 )

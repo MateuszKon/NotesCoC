@@ -28,7 +28,8 @@ class FormSubjectSelector {
         }
         new_select.appendChild(option);
 
-        this.subjectsNames.forEach((name) => {
+        this.subjectsNames.forEach((subject) => {
+            name = subject['name'];
             option = document.createElement('option');
             option.value = name;
             option.innerHTML= name;

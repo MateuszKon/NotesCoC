@@ -11,21 +11,28 @@
     <div class="mb-3">
         <label for="title-control" class="form-label">Title</label>
         <input type="text" class="form-control" id="title-control" placeholder="Title" name="title"
-            value="{{ note.title|d('', true) }}">
+            value="{{ resource['note']['title']|d('', true) }}">
     </div>
 
     <div class="mb-3">
         <label for="content-control" class="form-label">Content</label>
-        <textarea class="form-control" id="content-control" rows="3" name="content"
-            form="noteform">{{ note.content|d('', true) }}</textarea>
+        <textarea class="form-control" id="content-control" rows="3"
+                  name="content" form="noteform"
+        >{{ resource['note']['content']|d('', true)}}</textarea>
     </div>
 
-    {% for person in persons_visibility %}
-    <input type="hidden" name="{{ 'vis_previous_' ~ person.name }}" value="{{ person.is_note_visible(note.id) }}">
+    {% for person in persons %}
+    <input type="hidden" name="{{ 'vis_previous_' ~ person.name }}"
+           value="{{ person.is_note_visible(resource['note']['id']) }}">
     <div class="form-check">
-        <input type="checkbox" class="form-check-input" id="{{ 'visibility_' ~ person.name }}"
-            name="{{ 'visibility_' ~ person.name }}" {% if person.is_note_visible(note.id) is true %} value="True"
-            Checked {% else %} value="True" {% endif %}>
+        <input type="checkbox" class="form-check-input"
+               id="{{ 'visibility_' ~ person.name }}"
+               name="{{ 'visibility_' ~ person.name }}"
+               {% if person.is_note_visible(resource['note']['id']) is true %}
+               value="True" Checked
+               {% else %}
+               value="True"
+               {% endif %}>
         <label class="form-check-label" for="{{ 'visibility_' ~ person.name }}">
             {{person.name}}
         </label>
@@ -34,9 +41,9 @@
 
     <div class="mt-2" id="subjects-selection-div">
         <script>
-            subjectsGenerator = new FormSubjectSelector({{ subjects | tojson }});
-            {% for selected_subject in note_subjects %}
-            subjectsGenerator.createSelector('{{ selected_subject.name }}', subjectsGenerator.changeSubject);
+            subjectsGenerator = new FormSubjectSelector({{resource['all_subjects'] | tojson}});
+            {% for selected_subject in resource['note']['subjects'] %}
+            subjectsGenerator.createSelector('{{ selected_subject['name'] }}', subjectsGenerator.changeSubject);
             {% endfor %}
             subjectsGenerator.createSelector('none', subjectsGenerator.chooseSubject);
         </script>

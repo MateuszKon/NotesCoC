@@ -1,53 +1,100 @@
-from flask import request
+from typing import Type, Union
 
+from flask import request, Flask, Response
+
+from libs.factories import name_factory
 from libs.jwt_functions import jwt_required_with_redirect
+from ma import ma
+from models.base_resource import ResourceIdentifier
 from models.subjects import SubjectModel
-from schemas.subjects import SubjectSchema
-
-subject_schema = SubjectSchema()
-
-SUBJECT_ALREADY_EXIST = "Subject {} already exist!"
-SUBJECT_ADDED = "Subject {} added."
-SUBJECT_EDITED = "Subject {} edited."
-SUBJECT_DOESNT_EXIST = "Subject {} doesn't exist!"
-SUBJECT_DELETED = "Subject {} deleted."
+from routes.base_resource import BaseResourceRoute
+from routes.base_route import request_logic
+from routes.i_request import IRequestData, RequestData, ResponseData
 
 
-class SubjectRoutes:
+class SubjectRoutes(BaseResourceRoute):
 
-    @classmethod
+    logic: Type[SubjectModel]
+
+    def __init__(
+            self,
+            app: Flask,
+            data: Type[IRequestData],
+            logic: Type[SubjectModel],
+            schema: ma.Schema,
+            child_schema: ma.Schema,
+            template: str = 'base_resource.html',
+            resource_url_name: str = 'subject',
+            resources_url_name: str = 'subjects',
+            identifier: ResourceIdentifier = None,
+    ):
+        super().__init__(app, data, logic, schema, template,
+                         resource_url_name, resources_url_name, identifier)
+        self.child_schema = child_schema
+        app.add_url_rule(
+            f"/{self.resource_url_name}/<string:name>/category",
+            view_func=self.category_of_subject(
+                self.resource_url_name + 's_category'
+            ),
+            methods=["POST", "PUT", "DELETE"],
+        )
+        app.add_url_rule(
+            f"/{self.resource_url_name}/<string:name>/categories",
+            view_func=self.categories_of_subject(
+                self.resource_url_name + 's_categories'
+            ),
+            methods=["GET"],
+        )
+
+    @name_factory
     @jwt_required_with_redirect(admin=True)
-    def subject(cls, name: str):
-        subject_ = SubjectModel.find_by_name(name, allow_none=True)
+    @request_logic
+    def category_of_subject(
+        self,
+        data: RequestData,
+        name: str
+    ) -> Union[Response, ResponseData]:
+        subject = self.logic.find_by_name(name)
+        categories = self.child_schema.load(data.data, many=True)
+
         if request.method == "POST":
-            if subject_:
-                return {"message": SUBJECT_ALREADY_EXIST.format(name)}, 400
-            new_subject = SubjectModel(name=name)
-            new_subject.save_to_db()
-            return {"message": SUBJECT_ADDED.format(name)}, 201
+            subject.remove_categories(subject.categories.all())
+            subject.add_categories(categories)
+            subject.save_to_db()
+            return self.create_response(
+                201,
+                message=f"Categories set for subject {name}",
+                resource=subject,
+            )
 
         if request.method == "PUT":
-            new_subject = subject_schema.load(request.json)
-            if subject_:
-                subject_.name = new_subject.name
-                subject_.save_to_db()
-                return {"message": SUBJECT_EDITED.format(name)}, 200
-            new_subject.save_to_db()
-            return {"message": SUBJECT_ADDED.format(new_subject.name)}, 201
+            subject.add_categories(categories)
+            subject.save_to_db()
+            return self.create_response(
+                201,
+                message=f"Categories added for subject {name}",
+                resource=subject,
+            )
 
         if request.method == "DELETE":
-            if subject_ is None:
-                return {"message": SUBJECT_DOESNT_EXIST.format(name)}, 400
-            subject_.delete_from_db()
-            return {"message": SUBJECT_DELETED.format(name)}, 200
+            subject.remove_categories(categories)
+            subject.save_to_db()
+            return self.create_response(
+                201,
+                message=f"Categories deleted from subject {name}",
+                resource=subject,
+            )
 
-        # request.method == "GET"
-        if subject_ is None:
-            return {"message": SUBJECT_DOESNT_EXIST.format(name)}, 400
-        return subject_schema.dump(subject_), 200
-
-    @classmethod
+    @name_factory
     @jwt_required_with_redirect(admin=True)
-    def subjects(cls):
-        return {"subjects": subject_schema.dump(SubjectModel.get_all(),
-                                                many=True)}, 200
+    @request_logic
+    def categories_of_subject(
+            self,
+            data: RequestData,
+            name: str
+    ) -> Union[Response, ResponseData]:
+        subject = SubjectModel.find_by_name(name)
+        return self.create_response(
+            200,
+            resource=subject.categories.all()
+        )

@@ -1,36 +1,57 @@
 {% extends "base.html" %}
 {% block title%}<title>Notes | Home</title>{% endblock %}
 
+{% block navigation %}
+            <li class="nav-item mx-2">
+                <a class="nav-link dropdown-toggle"
+                   data-bs-toggle="dropdown"
+                   aria-expanded="false">Expand</a>
+                <ul class="nav-item dropdown dropdown-menu">
+                    <li>
+                        <a class="dropdown-item" id="expand-notes"
+                           onclick="expandNotes()">
+                            Expand All
+                        </a>
+                        <a class="dropdown-item" id="collapse-notes"
+                           onclick="collapseNotes()">
+                            Collapse All
+                        </a>
+                    </li>
+                </ul>
+            </li>
+{% endblock %}
+
+
 {% block main %}
 <div class="accordion" id="accordion-notes">
-    {% for note in notes %}
+    {% for note in resource %}
     <div class="accordion-item mb-3">
-        <h2 class="accordion-header" id="heading-{{note.id}}">
+        <h2 class="accordion-header" id="heading-{{note['id']}}">
             <button class="accordion-button" type="button"
                     data-bs-toggle="collapse"
-                    data-bs-target="#collapse-{{note.id}}"
+                    data-bs-target="#collapse-{{note['id']}}"
                     aria-expanded="true"
-                    aria-controls="collapse-{{note.title}}">
-                {{note.title}}
+                    aria-controls="collapse-{{note['title']}}">
+                {{note['title']}}
             </button>
         </h2>
-        <div id="collapse-{{note.id}}"
+        <div id="collapse-{{note['id']}}"
              class="accordion-collapse collapse note-header show"
-             aria-labelledby="heading-{{note.title}}">
+             aria-labelledby="heading-{{note['title']}}">
             <div class="accordion-body">
                 {% if admin %}
                 <div class="d-flex justify-content-end mb-2">
                     <a type="button" class="btn btn-primary mx-1"
-                       href="{{url_for('edit_note', note_id=note.id) }}">
+                       href="{{url_for('edit_note', note_id=note['id']) }}">
                         Edit
                     </a>
                     <a type="button" class="btn btn-danger mx-1"
-                       href="{{ url_for('delete_note', note_id=note.id) }}">
+                       href="{{ url_for('delete_note', note_id=note['id']) }}">
                         Delete
                     </a>
                 </div>
                 {% endif %}
-                {{ note.content }}
+                {{ note['content'] }}
             </div>
         </div>
     </div>

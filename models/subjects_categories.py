@@ -4,7 +4,7 @@ from sqlalchemy import Table, Column, ForeignKey, String
 from sqlalchemy.orm import relationship
 
 from db import db
-
+from models.base_resource import BaseResourceModel
 
 subjects_categories = Table(
     "subjects_categories",
@@ -15,7 +15,7 @@ subjects_categories = Table(
 )
 
 
-class SubjectCategoryModel(db.Model):
+class SubjectCategoryModel(BaseResourceModel):
     __tablename__ = "subject_categories"
 
     name = Column(String(80), primary_key=True)

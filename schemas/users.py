@@ -9,8 +9,7 @@ class RegisterUserSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = RegisterUserModel
         # load_only = ()
-        dump_only = ("id",)
-        exclude = ("hash",)
+        exclude = ("id",)
         include_fk = True
         load_instance = True
 

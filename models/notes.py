@@ -5,7 +5,6 @@ from sqlalchemy.orm import relationship
 
 from db import db
 from models.notes_subjects import notes_subjects
-# from models.persons import PersonModel
 from models.persons_notes import persons_notes
 
 
@@ -60,9 +59,14 @@ class NoteModel(db.Model):
     def get_all_visible(cls, person_name: str = None) -> List["NoteModel"]:
         if person_name is None:
             return cls.get_all()
-        return cls.query.join(NoteModel.persons_visibility).filter_by(
-            name=person_name
-        ).all()
+        return cls.add_filter_persons_visibility_query(cls.query, person_name).\
+            all()
+
+    @classmethod
+    def add_filter_persons_visibility_query(cls, qs, person_name: str = None):
+        if person_name is not None:
+            qs = qs.join(cls.persons_visibility).filter_by(name=person_name)
+        return qs
 
     def get_subjects_and_categories_words(self) -> Set[str]:
         subjects = self.subjects.all()

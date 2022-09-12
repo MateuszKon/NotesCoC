@@ -47,7 +47,10 @@ def configure_routing(app: Flask):
         app,
         BaseRequestData,
         SubjectModel,
-        SubjectSchema(),
+        SubjectSchema(
+            "NoteSchema",
+            notes_param={'only': ('id', 'title', 'persons_visibility')}
+        ),
         SubjectCategorySchema(),
         resource_url_name='subject',
         resources_url_name='subjects',

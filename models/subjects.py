@@ -3,7 +3,6 @@ from typing import List, Set
 from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
 
-from db import db
 from models.notes_subjects import notes_subjects
 from models.base_resource import BaseResourceModel
 from models.subjects_categories import subjects_categories
@@ -29,10 +28,14 @@ class SubjectModel(BaseResourceModel):
     )
 
     @classmethod
-    def find_by_name(cls, name: str,  allow_none=False) -> "SubjectModel":
+    def find_by_name(cls, name: str, allow_none=False) -> "SubjectModel":
         if allow_none:
             return cls.query.filter_by(name=name).one_or_none()
         return cls.query.filter_by(name=name).one()
+
+    @classmethod
+    def find_with_filtered_notes(cls, name: str, person: str) -> "SubjectModel":
+        return cls.find_by_name(name)
 
     @classmethod
     def get_all(cls) -> List["SubjectModel"]:

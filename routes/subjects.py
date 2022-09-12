@@ -62,6 +62,7 @@ class SubjectRoutes(BaseResourceRoute):
             subject.add_categories(categories)
             subject.save_to_db()
             return self.create_response(
+                data,
                 201,
                 message=f"Categories set for subject {name}",
                 resource=subject,
@@ -71,6 +72,7 @@ class SubjectRoutes(BaseResourceRoute):
             subject.add_categories(categories)
             subject.save_to_db()
             return self.create_response(
+                data,
                 201,
                 message=f"Categories added for subject {name}",
                 resource=subject,
@@ -80,6 +82,7 @@ class SubjectRoutes(BaseResourceRoute):
             subject.remove_categories(categories)
             subject.save_to_db()
             return self.create_response(
+                data,
                 201,
                 message=f"Categories deleted from subject {name}",
                 resource=subject,
@@ -95,6 +98,7 @@ class SubjectRoutes(BaseResourceRoute):
     ) -> Union[Response, ResponseData]:
         subject = SubjectModel.find_by_name(name)
         return self.create_response(
+            data,
             200,
             resource=subject.categories.all()
         )

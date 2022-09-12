@@ -55,12 +55,8 @@ class HomeLogic(IHomeRouteLogic):
 
     @classmethod
     def _prepare_common_data(cls, context_data: ContextData) -> dict:
-        if context_data.get("jwt_admin"):
-            visibility_selection = context_data.get("visibility_selection")
-        else:
-            visibility_selection = context_data.get("scope")
         return {
-            "notes": NoteModel.get_all_visible(visibility_selection),
+            "notes": NoteModel.get_all_visible(context_data.person_visibility),
         }
 
     @staticmethod

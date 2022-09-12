@@ -1,15 +1,16 @@
-from typing import Type, Union
+from typing import Type, Union, List
 
 from flask import request, Flask, Response
 
 from libs.factories import name_factory
 from libs.jwt_functions import jwt_required_with_redirect
 from ma import ma
-from models.base_resource import ResourceIdentifier
+from models.base_resource import ResourceIdentifier, BaseResourceModel
 from models.subjects import SubjectModel
 from routes.base_resource import BaseResourceRoute
 from routes.base_route import request_logic
 from routes.i_request import IRequestData, RequestData, ResponseData
+from schemas.schema_context import SchemaContext
 
 
 class SubjectRoutes(BaseResourceRoute):
@@ -55,7 +56,7 @@ class SubjectRoutes(BaseResourceRoute):
         name: str
     ) -> Union[Response, ResponseData]:
         subject = self.logic.find_by_name(name)
-        categories = self.child_schema.load(data.data, many=True)
+        categories = self.child_schema.load(data.data['subject_categories'], many=True)
 
         if request.method == "POST":
             subject.remove_categories(subject.categories.all())
@@ -102,3 +103,25 @@ class SubjectRoutes(BaseResourceRoute):
             200,
             resource=subject.categories.all()
         )
+
+    def create_resource_dict(
+            self,
+            data: RequestData,
+            resource: Union[BaseResourceModel, List[BaseResourceModel], None]
+    ) -> dict:
+        if isinstance(resource, SubjectModel) or (
+                isinstance(resource, list) and
+                isinstance(resource[0], SubjectModel)
+        ):
+            return super().create_resource_dict(data, resource)
+
+        resource_dict = {}
+        with SchemaContext(self.child_schema, data.context):
+            if isinstance(resource, BaseResourceModel):
+                resource_dict = self.child_schema.dump(resource)
+            if isinstance(resource, list):
+                resource_dict['list'] = self.child_schema.dump(
+                    resource,
+                    many=True
+                )
+            return resource_dict

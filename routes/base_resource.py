@@ -113,7 +113,7 @@ class BaseResourceRoute(BaseRoute):
             message: str = None,
             resource: Union[BaseResourceModel, List[BaseResourceModel]] = None
     ) -> ResponseData:
-        resource_dict = self._create_resource_dict(data, resource)
+        resource_dict = self.create_resource_dict(data, resource)
         if message:
             resource_dict['message'] = message
         return ResponseData(
@@ -122,7 +122,7 @@ class BaseResourceRoute(BaseRoute):
             status_code=status_code,
         )
 
-    def _create_resource_dict(
+    def create_resource_dict(
             self,
             data: RequestData,
             resource: Union[BaseResourceModel, List[BaseResourceModel], None]

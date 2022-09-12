@@ -1,4 +1,6 @@
-from marshmallow import fields
+from typing import List
+
+from marshmallow import fields, pre_dump
 from marshmallow.class_registry import get_class
 
 from db import db
@@ -15,7 +17,7 @@ class SubjectSchema(ma.SQLAlchemyAutoSchema):
         load_instance = True
         sqla_session = db.session
 
-    notes = fields.Method("get_persons_notes")
+    notes = fields.Method("get_notes_")
 
     def __init__(
             self,
@@ -31,6 +33,17 @@ class SubjectSchema(ma.SQLAlchemyAutoSchema):
         self.notes_schema_param = notes_param
         super().__init__(*args, **kwargs)
 
+    @pre_dump(pass_many=True)
+    def filter_empty_subjects(
+            self,
+            objs: List[SubjectModel],
+            **kwargs
+    ) -> List[SubjectModel]:
+        if self.notes_schema_name is None:
+            return objs
+        return [obj for obj in objs
+                if len(self.get_persons_notes(obj).notes_) > 0]
+
     def get_persons_notes(self, obj: SubjectModel):
         if self.notes_schema is None:
             self._init_notes_schema()
@@ -40,7 +53,11 @@ class SubjectSchema(ma.SQLAlchemyAutoSchema):
             obj.notes,
             person_visibility,
         )
-        return self.notes_schema.dump(notes, many=True)
+        obj.notes_ = notes.all()
+        return obj
+
+    def get_notes_(self, obj):
+        return self.notes_schema.dump(obj.notes_, many=True)
 
     def _init_notes_schema(self):
         class_ = get_class(self.notes_schema_name)

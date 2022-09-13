@@ -49,7 +49,7 @@ class BaseResourceRoute(BaseRoute):
             )
 
     @name_factory
-    @jwt_required_with_redirect(admin=True)
+    @jwt_required_with_redirect()
     @request_logic
     def resource(
             self,
@@ -57,6 +57,9 @@ class BaseResourceRoute(BaseRoute):
             **kwargs,
     ) -> Union[Response, ResponseData]:
         identifier = self.identifier.new_value(kwargs[self.identifier.key])
+        if request.method in ["PUT", "POST", "DELETE"] \
+                and not data.context.admin:
+            return self.access_denied_response()
         if request.method == "PUT":
             obj = self.logic.get_by_identifier(identifier, allow_none=True)
             if obj is not None:
@@ -94,7 +97,7 @@ class BaseResourceRoute(BaseRoute):
         )
 
     @name_factory
-    @jwt_required_with_redirect(admin=True)
+    @jwt_required_with_redirect()
     @request_logic
     def resources(
             self,
@@ -134,3 +137,10 @@ class BaseResourceRoute(BaseRoute):
             if isinstance(resource, list):
                 resource_dict['list'] = self.schema.dump(resource, many=True)
             return resource_dict
+
+    @staticmethod
+    def access_denied_response():
+        return ResponseData(
+            resource={'message': 'User admin claim verification failed'},
+            status_code=405,
+        )

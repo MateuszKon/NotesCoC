@@ -43,13 +43,18 @@ def configure_routing(app: Flask):
     )
 
     # Subjects routes
+    if app.config["DEBUG"]:
+        notes_param = {'only': ('id', 'title', 'persons_visibility')}
+    else:
+        notes_param = {'only': ('id', 'title')}
+
     SubjectRoutes(
         app,
         BaseRequestData,
         SubjectModel,
         SubjectSchema(
             "NoteSchema",
-            notes_param={'only': ('id', 'title')}
+            notes_param=notes_param
         ),
         SubjectCategorySchema(
             "SubjectSchema",

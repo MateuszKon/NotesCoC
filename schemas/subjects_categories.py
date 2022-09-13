@@ -1,6 +1,4 @@
-from typing import List
-
-from marshmallow import fields, pre_dump
+from marshmallow import fields
 from marshmallow.class_registry import get_class
 
 from db import db
@@ -32,29 +30,10 @@ class SubjectCategorySchema(ma.SQLAlchemyAutoSchema):
         self.subjects_schema_param = subjects_param
         super().__init__(*args, **kwargs)
 
-
-    @pre_dump(pass_many=True)
-    def filter_empty_category(
-            self,
-            objs: List[SubjectCategoryModel],
-            **kwargs
-    ) -> List[SubjectCategoryModel]:
-        if self.subjects_schema_name is None:
-            return objs
+    def get_subjects_(self, obj: SubjectCategoryModel):
         if self.subjects_schema is None:
             self._init_subjects_schema()
-        for obj in objs:
-            obj.subjects_ = self.subjects_schema.dump(
-                obj.subjects, many=True
-            )
-        return [obj for obj in objs if len(obj.subjects_) > 0]
-
-    def get_subjects_(self, obj: SubjectCategoryModel):
-        if not hasattr(obj, 'subjects_'):
-            if self.subjects_schema is None:
-                self._init_subjects_schema()
-            obj.subjects_ = self.subjects_schema.dump(obj.subjects, many=True)
-        return obj.subjects_
+        return self.subjects_schema.dump(obj.subjects_filtered, many=True)
 
     def _init_subjects_schema(self):
         class_ = get_class(self.subjects_schema_name)

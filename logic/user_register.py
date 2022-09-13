@@ -76,6 +76,7 @@ class UserRegisterLogic(IUserRegisterRouteLogic):
     @classmethod
     def list(
             cls,
+            data: RequestData,
     ) -> Union[Response, ResponseData]:
         return ResponseData(
             resource={"list": register_user_schema.dump(

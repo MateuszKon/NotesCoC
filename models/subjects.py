@@ -3,9 +3,11 @@ from typing import List, Set
 from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
 
+from models import NoteModel
 from models.notes_subjects import notes_subjects
 from models.base_resource import BaseResourceModel
 from models.subjects_categories import subjects_categories
+from routes.i_request import RequestData
 
 
 class SubjectModel(BaseResourceModel):
@@ -26,16 +28,42 @@ class SubjectModel(BaseResourceModel):
         lazy="dynamic",
         collection_class=set,
     )
+    _notes_filtered = None
+
+    def read(
+            self,
+            data: RequestData,
+    ) -> 'SubjectModel':
+        return self.filter_notes(data)
+
+    @classmethod
+    def list(
+            cls,
+            data: RequestData,
+    ) -> List['SubjectModel']:
+        objs = super().list(data)
+        if data.context.admin and data.context.person_visibility is None:
+            return [obj.read(data) for obj in objs]
+        return [obj for obj in objs if obj.read(data).has_notes]
+
+    @property
+    def notes_filtered(self):
+        return self._notes_filtered
+
+    @property
+    def has_notes(self):
+        return len(self.notes_filtered) > 0
+
+    def filter_notes(self, data: RequestData) -> "SubjectModel":
+        person = data.context.person_visibility
+        self._notes_filtered = NoteModel.filter_notes(self.notes, person)
+        return self
 
     @classmethod
     def find_by_name(cls, name: str, allow_none=False) -> "SubjectModel":
         if allow_none:
             return cls.query.filter_by(name=name).one_or_none()
         return cls.query.filter_by(name=name).one()
-
-    @classmethod
-    def find_with_filtered_notes(cls, name: str, person: str) -> "SubjectModel":
-        return cls.find_by_name(name)
 
     @classmethod
     def get_all(cls) -> List["SubjectModel"]:

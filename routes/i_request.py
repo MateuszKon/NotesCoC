@@ -25,6 +25,10 @@ class ContextData(dict):
             return self.get("admin_visibility")
         return self.get("jwt_scope")
 
+    @property
+    def admin(self):
+        return self.get("jwt_admin", False)
+
 
 class RequestData(dict):
     """

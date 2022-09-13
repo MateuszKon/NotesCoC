@@ -49,7 +49,7 @@ def configure_routing(app: Flask):
         SubjectModel,
         SubjectSchema(
             "NoteSchema",
-            notes_param={'only': ('id', 'title', 'persons_visibility')}
+            notes_param={'only': ('id', 'title')}
         ),
         SubjectCategorySchema(
             "SubjectSchema",
@@ -59,7 +59,6 @@ def configure_routing(app: Flask):
         resources_url_name='subjects',
         identifier=ResourceIdentifier("name", "string"),
     )
-    # TODO: Test Category of subjects hiding properly
 
     # Subject Categories routes
     BaseResourceRoute(

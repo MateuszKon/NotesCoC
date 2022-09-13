@@ -5,6 +5,7 @@ from sqlalchemy.orm import relationship
 
 from db import db
 from models.base_resource import BaseResourceModel
+from routes.i_request import RequestData
 
 subjects_categories = Table(
     "subjects_categories",
@@ -26,6 +27,45 @@ class SubjectCategoryModel(BaseResourceModel):
         lazy="dynamic",
         collection_class=set,
     )
+    _subjects_filtered = None
+
+    def read(
+            self,
+            data: RequestData,
+    ) -> 'SubjectCategoryModel':
+        return self.filter_subjects(data)
+
+    @classmethod
+    def list(
+            cls,
+            data: RequestData,
+    ) -> List['SubjectCategoryModel']:
+        objs = super().list(data)
+        if data.context.admin and data.context.person_visibility is None:
+            return [obj.read(data) for obj in objs]
+        return [obj for obj in objs if obj.read(data).has_subjects]
+
+    @property
+    def has_subjects(self):
+        return len(self.subjects_filtered) > 0
+
+    @property
+    def subjects_filtered(self):
+        return self._subjects_filtered
+
+    def filter_subjects(
+            self,
+            data: RequestData,
+    ) -> 'SubjectCategoryModel':
+        if data.context.admin and data.context.person_visibility is None:
+            filtered = [subject.read(data) for subject in self.subjects]
+        else:
+            filtered = [
+                subject for subject in self.subjects
+                if subject.filter_notes(data).has_notes
+            ]
+        self._subjects_filtered = filtered
+        return self
 
     @classmethod
     def get_all(cls) -> List["SubjectCategoryModel"]:

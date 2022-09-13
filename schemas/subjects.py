@@ -1,11 +1,8 @@
-from typing import List
-
-from marshmallow import fields, pre_dump
+from marshmallow import fields
 from marshmallow.class_registry import get_class
 
 from db import db
 from ma import ma
-from models import NoteModel
 from models.subjects import SubjectModel
 
 
@@ -17,6 +14,7 @@ class SubjectSchema(ma.SQLAlchemyAutoSchema):
         load_instance = True
         sqla_session = db.session
 
+    # notes = fields.Method("get_notes_")
     notes = fields.Method("get_notes_")
 
     def __init__(
@@ -33,31 +31,10 @@ class SubjectSchema(ma.SQLAlchemyAutoSchema):
         self.notes_schema_param = notes_param
         super().__init__(*args, **kwargs)
 
-    @pre_dump(pass_many=True)
-    def filter_empty_subjects(
-            self,
-            objs: List[SubjectModel],
-            **kwargs
-    ) -> List[SubjectModel]:
-        if self.notes_schema_name is None:
-            return objs
-        return [obj for obj in objs
-                if len(self.get_persons_notes(obj).notes_) > 0]
-
-    def get_persons_notes(self, obj: SubjectModel):
+    def get_notes_(self, obj):
         if self.notes_schema is None:
             self._init_notes_schema()
-
-        person_visibility = self.context["request-context"].person_visibility
-        notes = NoteModel.add_filter_persons_visibility_query(
-            obj.notes,
-            person_visibility,
-        )
-        obj.notes_ = notes.all()
-        return obj
-
-    def get_notes_(self, obj):
-        return self.notes_schema.dump(obj.notes_, many=True)
+        return self.notes_schema.dump(obj.notes_filtered, many=True)
 
     def _init_notes_schema(self):
         class_ = get_class(self.notes_schema_name)

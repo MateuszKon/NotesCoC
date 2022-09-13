@@ -83,14 +83,14 @@ class BaseResourceRoute(BaseRoute):
                 data,
                 202,
                 message=f"Resource {identifier.value} deleted.",
-                resource=self.logic.get_by_identifier(identifier).delete(),
+                resource=self.logic.get_by_identifier(identifier).delete(data),
             )
 
         # request.method == "GET"
         return self.create_response(
             data,
             200,
-            resource=self.logic.get_by_identifier(identifier).read(),
+            resource=self.logic.get_by_identifier(identifier).read(data),
         )
 
     @name_factory
@@ -103,7 +103,7 @@ class BaseResourceRoute(BaseRoute):
         return self.create_response(
             data,
             200,
-            resource=self.logic.list(),
+            resource=self.logic.list(data),
         )
 
     def create_response(

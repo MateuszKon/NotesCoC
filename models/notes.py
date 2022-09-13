@@ -62,12 +62,6 @@ class NoteModel(db.Model):
         return cls.add_filter_persons_visibility_query(cls.query, person_name).\
             all()
 
-    @classmethod
-    def add_filter_persons_visibility_query(cls, qs, person_name: str = None):
-        if person_name is not None:
-            qs = qs.join(cls.persons_visibility).filter_by(name=person_name)
-        return qs
-
     def get_subjects_and_categories_words(self) -> Set[str]:
         subjects = self.subjects.all()
         categories = set()
@@ -80,3 +74,16 @@ class NoteModel(db.Model):
             {subject.name for subject in subjects}
         )
         return words
+
+    @classmethod
+    def filter_notes(cls, qs, person: str) -> List["NoteModel"]:
+        return cls.add_filter_persons_visibility_query(
+            qs,
+            person,
+        ).all()
+
+    @classmethod
+    def add_filter_persons_visibility_query(cls, qs, person_name: str = None):
+        if person_name is not None:
+            qs = qs.join(cls.persons_visibility).filter_by(name=person_name)
+        return qs

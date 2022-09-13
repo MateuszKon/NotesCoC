@@ -4,3 +4,8 @@
     column-gap: 0rem;
 
 }
+
+.bg-primary-gradient {
+    background-color: #447A84;
+    background-image: linear-gradient(180deg, #447A84 0%, #0E444E 100%);
+}

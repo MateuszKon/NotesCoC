@@ -3,21 +3,21 @@
 
 {% block main %}
 <div class="row justify-content-center justify-content-sm-start">
-    {% for subject in resource['list'] %}
+    {% for category in resource['list'] %}
     <div class="mb-3 col-11 col-sm-6 col-md-4 col-xl-3">
         <div class="card">
             <div class="card-header">
-                {{ subject['name'] }}
-                {% if subject['notes']|length > 3 %}
+                {{ category['name'] }}
+                {% if category['subjects']|length > 3 %}
                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary">
-                    {{ subject['notes']|length }}
+                    {{ category['subjects']|length }}
                 </span>
                 {% endif %}
             </div>
             <ul class="note-group list-group">
-                {% for note in subject['notes'] %}
-                <a class="list-group-item" href="{{url_for('edit_note', note_id=note['id']) }}">
-                    {{ note['title'] }}
+                {% for subject in category['subjects'] %}
+                <a class="list-group-item" href="#">
+                    {{ subject['name'] }}
                 </a>
                 {% endfor %}
             </ul>

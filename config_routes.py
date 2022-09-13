@@ -60,6 +60,7 @@ def configure_routing(app: Flask):
             "SubjectSchema",
             subjects_param={'only': ('name',)}
         ),
+        template='subjects.html',
         resource_url_name='subject',
         resources_url_name='subjects',
         identifier=ResourceIdentifier("name", "string"),
@@ -74,6 +75,7 @@ def configure_routing(app: Flask):
             "SubjectSchema",
             subjects_param={'only': ('name',)}
         ),
+        template='categories.html',
         resource_url_name='subject_category',
         resources_url_name='subject_categories',
         identifier=ResourceIdentifier("name", "string"),

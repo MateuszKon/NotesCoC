@@ -2,23 +2,23 @@
 {% block title%}<title>Notes | Home</title>{% endblock %}
 
 {% block navigation %}
-            <li class="nav-item mx-2">
-                <a class="nav-link dropdown-toggle"
-                   data-bs-toggle="dropdown"
-                   aria-expanded="false">Expand</a>
-                <ul class="nav-item dropdown dropdown-menu">
-                    <li>
-                        <a class="dropdown-item" id="expand-notes"
-                           onclick="expandNotes()">
-                            Expand All
-                        </a>
-                        <a class="dropdown-item" id="collapse-notes"
-                           onclick="collapseNotes()">
-                            Collapse All
-                        </a>
-                    </li>
-                </ul>
-            </li>
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle text-on-primary"
+       data-bs-toggle="dropdown"
+       aria-expanded="false">Expand</a>
+    <ul class="nav-item dropdown dropdown-menu bg-primary">
+        <li>
+            <a class="dropdown-item text-on-primary" id="expand-notes"
+               onclick="expandNotes()">
+                Expand All
+            </a>
+            <a class="dropdown-item text-on-primary" id="collapse-notes"
+               onclick="collapseNotes()">
+                Collapse All
+            </a>
+        </li>
+    </ul>
+</li>
 {% endblock %}
 
 
@@ -27,7 +27,8 @@
     {% for note in resource %}
     <div class="accordion-item mb-3">
         <h2 class="accordion-header" id="heading-{{note['id']}}">
-            <button class="accordion-button" type="button"
+            <button class="accordion-button  bg-primary text-on-primary"
+                    type="button"
                     data-bs-toggle="collapse"
                     data-bs-target="#collapse-{{note['id']}}"
                     aria-expanded="true"
@@ -36,11 +37,14 @@
             </button>
         </h2>
         <div id="collapse-{{note['id']}}"
-             class="accordion-collapse collapse note-header show"
+             class="accordion-collapse collapse note-header show container-flex"
              aria-labelledby="heading-{{note['title']}}">
-            <div class="accordion-body">
+            <div class="accordion-body row d-flex justify-content-be">
+                <div class="col-10">
+                    {{ note['content'] }}
+                </div>
                 {% if admin %}
-                <div class="d-flex justify-content-end mb-2">
+                <div class="col-2 d-flex justify-content-end mb-2">
                     <a type="button" class="btn btn-primary mx-1"
                        href="{{url_for('edit_note', note_id=note['id']) }}">
                         Edit
@@ -51,7 +55,7 @@
                     </a>
                 </div>
                 {% endif %}
-                {{ note['content'] }}
+
             </div>
         </div>
     </div>

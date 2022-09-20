@@ -3,7 +3,8 @@ from typing import Type, Union
 
 from flask import request, Response, Flask
 
-from libs.jwt_functions import jwt_required_with_redirect
+from libs.jwt_functions import jwt_required_with_redirect, \
+    access_denied_response
 from routes.base_route import BaseRoute, request_logic
 from routes.i_request import IRequestLogic, RequestPayload, ResponseData, \
     IRequestData, RequestData
@@ -75,7 +76,7 @@ class NoteRoutes(BaseRoute):
             methods=["GET", "POST", "DELETE"],
         )
 
-    @jwt_required_with_redirect(admin=True)
+    @jwt_required_with_redirect()
     @request_logic
     def edit_note(
             self,
@@ -83,6 +84,8 @@ class NoteRoutes(BaseRoute):
             note_id: int = None,
     ) -> Union[Response, ResponseData]:
         if request.method == "POST":
+            if not data.context.admin:
+                return access_denied_response()
             return self.logic.save_note(data, note_id=note_id)
 
         # request.method == "GET"

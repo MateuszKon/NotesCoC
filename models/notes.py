@@ -52,6 +52,15 @@ class NoteModel(db.Model):
         return cls.query.filter_by(id=note_id).first_or_404()
 
     @classmethod
+    def find_by_id_with_scope(cls, note_id: int, person: str) -> "NoteModel":
+        if person is None:
+            return cls.find_by_id(note_id)
+        return cls.query.filter_by(id=note_id)\
+            .join(cls.persons_visibility)\
+            .filter_by(name=person)\
+            .first_or_404()
+
+    @classmethod
     def get_all(cls) -> List["NoteModel"]:
         return cls.query.all()
 

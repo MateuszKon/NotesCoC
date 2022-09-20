@@ -30,7 +30,8 @@ class NoteLogic(INoteRouteLogic):
         if note_id is None:
             note = NoteModel()
         else:
-            note = NoteModel.find_by_id(note_id)
+            scope = data.context.person_visibility
+            note = NoteModel.find_by_id_with_scope(note_id, scope)
 
         all_subjects = SubjectModel.get_all()
 

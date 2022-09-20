@@ -3,7 +3,8 @@ from typing import Type, Union, List, Tuple
 from flask import Flask, Response, request
 
 from libs.factories import name_factory
-from libs.jwt_functions import jwt_required_with_redirect
+from libs.jwt_functions import jwt_required_with_redirect, \
+    access_denied_response
 from ma import ma
 from models.base_resource import BaseResourceModel, ResourceIdentifier
 from routes.base_route import BaseRoute, request_logic
@@ -59,7 +60,7 @@ class BaseResourceRoute(BaseRoute):
         identifier = self.identifier.new_value(kwargs[self.identifier.key])
         if request.method in ["PUT", "POST", "DELETE"] \
                 and not data.context.admin:
-            return self.access_denied_response()
+            return access_denied_response()
         if request.method == "PUT":
             obj = self.logic.get_by_identifier(identifier, allow_none=True)
             if obj is not None:
@@ -137,10 +138,3 @@ class BaseResourceRoute(BaseRoute):
             if isinstance(resource, list):
                 resource_dict['list'] = self.schema.dump(resource, many=True)
             return resource_dict
-
-    @staticmethod
-    def access_denied_response():
-        return ResponseData(
-            resource={'message': 'User admin claim verification failed'},
-            status_code=405,
-        )

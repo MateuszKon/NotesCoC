@@ -5,7 +5,8 @@
 {% endblock %}
 
 {% block main %}
-<h2 class="text-center text-primary">Write note</h2>
+<h2 class="text-center text-primary">{{ resource['note']['title']|default('Notatka',true) }}</h2>
+{% if admin is defined and admin %}
 <form action="{{ submit_callback }}" method="post" id="noteform">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
     <div class="mb-3">
@@ -55,4 +56,9 @@
     </button>
 
 </form>
+{% else %}
+<textarea class="form-control" rows="10">{{
+     resource['note']['content']|d('', true) }}</textarea>
+{% endif %}
+
 {% endblock %}

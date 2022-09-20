@@ -66,7 +66,7 @@ class NoteRoutes(BaseRoute):
             methods=["GET", "POST"],
         )
         app.add_url_rule(
-            "/note/<int:note_id>/edit",
+            "/note/<int:note_id>/view",
             view_func=self.edit_note,
             methods=["GET", "POST"],
         )

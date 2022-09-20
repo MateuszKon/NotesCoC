@@ -27,7 +27,7 @@ def configure_routing(app: Flask):
 
     # Note routes:
     # /new_note
-    # /note/<int:note_id>/edit
+    # /note/<int:note_id>/view
     # /note/<int:note_id>/delete
     NoteRoutes(app, BaseRequestData, NoteLogic)
 

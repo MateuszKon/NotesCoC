@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block main %}
-<h2 class="text-center">Write note</h2>
+<h2 class="text-center text-primary">Write note</h2>
 <form action="{{ submit_callback }}" method="post" id="noteform">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
     <div class="mb-3">

@@ -34,3 +34,13 @@
 .btn-success {
   color: var(--primary);
 }
+
+
+.form-label {
+    color: var(--primary);
+}
+
+.form-control {
+    background-color: var(--primary);
+    text-color: var(--grey-white);
+}

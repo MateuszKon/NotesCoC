@@ -5,14 +5,16 @@
 {% endblock %}
 
 {% block main %}
-<h2 class="text-center text-primary">{{ resource['note']['title']|default('Notatka',true) }}</h2>
+<h2 class="text-center text-primary">{{
+    resource['note']['title']|default('Notatka',true) }}</h2>
 {% if admin is defined and admin %}
 <form action="{{ submit_callback }}" method="post" id="noteform">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
     <div class="mb-3">
         <label for="title-control" class="form-label">Title</label>
-        <input type="text" class="form-control" id="title-control" placeholder="Title" name="title"
-            value="{{ resource['note']['title']|d('', true) }}">
+        <input type="text" class="form-control" id="title-control"
+               placeholder="Title" name="title"
+               value="{{ resource['note']['title']|d('', true) }}">
     </div>
 
     <div class="mb-3">
@@ -30,10 +32,10 @@
                id="{{ 'visibility_' ~ person.name }}"
                name="{{ 'visibility_' ~ person.name }}"
                {% if person.is_note_visible(resource['note']['id']) is true %}
-               value="True" Checked
-               {% else %}
-               value="True"
-               {% endif %}>
+        value="True" Checked
+        {% else %}
+        value="True"
+        {% endif %}>
         <label class="form-check-label" for="{{ 'visibility_' ~ person.name }}">
             {{person.name}}
         </label>
@@ -47,18 +49,41 @@
             subjectsGenerator.createSelector('{{ selected_subject['name'] }}', subjectsGenerator.changeSubject);
             {% endfor %}
             subjectsGenerator.createSelector('none', subjectsGenerator.chooseSubject);
+
+
         </script>
     </div>
 
+    <div class="mb-2">
+        <label for="creation-date-control">Data powstania notatki</label>
+        <input id="creation-date-control" class="form-control" type="date"
+               value="{{ resource['note']['game_creation_date']}}"
+               name="game_creation_date"/>
+    </div>
+    <div class="mb-2">
+        <label for="updation-date-control">Data aktualizacji notatki</label>
+        <input id="updation-date-control" class="form-control" type="date"
+               value="{{ resource['note']['game_update_date']}}"
+               name="game_update_date"/>
+    </div>
 
     <button class="btn btn-primary btn-lg" type="submit">
         Save Note
     </button>
-
 </form>
+<hr class="mb-0"/>
+<span class="text-primary fst-italic">
+    Utworzono: {{ resource['note']['real_creation_date'] }} Zaktualizowano: {{ resource['note']['real_update_date'] }}
+</span>
 {% else %}
+
 <textarea class="form-control" rows="10" readonly="readonly">{{
      resource['note']['content']|d('', true) }}</textarea>
+<span class="text-primary fst-italic">
+    Informacje aktualne na dzień: {{ resource['note']['game_update_date'] }}<br/>
+    Utworzono: {{ resource['note']['real_creation_date'] }} Zaktualizowano: {{ resource['note']['real_update_date'] }}
+</span>
 {% endif %}
+
 
 {% endblock %}

@@ -1,6 +1,7 @@
+from datetime import datetime, date
 from typing import List, Set
 
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Date, DateTime
 from sqlalchemy.orm import relationship
 
 from db import db
@@ -15,6 +16,10 @@ class NoteModel(db.Model):
     id = Column(Integer, primary_key=True)
     title = Column(String(80))
     content = Column(String(1000))
+    game_creation_date = Column(Date, default=date(1920, 1, 1))
+    game_update_date = Column(Date, default=date(1920, 1, 1))
+    real_creation_date = Column(DateTime, default=datetime.now)
+    real_update_date = Column(DateTime, default=datetime.now)
     persons_visibility = relationship(
         "PersonModel",
         secondary=persons_notes,
@@ -29,6 +34,10 @@ class NoteModel(db.Model):
         lazy="dynamic",
         collection_class=set,
     )
+
+    def save_to_db(self):
+        self.real_update_date = datetime.now()
+        super().save_to_db()
 
     def add_persons_visibility(self, persons: Set["PersonModel"]):
         persons = {

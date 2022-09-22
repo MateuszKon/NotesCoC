@@ -63,6 +63,8 @@ class NoteLogic(INoteRouteLogic):
         # title and content:
         note.title = data.data["title"]
         note.content = data.data["content"]
+        note.game_creation_date = data.data["game_creation_date"]
+        note.game_update_date = data.data["game_update_date"]
 
         # persons visibility:
         cls._change_note_visibility(note, data.data)

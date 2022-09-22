@@ -1,6 +1,7 @@
 import os
+import time
 
-from flask import Flask
+from flask import Flask, g
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 
@@ -32,6 +33,12 @@ def create_admin_user():
         os.environ.get("USERADMIN_LOGIN"),
         os.environ.get("USERADMIN_PASSWORD"),
     )
+
+
+@app.before_request
+def before_request():
+    g.request_start_time = time.time()
+    g.request_time = lambda: "%.5fs" % (time.time() - g.request_start_time)
 
 
 @jwt.token_in_blocklist_loader

@@ -13,7 +13,9 @@ class HomeLogic(IHomeRouteLogic):
             cls,
             data: RequestData
     ) -> ResponseData:
-        common_data = cls._prepare_common_data(data.context)
+        common_data = {
+            "notes": NoteModel.get_all_visible(data.context.person_visibility),
+        }
         return cls._home_page_data(context_data=data.context, **common_data)
 
     @classmethod
@@ -21,12 +23,15 @@ class HomeLogic(IHomeRouteLogic):
             cls,
             data: RequestData,
     ) -> ResponseData:
-        common_data = cls._prepare_common_data(data.context)
+        filter_category = data.data.get('category')
+        filter_subject = data.data.get('subject')
+        filter_title_content = data.data.get("search")
 
-        search_string = data.data["search"]
-        search_words = cls._prepare_words_for_search(search_string)
-        notes_for_searching = set(common_data.pop("notes"))
+        notes_for_searching = set(
+            NoteModel.get_all_visible(data.context.person_visibility)
+        )
 
+        search_words = cls._prepare_words_for_search(filter_title_content)
         notes_filtered = cls._filter_notes_with_words(
             notes_for_searching,
             search_words,
@@ -34,7 +39,7 @@ class HomeLogic(IHomeRouteLogic):
 
         return cls._home_page_data(
             context_data=data.context,
-            search=search_string,
+            search=filter_title_content,
             notes=list(notes_filtered),
         )
 
@@ -52,12 +57,6 @@ class HomeLogic(IHomeRouteLogic):
             resource=resource,
             search=search,
         )
-
-    @classmethod
-    def _prepare_common_data(cls, context_data: ContextData) -> dict:
-        return {
-            "notes": NoteModel.get_all_visible(context_data.person_visibility),
-        }
 
     @staticmethod
     def _prepare_words_for_search(search_text: str) -> List[str]:

@@ -1,6 +1,6 @@
 from typing import Union
 
-from flask import Response
+from flask import Response, url_for
 
 from models.base_resource import ResourceIdentifier
 from models.users import RegisterUserModel, UserModel
@@ -33,6 +33,10 @@ class UserRegisterLogic(IUserRegisterRouteLogic):
                     "message": USERNAME_EXIST_ERROR.format(username)
                 },
                 status_code=400,
+                redirect=url_for(
+                    'register_user',
+                    registration_hash=registration_hash
+                ),
             )
 
         new_user = UserModel(username, password, register_user.person_name)
@@ -44,6 +48,7 @@ class UserRegisterLogic(IUserRegisterRouteLogic):
                 "message": "Registration complete!"
             },
             status_code=201,
+            redirect=url_for('login_user'),
         )
 
     @classmethod
@@ -80,8 +85,8 @@ class UserRegisterLogic(IUserRegisterRouteLogic):
     ) -> Union[Response, ResponseData]:
         return ResponseData(
             resource={"list": register_user_schema.dump(
-                RegisterUserModel.list(),
+                RegisterUserModel.list(data),
                 many=True,
             )},
-            status_code=200
+            status_code=200,
         )

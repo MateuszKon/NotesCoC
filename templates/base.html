@@ -25,7 +25,7 @@
 
     <nav
             class="navbar navbar-expand-lg navbar-dark container-fluid bg-primary-gradient d-sm-flex"
-         aria-label="Site navbar">
+            aria-label="Site navbar">
         <div class="container-fluid">
             <div class="">
                 <a class="navbar-brand text-success h1"
@@ -33,115 +33,12 @@
                     NotesCoC
                 </a>
             </div>
+            {% block navbar %}
+            {% endblock %}
 
-            <div>
-                <button class="navbar-toggler" type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#collapse-search"
-                        aria-controls="navbarsExample04" aria-expanded="false"
-                        aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-            </div>
-
-            <div class="collapse navbar-collapse mt-2 mt-sm-0"
-                 id="collapse-search">
-                <ul class="navbar-nav list-group-horizontal-sm me-auto">
-                    {% if admin %}
-                    <li class="nav-item">
-                        <a class="nav-link text-on-primary" aria-current="page"
-                           href="{{ url_for('edit_note') }}">Nowa notatka</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-on-primary"
-                           href="#"
-                           data-bs-toggle="dropdown"
-                           aria-expanded="false">Widoczność</a>
-                        <ul class="nav-item dropdown dropdown-menu bg-primary">
-                            <li>
-                                <a class="dropdown-item active text-on-primary"
-                                   id="visibility-all"
-                                   onclick="setVisibilityCookie('all')"
-                                   href="#">
-                                    All
-                                </a>
-                            </li>
-                            {% for person in persons %}
-                            <li>
-                                <a class="dropdown-item text-on-primary"
-                                   aria-current="true"
-                                   id="visibility-{{person.name}}"
-                                   onclick="setVisibilityCookie('{{person.name}}')"
-                                   href="#">
-                                    {{person.name}}
-                                </a>
-                            </li>
-                            <script>
-                        (function() {
-                        let cookie_visible = getCookie('admin_visibility');
-                        if (cookie_visible == '{{person.name}}') {
-                            document.getElementById('visibility-{{person.name}}').classList.add('active');
-                            document.getElementById('visibility-all').classList.remove('active');
-                        }
-                        })();
-                            </script>
-                            {% endfor %}
-                        </ul>
-                    </li>
-                    {% endif %}
-                    <li class="nav-item">
-                        <a class="nav-link text-on-primary"
-                           href="{{ url_for('subjects') }}">
-                            Tematy
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-on-primary"
-                           href="{{ url_for('subject_categories') }}">
-                            Kategorie
-                        </a>
-                    </li>
-                    {% block navigation %}
-                    {% endblock %}
-                </ul>
-
-                <form class="d-flex me-2" action="{{ url_for('home') }}"
-                      method="post"
-                      role="search">
-                    <input type="hidden" name="csrf_token"
-                           value="{{ csrf_token }}">
-                    <input
-                            class="form-control mx-1 btn-outline-success"
-                            type="search"
-                            name="search"
-                            placeholder="Szukaj" aria-label="Search"
-                            value="{{ search }}">
-                    <button class="btn btn-success px-3 "
-                            type="submit"
-                            aria-controls="navbarSearchButton"
-                            aria-label="Search for note">
-                        Szukaj
-                    </button>
-                </form>
-                <form class=""
-                      name="logout"
-                      method="post"
-                      action="{{ url_for('logout_user') }}">
-                    <input type="hidden" name="csrf_token"
-                           value="{{ csrf_token }}">
-                    <input class="btn btn-outline-success"
-                           name="submit_logout" type="submit"
-                           id="submit_logout"
-                           value="Wyloguj">
-                </form>
-            </div>
         </div>
     </nav>
 
-    <nav class="container-fluid navbar-dark bg-primary-gradient d-sm-flex ">
-
-
-    </nav>
 
     <div class="container mt-4">
         {% block main %}

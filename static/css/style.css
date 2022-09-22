@@ -42,5 +42,5 @@
 
 .form-control {
     background-color: var(--primary);
-    text-color: var(--grey-white);
+    color: var(--grey-white);
 }

@@ -44,6 +44,14 @@ class UserLoginLogic(IUserLoginRouteLogic):
                 redirect=data.context['args'].get('next', url_for('home')),
                 cookies=[AccessCookie('access_token', access_token)]
             )
+        return ResponseData(
+            resource={
+                'message': "User or Password is incorrect"
+            },
+            status_code=405,
+            template='login.html',
+            next=data.context['args'].get('next', None),
+        )
 
     @classmethod
     def logout_user(cls, data: RequestData) -> Union[Response, ResponseData]:

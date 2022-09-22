@@ -1,14 +1,16 @@
-{% extends "base_create.html" %}
+{% extends "base_logged.html" %}
 
-{% block form %}
-    <h2>Confirm note deletion</h2>
+{% block main %}
+    <h2 class="text-center text-primary">Confirm note deletion</h2>
     <form action="{{ submit_callback }}" method="post" id="noteform">
         <input type="hidden" name="_method" value="DELETE">
         <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-        <input readonly type="text" placeholder="Enter the Note Name" name="title"
-               value="{{title}}">
-        <textarea readonly name="content" form="noteform"
+        <input class="form-control my-2" readonly type="text"
+               placeholder="Enter the Note Name"
+               name="title"
+               value="{{ resource['title'] }}">
+        <textarea class="form-control my-2" readonly name="content" form="noteform"
                   placeholder="Enter Note Content Here or Create Note"
-                  rows="10">{{content}}</textarea>
-        <input type="submit" class="option danger" value="Delete Note">
+                  rows="10">{{ resource['content'] }}</textarea>
+        <input type="submit" class="btn btn-primary btn-lg" value="Delete Note">
 {% endblock %}

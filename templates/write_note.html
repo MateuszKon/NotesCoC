@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base_logged.html" %}
 
 {% block script %}
 <script src="{{ url_for('static',filename='js/select_subject.js') }}"></script>
@@ -57,7 +57,7 @@
 
 </form>
 {% else %}
-<textarea class="form-control" rows="10">{{
+<textarea class="form-control" rows="10" readonly="readonly">{{
      resource['note']['content']|d('', true) }}</textarea>
 {% endif %}
 

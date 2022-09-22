@@ -1,20 +1,20 @@
-{% extends "base.html" %}
+{% extends "base_logged.html" %}
 {% block title%}<title>Notes | Home</title>{% endblock %}
 
 {% block navigation %}
 <li class="nav-item dropdown">
     <a class="nav-link dropdown-toggle text-on-primary"
        data-bs-toggle="dropdown"
-       aria-expanded="false">Expand</a>
+       aria-expanded="false">Zwiń</a>
     <ul class="nav-item dropdown dropdown-menu bg-primary">
         <li>
             <a class="dropdown-item text-on-primary" id="expand-notes"
                onclick="expandNotes()">
-                Expand All
+                Rozwiń wszystkie
             </a>
             <a class="dropdown-item text-on-primary" id="collapse-notes"
                onclick="collapseNotes()">
-                Collapse All
+                Zwiń wszystkie
             </a>
         </li>
     </ul>

@@ -1,6 +1,7 @@
 :root {
   --grey-white: rgba(255, 255, 255, 0.85);
   --primary: #245D68;
+  --success: #D6B56C;
 }
 
 .note-group {
@@ -17,6 +18,11 @@
 
 .text-on-primary {
     color: var(--grey-white);
+    text-decoration: none;
+}
+
+a.text-on-primary:hover {
+    color: var(--success);
 }
 
 .accordion-button:not(.collapsed) {

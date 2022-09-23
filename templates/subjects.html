@@ -6,8 +6,11 @@
     {% for subject in resource['list'] %}
     <div class="mb-3 col-11 col-sm-6 col-md-4 col-xl-3">
         <div class="card bg-secondary">
-            <div class="card-header bg-primary text-on-primary">
-                {{ subject['name'] }}
+            <div class="card-header bg-primary">
+                <a class="text-on-primary" href="{{ url_for('home', subject=subject['name']) }}">
+                    {{ subject['name'] }}
+                </a>
+
                 {% if subject['notes']|length > 3 %}
                 <span
                         class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success text-primary">

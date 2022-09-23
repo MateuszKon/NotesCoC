@@ -57,13 +57,13 @@
     <div class="mb-2">
         <label for="creation-date-control">Data powstania notatki</label>
         <input id="creation-date-control" class="form-control" type="date"
-               value="{{ resource['note']['game_creation_date']}}"
+               value="{{ resource['note']['game_creation_date']|d('1920-01-01', true) }}"
                name="game_creation_date"/>
     </div>
     <div class="mb-2">
         <label for="updation-date-control">Data aktualizacji notatki</label>
         <input id="updation-date-control" class="form-control" type="date"
-               value="{{ resource['note']['game_update_date']}}"
+               value="{{ resource['note']['game_update_date']|d('1920-01-01', true) }}"
                name="game_update_date"/>
     </div>
 

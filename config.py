@@ -3,7 +3,7 @@ import os
 
 
 def _translate_postgres_driver(database_url: str):
-    if 'postgres' in database_url and 'postgresql' not in database_url:
+    if database_url and 'postgres' in database_url and 'postgresql' not in database_url:
         return database_url.replace("postgres", "postgresql")
     return database_url
 

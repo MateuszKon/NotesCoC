@@ -84,7 +84,7 @@
                 type="search"
                 name="search"
                 placeholder="Szukaj" aria-label="Search"
-                value="{{ search }}">
+                value="{{ search|d('', true) }}">
         <button class="btn btn-success px-3 "
                 type="submit"
                 aria-controls="navbarSearchButton"

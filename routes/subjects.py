@@ -111,6 +111,7 @@ class SubjectRoutes(BaseResourceRoute):
     ) -> dict:
         if isinstance(resource, SubjectModel) or (
                 isinstance(resource, list) and
+                len(resource) > 0 and
                 isinstance(resource[0], SubjectModel)
         ):
             return super().create_resource_dict(data, resource)

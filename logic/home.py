@@ -1,7 +1,5 @@
 from typing import List, Set
 
-from sqlalchemy import or_
-
 from models import NoteModel
 from routes.home import IHomeRouteLogic
 from routes.i_request import ResponseData, ContextData, RequestData

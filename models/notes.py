@@ -5,8 +5,6 @@ from sqlalchemy import Column, Integer, String, Date, DateTime, or_
 from sqlalchemy.orm import relationship
 
 from db import db
-# from models.subjects import SubjectModel
-from models.subjects_categories import SubjectCategoryModel
 from models.notes_subjects import notes_subjects
 from models.persons_notes import persons_notes
 
@@ -38,10 +36,12 @@ class NoteModel(db.Model):
     )
     categories = relationship(
         "SubjectCategoryModel",
-        secondary="subjects",
-        primaryjoin="notes_subjects",
-        secondaryjoin="subjects_categories",
+        secondary="notes_subjects."
+                  "join(subjects_categories, notes_subjects.columns.subject_name == "
+                  "subjects_categories.columns.subject_name)",
         viewonly=True,
+        lazy="dynamic",
+        collection_class=set,
     )
 
     def save_to_db(self):
@@ -124,7 +124,7 @@ class NoteModel(db.Model):
     @classmethod
     def category_filtering_qs(cls, qs, category):
         pass
-        return qs.join(cls.categories).filter(
+        return qs.join(cls.categories).filter_by(
             name=category
         )
 

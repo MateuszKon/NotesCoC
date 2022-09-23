@@ -1,10 +1,12 @@
 from datetime import datetime, date
 from typing import List, Set
 
-from sqlalchemy import Column, Integer, String, Date, DateTime
+from sqlalchemy import Column, Integer, String, Date, DateTime, or_
 from sqlalchemy.orm import relationship
 
 from db import db
+# from models.subjects import SubjectModel
+from models.subjects_categories import SubjectCategoryModel
 from models.notes_subjects import notes_subjects
 from models.persons_notes import persons_notes
 
@@ -33,6 +35,13 @@ class NoteModel(db.Model):
         back_populates="notes",
         lazy="dynamic",
         collection_class=set,
+    )
+    categories = relationship(
+        "SubjectCategoryModel",
+        secondary="subjects",
+        primaryjoin="notes_subjects",
+        secondaryjoin="subjects_categories",
+        viewonly=True,
     )
 
     def save_to_db(self):
@@ -105,3 +114,20 @@ class NoteModel(db.Model):
         if person_name is not None:
             qs = qs.join(cls.persons_visibility).filter_by(name=person_name)
         return qs
+
+    @classmethod
+    def words_filtering_qs(cls, qs, search_words):
+        filter_list = [NoteModel.title.contains(x) for x in search_words] + \
+                      [NoteModel.content.contains(x) for x in search_words]
+        return qs.filter(or_(*filter_list))
+
+    @classmethod
+    def category_filtering_qs(cls, qs, category):
+        pass
+        return qs.join(cls.categories).filter(
+            name=category
+        )
+
+    @classmethod
+    def subject_filtering_qs(cls, qs, subject):
+        return qs.join(cls.subjects).filter_by(name=subject)

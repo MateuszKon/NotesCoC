@@ -1,5 +1,7 @@
 from typing import List, Set
 
+from sqlalchemy import or_
+
 from models import NoteModel
 from routes.home import IHomeRouteLogic
 from routes.i_request import ResponseData, ContextData, RequestData
@@ -27,15 +29,26 @@ class HomeLogic(IHomeRouteLogic):
         filter_subject = data.data.get('subject')
         filter_title_content = data.data.get("search")
 
-        notes_for_searching = set(
-            NoteModel.get_all_visible(data.context.person_visibility)
-        )
 
-        search_words = cls._prepare_words_for_search(filter_title_content)
-        notes_filtered = cls._filter_notes_with_words(
-            notes_for_searching,
-            search_words,
-        )
+        notes_qs = NoteModel.query
+
+        if filter_category is not None:
+            notes_qs = NoteModel.category_filtering_qs(
+                notes_qs,
+                filter_category
+            )
+
+        if filter_subject is not None:
+            notes_qs = NoteModel.subject_filtering_qs(
+                notes_qs,
+                filter_subject
+            )
+
+        if filter_title_content is not None:
+            search_words = cls._prepare_words_for_search(filter_title_content)
+            notes_qs = NoteModel.words_filtering_qs(notes_qs, search_words)
+
+        notes_filtered = notes_qs.all()
 
         return cls._home_page_data(
             context_data=data.context,

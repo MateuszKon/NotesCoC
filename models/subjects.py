@@ -3,7 +3,7 @@ from typing import List, Set
 from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
 
-from models import NoteModel
+from models.notes import NoteModel
 from models.notes_subjects import notes_subjects
 from models.base_resource import BaseResourceModel
 from models.subjects_categories import subjects_categories

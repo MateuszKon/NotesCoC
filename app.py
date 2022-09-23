@@ -35,12 +35,6 @@ def create_admin_user():
     )
 
 
-@app.before_request
-def before_request():
-    g.request_start_time = time.time()
-    g.request_time = lambda: "%.5fs" % (time.time() - g.request_start_time)
-
-
 @jwt.token_in_blocklist_loader
 def check_if_token_in_blocklist(jwt_header, jwt_payload):
     return jwt_payload["jti"] in BLOCKLIST
@@ -48,6 +42,12 @@ def check_if_token_in_blocklist(jwt_header, jwt_payload):
 
 configure_routing(app)
 
+
+if app.config.get("DEBUG"):
+    @app.before_request
+    def before_request():
+        g.request_start_time = time.time()
+        g.request_time = lambda: "%.5fs" % (time.time() - g.request_start_time)
 
 if __name__ == "__main__":
     app.run(port=5001, debug=True)

@@ -35,7 +35,9 @@
             </div>
             {% block navbar %}
             {% endblock %}
+            {% if g.request_time %}
             <span class="text-success ms-2">{{ g.request_time() }}</span>
+            {% endif %}
         </div>
     </nav>
 

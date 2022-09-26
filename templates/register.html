@@ -1,41 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% block title %}
+<title>Notes | Login</title>
+{% endblock %}
 
-    <link rel="stylesheet" href="{{ url_for('static',filename='css/old_style.css') }}">
-    <script src="{{ url_for('static',filename='js/script.js') }}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsSHA/2.0.2/sha.js"></script>
-    <title>Notes | Register</title>
-</head>
+{% block script %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsSHA/2.0.2/sha.js"></script>
+{% endblock %}
 
-<body>
-    <nav>
-        <a href="/home">
-            <h1>Notes</h1>
-        </a>
-    </nav>
-    <div class="col main" id="col">
-        <h1>Register as {{ person_name }}</h1>
+{% block main %}
+<div class="row justify-content-center">
+    <div class="col main col-12 col-md-6 col-lg-4">
+        <h1 class="text-center text-primary">Register as {{ resource['person_name'] }}</h1>
         <form onsubmit="mySubmit(this)"
-                action="{{ url_for('register_user',registration_hash=register_hash) }}"
-                method="post" id="register_form">
-            <input type="text" placeholder="Enter username" name="username"
+              action="{{ url_for('register_user',registration_hash=resource['hash']) }}"
+              method="post" id="register_form">
+            <input class="form-control my-2" type="text"
+                   placeholder="Enter username"
+                   name="username"
                    autocomplete="username" required>
-            <input type="password" placeholder="Enter password"
+            <input class="form-control my-2" type="password"
+                   placeholder="Enter password"
                    name="new-password" id="new-password"
                    autocomplete="new-password" required>
-            <input type="password" placeholder="Confirm password"
+            <input class="form-control my-2" type="password"
+                   placeholder="Confirm password"
                    name="confirm-password" id="confirm-password"
                    autocomplete="new-password" required>
-            <input type="submit"
+            <input class="btn btn-primary btn-lg" type="submit"
                    value="Register user">
             <script src="{{ url_for('static',filename='js/register.js') }}"></script>
         </form>
     </div>
-
-</body>
-
-</html>
+</div>
+{% endblock %}

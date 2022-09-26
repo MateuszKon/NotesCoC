@@ -27,7 +27,7 @@ def configure_routing(app: Flask):
 
     # Note routes:
     # /new_note
-    # /note/<int:note_id>/edit
+    # /note/<int:note_id>/view
     # /note/<int:note_id>/delete
     NoteRoutes(app, BaseRequestData, NoteLogic)
 
@@ -43,12 +43,24 @@ def configure_routing(app: Flask):
     )
 
     # Subjects routes
+    if app.config["DEBUG"]:
+        notes_param = {'only': ('id', 'title', 'persons_visibility')}
+    else:
+        notes_param = {'only': ('id', 'title')}
+
     SubjectRoutes(
         app,
         BaseRequestData,
         SubjectModel,
-        SubjectSchema(),
-        SubjectCategorySchema(),
+        SubjectSchema(
+            "NoteSchema",
+            notes_param=notes_param
+        ),
+        SubjectCategorySchema(
+            "SubjectSchema",
+            subjects_param={'only': ('name',)}
+        ),
+        template='subjects.html',
         resource_url_name='subject',
         resources_url_name='subjects',
         identifier=ResourceIdentifier("name", "string"),
@@ -59,7 +71,11 @@ def configure_routing(app: Flask):
         app,
         BaseRequestData,
         SubjectCategoryModel,
-        SubjectCategorySchema(),
+        SubjectCategorySchema(
+            "SubjectSchema",
+            subjects_param={'only': ('name',)}
+        ),
+        template='categories.html',
         resource_url_name='subject_category',
         resources_url_name='subject_categories',
         identifier=ResourceIdentifier("name", "string"),

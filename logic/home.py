@@ -13,7 +13,9 @@ class HomeLogic(IHomeRouteLogic):
             cls,
             data: RequestData
     ) -> ResponseData:
-        common_data = cls._prepare_common_data(data.context)
+        common_data = {
+            "notes": NoteModel.get_all_visible(data.context.person_visibility),
+        }
         return cls._home_page_data(context_data=data.context, **common_data)
 
     @classmethod
@@ -21,20 +23,34 @@ class HomeLogic(IHomeRouteLogic):
             cls,
             data: RequestData,
     ) -> ResponseData:
-        common_data = cls._prepare_common_data(data.context)
+        filter_category = data.data.get('category')
+        filter_subject = data.data.get('subject')
+        filter_title_content = data.data.get("search")
 
-        search_string = data.data["search"]
-        search_words = cls._prepare_words_for_search(search_string)
-        notes_for_searching = set(common_data.pop("notes"))
 
-        notes_filtered = cls._filter_notes_with_words(
-            notes_for_searching,
-            search_words,
-        )
+        notes_qs = NoteModel.query
+
+        if filter_category is not None:
+            notes_qs = NoteModel.category_filtering_qs(
+                notes_qs,
+                filter_category
+            )
+
+        if filter_subject is not None:
+            notes_qs = NoteModel.subject_filtering_qs(
+                notes_qs,
+                filter_subject
+            )
+
+        if filter_title_content is not None:
+            search_words = cls._prepare_words_for_search(filter_title_content)
+            notes_qs = NoteModel.words_filtering_qs(notes_qs, search_words)
+
+        notes_filtered = notes_qs.all()
 
         return cls._home_page_data(
             context_data=data.context,
-            search=search_string,
+            search=filter_title_content,
             notes=list(notes_filtered),
         )
 
@@ -52,16 +68,6 @@ class HomeLogic(IHomeRouteLogic):
             resource=resource,
             search=search,
         )
-
-    @classmethod
-    def _prepare_common_data(cls, context_data: ContextData) -> dict:
-        if context_data.get("jwt_admin"):
-            visibility_selection = context_data.get("visibility_selection")
-        else:
-            visibility_selection = context_data.get("scope")
-        return {
-            "notes": NoteModel.get_all_visible(visibility_selection),
-        }
 
     @staticmethod
     def _prepare_words_for_search(search_text: str) -> List[str]:

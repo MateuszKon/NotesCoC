@@ -45,6 +45,7 @@ class IUserRegisterRouteLogic(IRequestLogic):
     @abstractmethod
     def list(
             cls,
+            data: RequestData,
     ) -> Union[Response, ResponseData]:
         pass
 
@@ -97,7 +98,7 @@ class UserRegister(BaseRoute):
             self,
             data: RequestData,
     ):
-        return self.logic.list()
+        return self.logic.list(data)
 
 
 class IUserLoginRouteLogic(IRequestLogic):

@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 from typing import List, Tuple, Set
 
 from flask import redirect, url_for, Response
@@ -30,7 +31,8 @@ class NoteLogic(INoteRouteLogic):
         if note_id is None:
             note = NoteModel()
         else:
-            note = NoteModel.find_by_id(note_id)
+            scope = data.context.person_visibility
+            note = NoteModel.find_by_id_with_scope(note_id, scope)
 
         all_subjects = SubjectModel.get_all()
 
@@ -62,6 +64,10 @@ class NoteLogic(INoteRouteLogic):
         # title and content:
         note.title = data.data["title"]
         note.content = data.data["content"]
+        note.game_creation_date = datetime.strptime(
+            data.data["game_creation_date"], "%Y-%m-%d").date()
+        note.game_update_date = datetime.strptime(
+            data.data["game_update_date"], "%Y-%m-%d").date()
 
         # persons visibility:
         cls._change_note_visibility(note, data.data)

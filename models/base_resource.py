@@ -38,6 +38,7 @@ class BaseResourceModel(IRequestLogic, db.Model):
 
     def read(
             self,
+            data: RequestData,
     ) -> 'BaseResourceModel':
         return self
 
@@ -52,6 +53,7 @@ class BaseResourceModel(IRequestLogic, db.Model):
 
     def delete(
             self,
+            data: RequestData,
     ) -> 'BaseResourceModel':
         self.delete_from_db()
         return self
@@ -59,6 +61,7 @@ class BaseResourceModel(IRequestLogic, db.Model):
     @classmethod
     def list(
             cls,
+            data: RequestData,
     ) -> List['BaseResourceModel']:
         return cls.query.all()
 

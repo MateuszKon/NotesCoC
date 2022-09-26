@@ -8,6 +8,8 @@ from flask_jwt_extended.exceptions import UserClaimsVerificationError
 from flask_jwt_extended.exceptions import NoAuthorizationError
 from flask_jwt_extended.view_decorators import LocationType
 
+from routes.i_request import ResponseData
+
 
 def token_not_valid(next_url: str = None) -> ResponseReturnValue:
     """Action on token not existing or expired
@@ -72,3 +74,10 @@ def token_expired_redirection_callback(
         jwt_data: dict
 ) -> ResponseReturnValue:
     return token_not_valid(request.path)
+
+
+def access_denied_response():
+    return ResponseData(
+        resource={'message': 'User admin claim verification failed'},
+        status_code=405,
+    )

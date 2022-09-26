@@ -1,38 +1,32 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% block title %}
+<title>Notes | Login</title>
+{% endblock %}
 
-    <link rel="stylesheet" href="{{ url_for('static',filename='css/old_style.css') }}">
-    <script src="{{ url_for('static',filename='js/script.js') }}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsSHA/2.0.2/sha.js"></script>
-    <title>Notes | Login</title>
-</head>
+{% block script %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsSHA/2.0.2/sha.js"></script>
+{% endblock %}
 
-<body>
-    <nav>
-        <a href="/home">
-            <h1>Notes</h1>
-        </a>
-    </nav>
-    <div class="col main" id="col">
-        <h1>Login</h1>
+{% block main %}
+<div class="row justify-content-center">
+    <div class="col main col-12 col-md-6 col-lg-4">
+        <h1 class="text-center text-primary">Login</h1>
         <form onsubmit="myLogin(this)"
-                action="{{ url_for('login_user', next=next) }}"
-                method="post" id="login_form">
-            <input type="text" placeholder="Enter username" name="username"
+              action="{{ url_for('login_user', next=next) }}"
+              method="post" id="login_form">
+            <input class="form-control my-2" type="text"
+                   placeholder="Enter username"
+                   name="username"
                    autocomplete="username" required>
-            <input type="password" placeholder="Enter password"
+            <input class="form-control my-2" type="password"
+                   placeholder="Enter password"
                    name="current-password" id="current-password"
                    autocomplete="current-password" required>
-            <input type="submit"
+            <input class="btn btn-primary btn-lg" type="submit"
                    value="Login user">
             <script src="{{ url_for('static',filename='js/login.js') }}"></script>
         </form>
     </div>
-
-</body>
-
-</html>
+</div>
+{% endblock %}

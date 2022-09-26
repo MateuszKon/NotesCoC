@@ -3,11 +3,13 @@ from typing import Type, Union, List, Tuple
 from flask import Flask, Response, request
 
 from libs.factories import name_factory
-from libs.jwt_functions import jwt_required_with_redirect
+from libs.jwt_functions import jwt_required_with_redirect, \
+    access_denied_response
 from ma import ma
 from models.base_resource import BaseResourceModel, ResourceIdentifier
 from routes.base_route import BaseRoute, request_logic
 from routes.i_request import IRequestData, ResponseData, RequestData
+from schemas.schema_context import SchemaContext
 
 
 class BaseResourceRoute(BaseRoute):
@@ -48,7 +50,7 @@ class BaseResourceRoute(BaseRoute):
             )
 
     @name_factory
-    @jwt_required_with_redirect(admin=True)
+    @jwt_required_with_redirect()
     @request_logic
     def resource(
             self,
@@ -56,10 +58,14 @@ class BaseResourceRoute(BaseRoute):
             **kwargs,
     ) -> Union[Response, ResponseData]:
         identifier = self.identifier.new_value(kwargs[self.identifier.key])
+        if request.method in ["PUT", "POST", "DELETE"] \
+                and not data.context.admin:
+            return access_denied_response()
         if request.method == "PUT":
             obj = self.logic.get_by_identifier(identifier, allow_none=True)
             if obj is not None:
                 return self.create_response(
+                    data,
                     202,
                     message=f"Resource {identifier.value} updated.",
                     resource=obj.update(data),
@@ -67,6 +73,7 @@ class BaseResourceRoute(BaseRoute):
 
         if request.method in ["POST", "PUT"]:
             return self.create_response(
+                data,
                 201,
                 message=f"Resource {identifier.value} created.",
                 resource=self.logic.create(
@@ -77,36 +84,40 @@ class BaseResourceRoute(BaseRoute):
 
         if request.method == "DELETE":
             return self.create_response(
+                data,
                 202,
                 message=f"Resource {identifier.value} deleted.",
-                resource=self.logic.get_by_identifier(identifier).delete(),
+                resource=self.logic.get_by_identifier(identifier).delete(data),
             )
 
         # request.method == "GET"
         return self.create_response(
+            data,
             200,
-            resource=self.logic.get_by_identifier(identifier).read(),
+            resource=self.logic.get_by_identifier(identifier).read(data),
         )
 
     @name_factory
-    @jwt_required_with_redirect(admin=True)
+    @jwt_required_with_redirect()
     @request_logic
     def resources(
             self,
             data: RequestData,
     ) -> Union[Response, ResponseData]:
         return self.create_response(
+            data,
             200,
-            resource=self.logic.list()
+            resource=self.logic.list(data),
         )
 
     def create_response(
             self,
+            data: RequestData,
             status_code: int = None,
             message: str = None,
             resource: Union[BaseResourceModel, List[BaseResourceModel]] = None
     ) -> ResponseData:
-        resource_dict = self._create_resource_dict(resource)
+        resource_dict = self.create_resource_dict(data, resource)
         if message:
             resource_dict['message'] = message
         return ResponseData(
@@ -115,13 +126,15 @@ class BaseResourceRoute(BaseRoute):
             status_code=status_code,
         )
 
-    def _create_resource_dict(
+    def create_resource_dict(
             self,
+            data: RequestData,
             resource: Union[BaseResourceModel, List[BaseResourceModel], None]
     ) -> dict:
         resource_dict = {}
-        if isinstance(resource, BaseResourceModel):
-            resource_dict = self.schema.dump(resource)
-        if isinstance(resource, list):
-            resource_dict['list'] = self.schema.dump(resource, many=True)
-        return resource_dict
+        with SchemaContext(self.schema, data.context):
+            if isinstance(resource, BaseResourceModel):
+                resource_dict = self.schema.dump(resource)
+            if isinstance(resource, list):
+                resource_dict['list'] = self.schema.dump(resource, many=True)
+            return resource_dict

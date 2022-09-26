@@ -1,7 +1,7 @@
 from typing import Union, Tuple
 
 from flask import Response, redirect, request, jsonify, render_template, \
-    make_response
+    make_response, flash
 from flask_jwt_extended import get_jwt
 
 from models import PersonModel
@@ -17,6 +17,7 @@ class BaseRequestData(IRequestData):
     @classmethod
     def get_request_data(cls) -> RequestData:
         data = RequestPayload()
+        data.update(cls.get_args_data())  # data from args (url)
         data.update(cls.get_form_data())  # data from form
         data.update(cls.get_json_data())  # data from json body
 
@@ -34,9 +35,17 @@ class BaseRequestData(IRequestData):
     ) -> Union[Tuple[Response, int], str, Response]:
         if context_data["accept"] == "application/json":
             return cls.prepare_json_response(response_data)
+        if isinstance(response_data.resource, dict) \
+                and response_data.resource.get('message'):
+            message = response_data.resource.pop('message')
+            flash(message)
         if response_data.is_redirect:
             return cls.prepare_redirect_response(context_data, response_data)
         return cls.prepare_html_response(context_data, response_data)
+
+    @classmethod
+    def get_args_data(cls):
+        return request.args
 
     @classmethod
     def get_form_data(cls):

@@ -52,8 +52,4 @@ class HomeRoutes(BaseRoute):
     @jwt_required_with_redirect()
     @request_logic
     def home(self, data: RequestPayload) -> Union[Response, ResponseData]:
-        if request.method == "POST":
-            return self.logic.render_home_page_filtered(data)
-
-        # request.method == "GET"
-        return self.logic.render_home_page(data)
+        return self.logic.render_home_page_filtered(data)

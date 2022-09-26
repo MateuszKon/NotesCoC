@@ -27,8 +27,7 @@ class HomeLogic(IHomeRouteLogic):
         filter_subject = data.data.get('subject')
         filter_title_content = data.data.get("search")
 
-
-        notes_qs = NoteModel.query
+        notes_qs = NoteModel.get_all_visible(data.context.person_visibility)
 
         if filter_category is not None:
             notes_qs = NoteModel.category_filtering_qs(

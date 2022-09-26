@@ -66,10 +66,10 @@ class TestNoteModelPersonsVisibility(BaseTestUnitDatabase):
             )
             note1.save_to_db()
             note2.save_to_db()
-            self.assertEqual(len(NoteModel.get_all_visible(person1.name)),
+            self.assertEqual(len(NoteModel.get_all_visible(person1.name).all()),
                              2,
                              "Person was added to two notes!")
-            self.assertEqual(len(NoteModel.get_all_visible(person2.name)),
+            self.assertEqual(len(NoteModel.get_all_visible(person2.name).all()),
                              1,
                              "Person was added to a single note!")
 

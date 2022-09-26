@@ -74,7 +74,7 @@
         {% endblock %}
     </ul>
 
-    <form class="d-flex me-2" action=""
+    <form class="d-flex me-2" action="{{ url_for('home') }}"
           method="post"
           role="search">
         <input type="hidden" name="csrf_token"

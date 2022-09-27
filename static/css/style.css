@@ -50,3 +50,8 @@ a.text-on-primary:hover {
     background-color: var(--primary);
     color: var(--grey-white);
 }
+
+.note-content {
+    border: none;
+    resize: none;
+}

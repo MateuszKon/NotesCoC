@@ -46,3 +46,8 @@ function collapseNotes() {
         collection[i].classList.remove('show');
     }
 }
+
+
+function setHeight(fieldId){
+    document.getElementById(fieldId).style.height = document.getElementById(fieldId).scrollHeight+'px';
+}

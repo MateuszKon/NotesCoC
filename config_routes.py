@@ -5,8 +5,9 @@ from logic.home import HomeLogic
 from logic.notes import NoteLogic
 from logic.user_login import UserLoginLogic
 from logic.user_register import UserRegisterLogic
-from models import PersonModel, SubjectModel, SubjectCategoryModel
+from models import PersonModel, SubjectModel, SubjectCategoryModel, UserModel
 from models.base_resource import ResourceIdentifier
+from routes.admin_resource_route import AdminResourceRoute
 from routes.home import HomeRoutes
 from routes.notes import NoteRoutes
 from routes.base_resource import BaseResourceRoute
@@ -15,6 +16,7 @@ from routes.users import UserRegister, UserLogin, User
 from schemas.persons import PersonSchema
 from schemas.subjects import SubjectSchema
 from schemas.subjects_categories import SubjectCategorySchema
+from schemas.users import UserSchema
 
 
 def configure_routing(app: Flask):
@@ -98,4 +100,13 @@ def configure_routing(app: Flask):
         UserLoginLogic,
     )
 
-    app.add_url_rule("/users", view_func=User.get_all)
+    # User routes
+    AdminResourceRoute(
+        app,
+        BaseRequestData,
+        UserModel,
+        UserSchema(),
+        resource_url_name='user',
+        resources_url_name='users',
+        identifier=ResourceIdentifier("id", "int"),
+    )

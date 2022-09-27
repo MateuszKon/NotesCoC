@@ -56,13 +56,17 @@ class Cookie:
     def __init__(
             self,
             key: str,
-            value: str,
+            value: Union[str, None],
     ):
         self.key = key
         self.value = value
 
     def set_cookie(self, response: Response) -> Response:
-        response.set_cookie(self.key, self.value)
+        if self.value is not None:
+            response.set_cookie(self.key, self.value)
+        else:
+            response.delete_cookie(self.key)
+        return response
 
 
 class ResponseData:

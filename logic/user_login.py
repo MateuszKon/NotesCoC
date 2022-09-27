@@ -1,7 +1,7 @@
 from typing import Union
 
 from flask import Response, url_for
-from flask_jwt_extended import set_access_cookies
+from flask_jwt_extended import set_access_cookies, unset_access_cookies
 
 from blocklist import add_to_blocklist
 from models import UserModel
@@ -13,7 +13,10 @@ from routes.users import IUserLoginRouteLogic
 class AccessCookie(Cookie):
 
     def set_cookie(self, response: Response) -> Response:
-        set_access_cookies(response, self.value)
+        if self.value is None:
+            unset_access_cookies(response)
+        else:
+            set_access_cookies(response, self.value)
         return response
 
 
@@ -61,4 +64,5 @@ class UserLoginLogic(IUserLoginRouteLogic):
         return ResponseData(
             resource={'message': "User logged out"},
             redirect=url_for('login_user'),
+            cookies=[AccessCookie('access_token', None)],
         )

@@ -39,12 +39,10 @@
         <div id="collapse-{{note['id']}}"
              class="accordion-collapse collapse note-header show container-flex"
              aria-labelledby="heading-{{note['title']}}">
-            <div class="accordion-body row d-flex justify-content-be">
-                <div class="col-10">
-                    {{ note['content'] }}
-                </div>
+            <div class="accordion-body d-flex">
+                <textarea role='textbox' class="flex-fill note-content" id="textarea-{{note['id']}}">{{ note['content'] }}</textarea>
                 {% if admin %}
-                <div class="col-2 d-flex justify-content-end mb-2">
+                <div class="d-flex align-items-center mb-2">
                     <a type="button" class="btn btn-success mx-1"
                        href="{{url_for('edit_note', note_id=note['id']) }}">
                         Edit
@@ -55,6 +53,9 @@
                     </a>
                 </div>
                 {% endif %}
+                <script type="text/javascript">
+                    setHeight("textarea-{{note['id']}}");
+                </script>
 
             </div>
         </div>

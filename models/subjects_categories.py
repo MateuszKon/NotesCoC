@@ -40,7 +40,8 @@ class SubjectCategoryModel(BaseResourceModel):
             cls,
             data: RequestData,
     ) -> List['SubjectCategoryModel']:
-        objs = super().list(data)
+        qs = cls.query.order_by(cls.name)
+        objs = qs.all()
         if data.context.admin and data.context.person_visibility is None:
             return [obj.read(data) for obj in objs]
         return [obj for obj in objs if obj.read(data).has_subjects]

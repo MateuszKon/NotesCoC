@@ -25,6 +25,7 @@ ma.init_app(app)
 
 
 jwt.expired_token_loader(token_expired_redirection_callback)
+jwt.revoked_token_loader(token_expired_redirection_callback)
 
 
 @app.before_first_request

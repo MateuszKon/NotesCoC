@@ -42,10 +42,12 @@ class SubjectModel(BaseResourceModel):
             data: RequestData,
     ) -> List['SubjectModel']:
         category = data.data.get('category')
+        qs = cls.query
         if category is not None:
-            objs = cls.query.join(cls.categories).filter_by(name=category)
-        else:
-            objs = super().list(data)
+            qs = qs.join(cls.categories).filter_by(name=category)
+        qs = qs.order_by(cls.name)
+
+        objs = qs.all()
         if data.context.admin and data.context.person_visibility is None:
             return [obj.read(data) for obj in objs]
         return [obj for obj in objs if obj.read(data).has_notes]

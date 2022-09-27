@@ -85,8 +85,10 @@ class NoteModel(db.Model):
     @classmethod
     def get_all_visible(cls, person_name: str = None) -> List["NoteModel"]:
         if person_name is None:
-            return cls.get_all()
-        return cls.add_filter_persons_visibility_query(cls.query, person_name)
+            qs = cls.get_all()
+        else:
+            qs = cls.add_filter_persons_visibility_query(cls.query, person_name)
+        return qs.order_by(cls.real_update_date.desc())
 
     def get_subjects_and_categories_words(self) -> Set[str]:
         subjects = self.subjects.all()

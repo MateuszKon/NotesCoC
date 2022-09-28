@@ -178,3 +178,82 @@ class TestHomePageResponseDataPreparation(BaseIntegrationTest):
                 len(response.resource),
                 "Visible notes count should be 0!"
             )
+
+    def test_home_page_resource_fields_displayed_for_user(self):
+        with self.app_context():
+            data = RequestData(
+                RequestPayload(
+                    {}
+                ),
+                ContextData(
+                    {"jwt_scope": self.person_logged.name}
+                )
+            )
+            response = HomeLogic.render_home_page_filtered(data)
+
+            note = response.resource[0]
+            user_note_keys = ['real_update_date', 'title', 'real_creation_date', 'content', 'id',
+                              'game_creation_date', 'subjects', 'game_update_date', ]
+            self.assertEqual(
+                len(note),
+                len(user_note_keys),
+                "Number of keys of note dictionary is incorrect!"
+            )
+            for i, key in enumerate(user_note_keys):
+                with self.subTest(i=i):
+                    self.assertIn(
+                        key,
+                        note,
+                        "Note does not contain key!"
+                    )
+            subject = note['subjects'][0]
+            self.assertEqual(
+                len(subject),
+                1,
+                "Number of keys of subject dictionary in note dictionary is incorrect!"
+            )
+            self.assertIn(
+                'name',
+                subject,
+                "Subject dictionary in note dictionary does not contain key!"
+            )
+
+    def test_home_page_resource_fields_displayed_for_admin(self):
+        with self.app_context():
+            data = RequestData(
+                RequestPayload(
+                    {}
+                ),
+                ContextData(
+                    {"jwt_admin": True}
+                )
+            )
+            response = HomeLogic.render_home_page_filtered(data)
+
+            note = response.resource[0]
+            user_note_keys = ['real_update_date', 'title', 'real_creation_date', 'content', 'id',
+                              'game_creation_date', 'subjects', 'game_update_date',
+                              'persons_visibility', ]
+            self.assertEqual(
+                len(note),
+                len(user_note_keys),
+                "Number of keys of note dictionary is incorrect!"
+            )
+            for i, key in enumerate(user_note_keys):
+                with self.subTest(i=i):
+                    self.assertIn(
+                        key,
+                        note,
+                        "Note does not contain key!"
+                    )
+            subject = note['subjects'][0]
+            self.assertEqual(
+                len(subject),
+                1,
+                "Number of keys of subject dictionary in note dictionary is incorrect!"
+            )
+            self.assertIn(
+                'name',
+                subject,
+                "Subject dictionary in note dictionary does not contain key!"
+            )

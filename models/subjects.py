@@ -20,6 +20,7 @@ class SubjectModel(BaseResourceModel):
         back_populates="subjects",
         lazy="dynamic",
         collection_class=set,
+        order_by="SubjectCategoryModel.name",
     )
     notes = relationship(
         "NoteModel",
@@ -27,6 +28,7 @@ class SubjectModel(BaseResourceModel):
         back_populates="subjects",
         lazy="dynamic",
         collection_class=set,
+        order_by="NoteModel.real_update_date.desc()"
     )
     _notes_filtered = None
 

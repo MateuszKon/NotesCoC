@@ -26,6 +26,7 @@ class SubjectCategoryModel(BaseResourceModel):
         back_populates="categories",
         lazy="dynamic",
         collection_class=set,
+        order_by="SubjectModel.name"
     )
     _subjects_filtered = None
 

@@ -1,4 +1,5 @@
 {% extends "base_logged.html" %}
+{% block title%}<title>NotesCoC | {{ resource['note']['title']|default('Nowa',true) }}</title>{% endblock %}
 
 {% block script %}
 <script src="{{ url_for('static',filename='js/select_subject.js') }}"></script>

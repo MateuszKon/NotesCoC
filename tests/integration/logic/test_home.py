@@ -1,8 +1,4 @@
-from math import floor
-
-from db import db
 from logic.home import HomeLogic
-from models import PersonModel, SubjectCategoryModel, SubjectModel, NoteModel
 from routes.i_request import RequestData, RequestPayload, ContextData
 from tests.integration.base_integration_test import BaseIntegrationTest
 

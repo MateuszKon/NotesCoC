@@ -1,7 +1,7 @@
-from tests.base_test import BaseTest
+from tests.integration.base_integration_test import BaseIntegrationTest
 
 
-class TestSubjectResourceResponseDataPreparation(BaseTest):
+class TestSubjectResourceResponseDataPreparation(BaseIntegrationTest):
     # TODO: test cases
     """
     test for viewing single subject by user (check ResponseData.resource)

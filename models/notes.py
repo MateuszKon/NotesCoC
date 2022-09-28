@@ -111,7 +111,6 @@ class NoteModel(db.Model):
 
     @classmethod
     def category_filtering_qs(cls, qs, category):
-        pass
         return qs.join(cls.categories).filter_by(
             name=category
         )

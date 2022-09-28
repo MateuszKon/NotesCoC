@@ -13,14 +13,6 @@ class IHomeRouteLogic(IRequestLogic):
 
     @classmethod
     @abstractmethod
-    def render_home_page(
-            cls,
-            data: RequestPayload
-    ) -> ResponseData:
-        pass
-
-    @classmethod
-    @abstractmethod
     def render_home_page_filtered(
             cls,
             data: RequestPayload

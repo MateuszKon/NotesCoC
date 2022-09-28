@@ -6,7 +6,6 @@ from flask_jwt_extended import create_access_token
 from sqlalchemy import String, Integer, Column, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 
-from db import db
 from libs.random import uuid_gen
 from models.base_resource import BaseResourceModel
 

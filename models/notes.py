@@ -90,19 +90,6 @@ class NoteModel(db.Model):
             qs = cls.add_filter_persons_visibility_query(cls.query, person_name)
         return qs.order_by(cls.real_update_date.desc())
 
-    def get_subjects_and_categories_words(self) -> Set[str]:
-        subjects = self.subjects.all()
-        categories = set()
-        for subject in subjects:
-            categories.update(set(subject.categories.all()))
-        words = {
-            category.name for category in categories
-        }
-        words.update(
-            {subject.name for subject in subjects}
-        )
-        return words
-
     @classmethod
     def filter_notes(cls, qs, person: str) -> List["NoteModel"]:
         return cls.add_filter_persons_visibility_query(

@@ -68,13 +68,3 @@ class SubjectCategoryModel(BaseResourceModel):
             ]
         self._subjects_filtered = filtered
         return self
-
-    @classmethod
-    def get_all(cls) -> List["SubjectCategoryModel"]:
-        return cls.query.all()
-
-    @classmethod
-    def find_by_name(cls, name: str, allow_none=False):
-        if allow_none:
-            return cls.query.filter_by(name=name).one_or_none()
-        return cls.query.filter_by(name=name).one()

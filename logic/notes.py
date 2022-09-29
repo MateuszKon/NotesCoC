@@ -34,19 +34,19 @@ class NoteLogic(INoteRouteLogic):
             scope = data.context.person_visibility
             note = NoteModel.find_by_id_with_scope(note_id, scope)
 
-        all_subjects = SubjectModel.get_all()
+        admin = data.context.get("jwt_admin")
 
-        note_schema_ = cls._get_note_schema(data.context.get("jwt_admin"))
+        note_schema_ = cls._get_note_schema(admin)
+        resource = {'note': note_schema_.dump(note)}
+        if admin:
+            resource['all_subjects'] = subject_name_schema.dump(
+                    SubjectModel.get_all(),
+                    many=True,
+                )
 
         return ResponseData(
             'write_note.html',
-            resource={
-                'note': note_schema_.dump(note),
-                'all_subjects': subject_name_schema.dump(
-                    all_subjects,
-                    many=True,
-                )
-            },
+            resource=resource,
             submit_callback=url_for('edit_note', note_id=note.id),
         )
 

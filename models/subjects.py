@@ -75,7 +75,7 @@ class SubjectModel(BaseResourceModel):
 
     @classmethod
     def get_all(cls) -> List["SubjectModel"]:
-        return cls.query.all()
+        return cls.query.order_by("name").all()
 
     def add_categories(self, categories: Set["SubjectCategoryModel"]):
         self.categories.extend(categories)

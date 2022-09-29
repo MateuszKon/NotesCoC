@@ -42,13 +42,13 @@ class TestSubjectResourceResponseDataPreparation(BaseIntegrationTest):
                     obj = self.routes.logic.get_by_identifier(identifier).read(data)
                     resource = self.routes.create_resource_dict(data, obj)
 
-                    user_note_keys = ['name', 'notes']
+                    user_subject_keys = ['name', 'notes']
                     self.assertEqual(
                         len(resource),
-                        len(user_note_keys),
+                        len(user_subject_keys),
                         "Number of keys of resource dictionary is incorrect!"
                     )
-                    for i, key in enumerate(user_note_keys):
+                    for i, key in enumerate(user_subject_keys):
                         with self.subTest(i=i):
                             self.assertIn(
                                 key,
@@ -66,6 +66,14 @@ class TestSubjectResourceResponseDataPreparation(BaseIntegrationTest):
                         5-sub_i,
                         "Number of visible notes are incorrect"
                     )
+                    user_note_keys = ['title', 'id']
+                    for i, key in enumerate(user_note_keys):
+                        with self.subTest(note_key=i):
+                            self.assertIn(
+                                key,
+                                resource['notes'][0],
+                                "Resource does not contain key!"
+                            )
 
     def test_not_visible_subject_for_user_404(self):
         with self.app_context():
@@ -115,3 +123,11 @@ class TestSubjectResourceResponseDataPreparation(BaseIntegrationTest):
                                 self.visible_titles,
                                 "Showed note is not visible note!"
                             )
+            user_note_keys = ['id', 'title']
+            for key in resource['list'][0]['notes'][0]:
+                with self.subTest(note_key=i):
+                    self.assertIn(
+                        key,
+                        user_note_keys,
+                        "Subject has not valid key!"
+                    )

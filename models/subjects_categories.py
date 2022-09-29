@@ -1,5 +1,6 @@
 from typing import List
 
+from flask import abort
 from sqlalchemy import Table, Column, ForeignKey, String
 from sqlalchemy.orm import relationship
 
@@ -34,7 +35,10 @@ class SubjectCategoryModel(BaseResourceModel):
             self,
             data: RequestData,
     ) -> 'SubjectCategoryModel':
-        return self.filter_subjects(data)
+        self.filter_subjects(data)
+        if not data.context.admin and not self.has_subjects:
+            abort(404)
+        return self
 
     @classmethod
     def list(
@@ -44,8 +48,8 @@ class SubjectCategoryModel(BaseResourceModel):
         qs = cls.query.order_by(cls.name)
         objs = qs.all()
         if data.context.admin and data.context.person_visibility is None:
-            return [obj.read(data) for obj in objs]
-        return [obj for obj in objs if obj.read(data).has_subjects]
+            return [obj.filter_subjects(data) for obj in objs]
+        return [obj for obj in objs if obj.filter_subjects(data).has_subjects]
 
     @property
     def has_subjects(self):

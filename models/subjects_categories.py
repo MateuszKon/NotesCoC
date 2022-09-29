@@ -1,5 +1,6 @@
 from typing import List
 
+from flask import abort
 from sqlalchemy import Table, Column, ForeignKey, String
 from sqlalchemy.orm import relationship
 
@@ -34,7 +35,10 @@ class SubjectCategoryModel(BaseResourceModel):
             self,
             data: RequestData,
     ) -> 'SubjectCategoryModel':
-        return self.filter_subjects(data)
+        self.filter_subjects(data)
+        if not data.context.admin and not self.has_subjects:
+            abort(404)
+        return self
 
     @classmethod
     def list(
@@ -44,8 +48,8 @@ class SubjectCategoryModel(BaseResourceModel):
         qs = cls.query.order_by(cls.name)
         objs = qs.all()
         if data.context.admin and data.context.person_visibility is None:
-            return [obj.read(data) for obj in objs]
-        return [obj for obj in objs if obj.read(data).has_subjects]
+            return [obj.filter_subjects(data) for obj in objs]
+        return [obj for obj in objs if obj.filter_subjects(data).has_subjects]
 
     @property
     def has_subjects(self):
@@ -60,7 +64,7 @@ class SubjectCategoryModel(BaseResourceModel):
             data: RequestData,
     ) -> 'SubjectCategoryModel':
         if data.context.admin and data.context.person_visibility is None:
-            filtered = [subject.read(data) for subject in self.subjects]
+            filtered = [subject.filter_notes(data) for subject in self.subjects]
         else:
             filtered = [
                 subject for subject in self.subjects
@@ -68,13 +72,3 @@ class SubjectCategoryModel(BaseResourceModel):
             ]
         self._subjects_filtered = filtered
         return self
-
-    @classmethod
-    def get_all(cls) -> List["SubjectCategoryModel"]:
-        return cls.query.all()
-
-    @classmethod
-    def find_by_name(cls, name: str, allow_none=False):
-        if allow_none:
-            return cls.query.filter_by(name=name).one_or_none()
-        return cls.query.filter_by(name=name).one()

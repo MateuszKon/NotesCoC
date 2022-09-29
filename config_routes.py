@@ -45,43 +45,10 @@ def configure_routing(app: Flask):
     )
 
     # Subjects routes
-    if app.config["DEBUG"]:
-        notes_param = {'only': ('id', 'title', 'persons_visibility')}
-    else:
-        notes_param = {'only': ('id', 'title')}
-
-    SubjectRoutes(
-        app,
-        BaseRequestData,
-        SubjectModel,
-        SubjectSchema(
-            "NoteSchema",
-            notes_param=notes_param
-        ),
-        SubjectCategorySchema(
-            "SubjectSchema",
-            subjects_param={'only': ('name',)}
-        ),
-        template='subjects.html',
-        resource_url_name='subject',
-        resources_url_name='subjects',
-        identifier=ResourceIdentifier("name", "string"),
-    )
+    configure_subject_routes(app)
 
     # Subject Categories routes
-    BaseResourceRoute(
-        app,
-        BaseRequestData,
-        SubjectCategoryModel,
-        SubjectCategorySchema(
-            "SubjectSchema",
-            subjects_param={'only': ('name',)}
-        ),
-        template='categories.html',
-        resource_url_name='subject_category',
-        resources_url_name='subject_categories',
-        identifier=ResourceIdentifier("name", "string"),
-    )
+    configure_subject_categories_routes(app)
 
     # User routes
     # /register/form/<string:registration_hash>
@@ -109,4 +76,45 @@ def configure_routing(app: Flask):
         resource_url_name='user',
         resources_url_name='users',
         identifier=ResourceIdentifier("id", "int"),
+    )
+
+
+def configure_subject_routes(app: Flask):
+    if app.config["DEBUG"]:
+        notes_param = {'only': ('id', 'title', 'persons_visibility')}
+    else:
+        notes_param = {'only': ('id', 'title')}
+
+    return SubjectRoutes(
+        app,
+        BaseRequestData,
+        SubjectModel,
+        SubjectSchema(
+            "NoteSchema",
+            notes_param=notes_param
+        ),
+        SubjectCategorySchema(
+            "SubjectSchema",
+            subjects_param={'only': ('name',)}
+        ),
+        template='subjects.html',
+        resource_url_name='subject',
+        resources_url_name='subjects',
+        identifier=ResourceIdentifier("name", "string"),
+    )
+
+
+def configure_subject_categories_routes(app: Flask):
+    return BaseResourceRoute(
+        app,
+        BaseRequestData,
+        SubjectCategoryModel,
+        SubjectCategorySchema(
+            "SubjectSchema",
+            subjects_param={'only': ('name',)}
+        ),
+        template='categories.html',
+        resource_url_name='subject_category',
+        resources_url_name='subject_categories',
+        identifier=ResourceIdentifier("name", "string"),
     )

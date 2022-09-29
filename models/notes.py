@@ -1,7 +1,7 @@
 from datetime import datetime, date
 from typing import List, Set
 
-from sqlalchemy import Column, Integer, String, Date, DateTime, or_
+from sqlalchemy import Column, Integer, String, Date, DateTime, or_, func
 from sqlalchemy.orm import relationship
 
 from db import db
@@ -105,8 +105,8 @@ class NoteModel(db.Model):
 
     @classmethod
     def words_filtering_qs(cls, qs, search_words):
-        filter_list = [NoteModel.title.contains(x) for x in search_words] + \
-                      [NoteModel.content.contains(x) for x in search_words]
+        filter_list = [func.lower(NoteModel.title).contains(x) for x in search_words] + \
+                      [func.lower(NoteModel.content).contains(x) for x in search_words]
         return qs.filter(or_(*filter_list))
 
     @classmethod

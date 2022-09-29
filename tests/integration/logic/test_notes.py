@@ -8,7 +8,6 @@ from tests.integration.base_integration_test import BaseIntegrationTest
 
 
 class TestNotePageResponseDataPreparation(BaseIntegrationTest):
-    # TODO: test cases
     """
     test for viewing note by user
     test for viewing (editing) note by admin

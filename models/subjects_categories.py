@@ -60,7 +60,7 @@ class SubjectCategoryModel(BaseResourceModel):
             data: RequestData,
     ) -> 'SubjectCategoryModel':
         if data.context.admin and data.context.person_visibility is None:
-            filtered = [subject.read(data) for subject in self.subjects]
+            filtered = [subject.filter_notes(data) for subject in self.subjects]
         else:
             filtered = [
                 subject for subject in self.subjects

@@ -44,6 +44,8 @@ class BaseIntegrationTest(BaseTest):
                 NoteModel(title=f"note invisible{i}", content=f"invis_mym {i}") for i in range(0, 10)
             ]
             self.visible_titles = [note.title for note in self.notes_visible]
+            self.visible_subjects_names = [subject.name for subject in self.subjects_visible]
+            self.visible_categories_names = [category.name for category in self.categories_visible]
 
             # Adding categories to subjects
             self.subjects_visible[0].add_categories(set(self.categories_visible[0:1]))

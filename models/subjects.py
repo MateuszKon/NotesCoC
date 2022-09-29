@@ -1,5 +1,6 @@
 from typing import List, Set
 
+from flask import abort
 from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
 
@@ -36,7 +37,10 @@ class SubjectModel(BaseResourceModel):
             self,
             data: RequestData,
     ) -> 'SubjectModel':
-        return self.filter_notes(data)
+        self.filter_notes(data)
+        if not data.context.admin and not self.has_notes:
+            abort(404)
+        return self
 
     @classmethod
     def list(
@@ -51,8 +55,8 @@ class SubjectModel(BaseResourceModel):
 
         objs = qs.all()
         if data.context.admin and data.context.person_visibility is None:
-            return [obj.read(data) for obj in objs]
-        return [obj for obj in objs if obj.read(data).has_notes]
+            return [obj.filter_notes(data) for obj in objs]
+        return [obj for obj in objs if obj.filter_notes(data).has_notes]
 
     @property
     def notes_filtered(self):

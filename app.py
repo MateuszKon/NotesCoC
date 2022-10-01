@@ -19,7 +19,7 @@ app.config.from_object("config.Config")
 app.config.from_object(os.environ.get("APPLICATION_SETTINGS"))
 app.secret_key = os.environ.get("APP_SECRET_KEY")
 jwt = JWTManager(app)
-migrate = Migrate(app, db)
+migrate = Migrate(app, db, compare_type=True)
 db.init_app(app)
 ma.init_app(app)
 

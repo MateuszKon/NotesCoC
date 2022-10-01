@@ -15,7 +15,7 @@ class NoteModel(db.Model):
 
     id = Column(Integer, primary_key=True)
     title = Column(String(80))
-    content = Column(String(1000))
+    content = Column(String(5000))
     game_creation_date = Column(Date, default=date(1920, 1, 1))
     game_update_date = Column(Date, default=date(1920, 1, 1))
     real_creation_date = Column(DateTime, default=datetime.now)

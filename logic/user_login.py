@@ -35,7 +35,8 @@ class UserLoginLogic(IUserLoginRouteLogic):
         password = data.data['current-password']
 
         user_obj = UserModel.get_by_identifier(
-            ResourceIdentifier('login', 'string', username)
+            ResourceIdentifier('login', 'string', username),
+            allow_none=True,
         )
         if user_obj and password and user_obj.check_password(password):
             access_token = user_obj.create_authorisation_tokens()
@@ -49,7 +50,7 @@ class UserLoginLogic(IUserLoginRouteLogic):
             )
         return ResponseData(
             resource={
-                'message': "User or Password is incorrect"
+                'message': "Username or password is incorrect"
             },
             status_code=405,
             template='login.html',

@@ -40,7 +40,9 @@
              class="accordion-collapse collapse note-header show container-flex"
              aria-labelledby="heading-{{note['title']}}">
             <div class="accordion-body d-flex">
-                <textarea role='textbox' class="flex-fill note-content" id="textarea-{{note['id']}}">{{ note['content'] }}</textarea>
+                <textarea role='textbox' class="flex-fill note-content"
+                          id="textarea-{{note['id']}}" readonly>{{ note['content']
+                    }}</textarea>
                 {% if admin %}
                 <div class="d-flex align-items-center mb-2">
                     <a type="button" class="btn btn-success mx-1"

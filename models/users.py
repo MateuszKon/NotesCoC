@@ -17,9 +17,11 @@ class UserModel(BaseResourceModel):
     login = Column(String(80), nullable=False, unique=True)
     password = Column(String(60), nullable=False)
     person_name = Column(String(80), ForeignKey('persons.name'))
+    setting_id = Column(Integer, ForeignKey('settings.id'))
     admin = Column(Boolean, default=False)
 
     person = relationship("PersonModel", uselist=False)
+    setting = relationship("SettingModel", uselist=False, cascade='delete')
 
     def __init__(
             self,

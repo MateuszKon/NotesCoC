@@ -18,6 +18,10 @@ class BaseModel:
         db.session.add(self)
         db.session.commit()
 
+    def merge(self):
+        db.session.merge(self)
+        db.session.commit()
+
     def delete_from_db(self):
         db.session.delete(self)
         db.session.commit()

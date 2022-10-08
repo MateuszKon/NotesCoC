@@ -8,6 +8,7 @@ from sqlalchemy.orm import relationship
 
 from libs.random import uuid_gen
 from models.base_resource import BaseResourceModel
+from routes.i_request import RequestData
 
 
 class UserModel(BaseResourceModel):
@@ -36,6 +37,10 @@ class UserModel(BaseResourceModel):
     @classmethod
     def get_by_login(cls, username: str) -> "UserModel":
         return cls.query.filter_by(login=username).one_or_none()
+
+    @classmethod
+    def get_by_id(cls, id_: str) -> "UserModel":
+        return cls.query.filter_by(id=id_).one_or_none()
 
     def set_password(self, password: str):
         if isinstance(password, str):
@@ -68,6 +73,10 @@ class UserModel(BaseResourceModel):
             user = cls(login, password, person_name=None)
             user.admin = True
             user.save_to_db()
+
+    @classmethod
+    def get_requester(cls, data: RequestData) -> "UserModel":
+        return cls.get_by_id(data.context["jwt_sub"])
 
 
 class RegisterUserModel(BaseResourceModel):

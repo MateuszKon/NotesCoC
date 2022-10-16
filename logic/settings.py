@@ -28,8 +28,9 @@ class SettingsLogic(ISettingsRouteLogic):
         user = UserModel.get_requester(data)
         new_settings = settings_schema.load(data.data, unknown=EXCLUDE)
         if user.setting is not None:
-            new_settings.id = user.settings.id
+            new_settings.id = user.setting.id
             new_settings.merge()
+            new_settings.commit()
         else:
             new_settings.save_to_db()
             user.setting_id = new_settings.id

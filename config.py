@@ -1,4 +1,5 @@
 import datetime
+import logging.config
 import os
 
 
@@ -31,3 +32,6 @@ class DevelopmentConfig(Config):
                                              "sqlite:///data.db")
     SQLALCHEMY_ECHO = False
 
+
+logging.config.fileConfig('logging.conf')
+logger = logging.getLogger("NotesCoC")

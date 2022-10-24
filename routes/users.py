@@ -3,6 +3,7 @@ from typing import Type, Union
 
 from flask import request, Flask, Response
 
+from config import log_admin_route, logger
 from libs.jwt_functions import jwt_required_with_redirect
 from models.users import UserModel
 from routes.base_route import BaseRoute, request_logic
@@ -90,6 +91,7 @@ class UserRegister(BaseRoute):
             self,
             data: RequestData,
     ):
+        log_admin_route(f"add_registration", data.context)
         return self.logic.add_registration_record(data)
 
     @jwt_required_with_redirect(admin=True)
@@ -98,6 +100,7 @@ class UserRegister(BaseRoute):
             self,
             data: RequestData,
     ):
+        log_admin_route(f"get_registrations", data.context)
         return self.logic.list(data)
 
 
@@ -163,14 +166,3 @@ class UserLogin(BaseRoute):
             data: RequestData,
     ):
         return self.logic.logout_user(data)
-
-
-class User:
-
-    @classmethod
-    @jwt_required_with_redirect(admin=True)
-    def get_all(cls):
-        return {'users': user_schema.dump(
-            UserModel.get_all(),
-            many=True
-        )}

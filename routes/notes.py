@@ -3,6 +3,7 @@ from typing import Type, Union
 
 from flask import request, Response, Flask
 
+from config import log_admin_route
 from libs.jwt_functions import jwt_required_with_redirect, \
     access_denied_response
 from routes.base_route import BaseRoute, request_logic
@@ -86,6 +87,7 @@ class NoteRoutes(BaseRoute):
         if request.method == "POST":
             if not data.context.admin:
                 return access_denied_response()
+            log_admin_route(f"note_edit-{note_id}", data.context)
             return self.logic.save_note(data, note_id=note_id)
 
         # request.method == "GET"
@@ -98,6 +100,7 @@ class NoteRoutes(BaseRoute):
             data: RequestData,
             note_id: int
     ) -> Union[Response, ResponseData]:
+        log_admin_route(f"note_delete-{note_id}", data.context)
         if request.method in ["DELETE", "POST"]:
             return self.logic.delete_note(data, note_id=note_id)
 

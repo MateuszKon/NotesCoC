@@ -2,6 +2,8 @@ import datetime
 import logging.config
 import os
 
+from routes.i_request import ContextData
+
 
 def _translate_postgres_driver(database_url: str):
     if database_url and 'postgres' in database_url and 'postgresql' not in database_url:
@@ -35,3 +37,8 @@ class DevelopmentConfig(Config):
 
 logging.config.fileConfig('logging.conf')
 logger = logging.getLogger("NotesCoC")
+
+
+def log_admin_route(resource_name: str, context: ContextData):
+    logger.warning(
+        f"Resource '{resource_name}' User sub: {context.get('jwt_sub')} Admin: {context.admin} Scope: {context.get('jwt_scope')}")

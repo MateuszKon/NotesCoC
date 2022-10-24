@@ -75,7 +75,7 @@ class BaseRequestData(IRequestData):
             jwt_data = get_jwt()
         except RuntimeError:
             jwt_data = {}
-        needed_keys = jwt_data.keys() & {'csrf', 'admin', 'scope', 'jti', 'exp'}
+        needed_keys = jwt_data.keys() & {'csrf', 'admin', 'scope', 'jti', 'exp', 'sub'}
         return {'jwt_' + key: jwt_data[key] for key in needed_keys}
 
     @classmethod

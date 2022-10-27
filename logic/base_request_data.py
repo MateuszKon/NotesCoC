@@ -24,6 +24,7 @@ class BaseRequestData(IRequestData):
         context_data = ContextData()
         context_data.update(cls.get_header_data())  # data from header
         context_data.update(cls.get_cookies_data())  # data from cookies
+        context_data.update(cls.get_other_request_data())  # other data from request
         context_data.update(cls.get_jwt_data())  # data from jwt token
         return RequestData(data, context_data)
 
@@ -70,12 +71,19 @@ class BaseRequestData(IRequestData):
         return request.cookies
 
     @classmethod
+    def get_other_request_data(cls):
+        return {
+            "url": request.url,
+            "method": request.method,
+        }
+
+    @classmethod
     def get_jwt_data(cls):
         try:
             jwt_data = get_jwt()
         except RuntimeError:
             jwt_data = {}
-        needed_keys = jwt_data.keys() & {'csrf', 'admin', 'scope', 'jti', 'exp'}
+        needed_keys = jwt_data.keys() & {'csrf', 'admin', 'scope', 'jti', 'exp', 'sub'}
         return {'jwt_' + key: jwt_data[key] for key in needed_keys}
 
     @classmethod

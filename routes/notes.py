@@ -1,12 +1,14 @@
+import logging
 from abc import abstractmethod
 from typing import Type, Union
 
 from flask import request, Response, Flask
 
+from config import log_access
 from libs.jwt_functions import jwt_required_with_redirect, \
     access_denied_response
 from routes.base_route import BaseRoute, request_logic
-from routes.i_request import IRequestLogic, RequestPayload, ResponseData, \
+from routes.i_request import IRequestLogic, ResponseData, \
     IRequestData, RequestData
 
 
@@ -83,6 +85,8 @@ class NoteRoutes(BaseRoute):
             data: RequestData,
             note_id: int = None,
     ) -> Union[Response, ResponseData]:
+        level = logging.INFO if request.method == "GET" else logging.WARNING
+        log_access(level, data, note_id=note_id)
         if request.method == "POST":
             if not data.context.admin:
                 return access_denied_response()
@@ -98,6 +102,8 @@ class NoteRoutes(BaseRoute):
             data: RequestData,
             note_id: int
     ) -> Union[Response, ResponseData]:
+        level = logging.INFO if request.method == "GET" else logging.WARNING
+        log_access(level, data, note_id=note_id)
         if request.method in ["DELETE", "POST"]:
             return self.logic.delete_note(data, note_id=note_id)
 

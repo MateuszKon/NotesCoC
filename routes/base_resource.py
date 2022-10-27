@@ -1,7 +1,9 @@
+import logging
 from typing import Type, Union, List
 
 from flask import Flask, Response, request
 
+from config import log_access
 from libs.factories import name_factory
 from libs.jwt_functions import jwt_required_with_redirect, \
     access_denied_response
@@ -58,6 +60,8 @@ class BaseResourceRoute(BaseRoute):
             **kwargs,
     ) -> Union[Response, ResponseData]:
         identifier = self.identifier.new_value(kwargs[self.identifier.key])
+        level = logging.INFO if request.method == "GET" else logging.WARNING
+        log_access(level, data, **identifier.dict)
         if request.method in ["PUT", "POST", "DELETE"] \
                 and not data.context.admin:
             return access_denied_response()
@@ -104,6 +108,7 @@ class BaseResourceRoute(BaseRoute):
             self,
             data: RequestData,
     ) -> Union[Response, ResponseData]:
+        log_access(logging.INFO, data)
         return self.create_response(
             data,
             200,

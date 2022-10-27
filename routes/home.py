@@ -1,8 +1,10 @@
+import logging
 from abc import abstractmethod
 from typing import Type, Union
 
 from flask import redirect, url_for, request, Flask, Response
 
+from config import log_access
 from libs.jwt_functions import jwt_required_with_redirect
 from routes.base_route import BaseRoute, request_logic
 from routes.i_request import IRequestData, IRequestLogic, RequestPayload, \
@@ -44,4 +46,5 @@ class HomeRoutes(BaseRoute):
     @jwt_required_with_redirect()
     @request_logic
     def home(self, data: RequestPayload) -> Union[Response, ResponseData]:
+        log_access(logging.INFO, data)
         return self.logic.render_home_page_filtered(data)

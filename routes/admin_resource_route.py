@@ -1,7 +1,9 @@
+import logging
 from typing import Union, Type, Callable
 
 from flask import Response, Flask
 
+from config import log_access
 from libs.factories import name_factory
 from libs.jwt_functions import jwt_required_with_redirect
 from ma import ma
@@ -37,6 +39,7 @@ class AdminResourceRoute(BaseResourceRoute):
             data: RequestData,
             **kwargs,
     ) -> Union[Response, ResponseData]:
+        log_access(logging.WARNING, data)
         return self._super_resource(**kwargs)
 
     @name_factory
@@ -46,4 +49,5 @@ class AdminResourceRoute(BaseResourceRoute):
             self,
             data: RequestData,
     ) -> Union[Response, ResponseData]:
+        log_access(logging.WARNING, data)
         return self._super_resources()

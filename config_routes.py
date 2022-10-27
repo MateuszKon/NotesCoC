@@ -12,7 +12,7 @@ from routes.home import HomeRoutes
 from routes.notes import NoteRoutes
 from routes.base_resource import BaseResourceRoute
 from routes.subjects import SubjectRoutes
-from routes.users import UserRegister, UserLogin, User
+from routes.users import UserRegister, UserLogin
 from schemas.persons import PersonSchema
 from schemas.subjects import SubjectSchema
 from schemas.subjects_categories import SubjectCategorySchema

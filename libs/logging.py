@@ -1,4 +1,6 @@
 import logging
+from datetime import datetime
+
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3 import Retry
@@ -43,7 +45,12 @@ class CustomHttpJsonHandler(logging.Handler):
             record: a log record
         '''
         log_entry = self.format(record)
-        response = self.session.post(self.url, data=log_entry)
+        data = {
+            "@timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "level": record.levelname,
+            "message": log_entry,
+        }
+        response = self.session.post(self.url, json=data)
 
         if not self.silent:
             print(log_entry)

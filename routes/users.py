@@ -1,11 +1,11 @@
+import logging
 from abc import abstractmethod
 from typing import Type, Union
 
 from flask import request, Flask, Response
 
-from config import log_admin_route, logger
+from config import log_access
 from libs.jwt_functions import jwt_required_with_redirect
-from models.users import UserModel
 from routes.base_route import BaseRoute, request_logic
 from routes.i_request import IRequestLogic, IRequestData, RequestData, \
     ResponseData
@@ -79,6 +79,7 @@ class UserRegister(BaseRoute):
             data: RequestData,
             registration_hash: str
     ):
+        log_access(logging.INFO, data, hash=registration_hash)
         if request.method == "POST":
             return self.logic.confirm_registration(data, registration_hash)
 
@@ -91,7 +92,7 @@ class UserRegister(BaseRoute):
             self,
             data: RequestData,
     ):
-        log_admin_route(f"add_registration", data.context)
+        log_access(logging.WARNING, data)
         return self.logic.add_registration_record(data)
 
     @jwt_required_with_redirect(admin=True)
@@ -100,7 +101,7 @@ class UserRegister(BaseRoute):
             self,
             data: RequestData,
     ):
-        log_admin_route(f"get_registrations", data.context)
+        log_access(logging.WARNING, data)
         return self.logic.list(data)
 
 
@@ -155,6 +156,7 @@ class UserLogin(BaseRoute):
             self,
             data: RequestData,
     ):
+        log_access(logging.INFO, data)
         if request.method == "POST":
             return self.logic.login_user(data)
         return self.logic.render_login(data)
@@ -165,4 +167,5 @@ class UserLogin(BaseRoute):
             self,
             data: RequestData,
     ):
+        log_access(logging.INFO, data)
         return self.logic.logout_user(data)

@@ -2,7 +2,8 @@ import datetime
 import logging.config
 import os
 
-from routes.i_request import ContextData
+import libs.env_import  # Import for loading .env file before other imports
+from routes.i_request import ContextData, RequestData
 
 
 def _translate_postgres_driver(database_url: str):
@@ -39,6 +40,10 @@ logging.config.fileConfig('logging.conf')
 logger = logging.getLogger("NotesCoC")
 
 
-def log_admin_route(resource_name: str, context: ContextData):
-    logger.warning(
-        f"Resource '{resource_name}' User sub: {context.get('jwt_sub')} Admin: {context.admin} Scope: {context.get('jwt_scope')}")
+def log_access(level: int, data: RequestData, **kwargs):
+    logger.log(
+        level,
+        f"Url: {data.context.get('url')} [{data.context.get('method')}] "
+        f"User sub: {data.context.get('jwt_sub')} Admin: {data.context.admin} Scope: {data.context.get('jwt_scope')} "
+        + " ".join([f"{key}: {value}" for key, value in kwargs.items()])
+    )

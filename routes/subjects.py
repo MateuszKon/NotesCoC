@@ -1,8 +1,9 @@
+import logging
 from typing import Type, Union, List
 
 from flask import request, Flask, Response
 
-from config import log_admin_route
+from config import log_access
 from libs.factories import name_factory
 from libs.jwt_functions import jwt_required_with_redirect
 from ma import ma
@@ -56,7 +57,7 @@ class SubjectRoutes(BaseResourceRoute):
         data: RequestData,
         name: str
     ) -> Union[Response, ResponseData]:
-        log_admin_route(f"{self.resource_url_name}-{name}", data.context)
+        log_access(logging.WARNING, data, name=name)
         subject = self.logic.find_by_name(name)
         categories = self.child_schema.load(data.data['subject_categories'], many=True)
 
@@ -99,7 +100,7 @@ class SubjectRoutes(BaseResourceRoute):
             data: RequestData,
             name: str
     ) -> Union[Response, ResponseData]:
-        log_admin_route(f"{self.resources_url_name}-{name}", data.context)
+        log_access(logging.WARNING, data, name=name)
         subject = SubjectModel.find_by_name(name)
         return self.create_response(
             data,

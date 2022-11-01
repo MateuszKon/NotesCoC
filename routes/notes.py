@@ -6,8 +6,8 @@ from flask import request, Response, Flask
 from libs.jwt_functions import jwt_required_with_redirect, \
     access_denied_response
 from routes.base_route import BaseRoute, request_logic
-from routes.i_request import IRequestLogic, RequestPayload, ResponseData, \
-    IRequestData, RequestData
+from routes.i_request import IRequestLogic, ResponseData, IRequestData, \
+    RequestData
 
 
 class INoteRouteLogic(IRequestLogic):

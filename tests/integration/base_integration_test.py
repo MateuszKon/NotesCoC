@@ -1,9 +1,10 @@
 import os
 from math import floor
+from unittest.mock import patch
 
 from app import app
 from db import db
-from models import PersonModel, SubjectCategoryModel, SubjectModel, NoteModel
+from models import PersonModel, SubjectCategoryModel, SubjectModel, NoteModel, UserModel
 from tests.base_test import BaseTest
 
 
@@ -21,6 +22,9 @@ class BaseIntegrationTest(BaseTest):
             db.create_all()
 
             # Creating models
+            with patch("models.users.bcrypt.hashpw") as mock_hashing:
+                mock_hashing.return_value = "aaa".encode("utf8")
+                self.user = UserModel(login="mym", password='mym', person_name=None)
             self.person_logged = PersonModel(name='logged')
             self.persons_others = [
                 PersonModel(name=f'other{i}') for i in range(0, 2)
@@ -86,6 +90,7 @@ class BaseIntegrationTest(BaseTest):
             # Adding models to session and commit
             db.session().expire_on_commit = False
             for models_list in [
+                [self.user],
                 [self.person_logged],
                 self.persons_others,
                 self.categories_visible,

@@ -4,7 +4,7 @@ from typing import List, Tuple, Set
 
 from flask import redirect, url_for, Response
 
-from models import SubjectModel
+from models import SubjectModel, UserModel
 from models.notes import NoteModel
 from models.persons import PersonModel
 from routes.i_request import RequestPayload, ResponseData, RequestData
@@ -28,13 +28,18 @@ class NoteLogic(INoteRouteLogic):
             data: RequestData,
             note_id: int = None
     ) -> ResponseData:
+        settings = UserModel.get_requester(data).setting
+        admin = data.context.get("jwt_admin")
         if note_id is None:
             note = NoteModel()
+            if settings:
+                note.game_creation_date = settings.today_game_date
+                note.game_update_date = settings.today_game_date
         else:
             scope = data.context.person_visibility
             note = NoteModel.find_by_id_with_scope(note_id, scope)
-
-        admin = data.context.get("jwt_admin")
+            if settings:
+                note.game_update_date = settings.today_game_date
 
         note_schema_ = cls._get_note_schema(admin)
         resource = {'note': note_schema_.dump(note)}

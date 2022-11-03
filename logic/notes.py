@@ -2,8 +2,9 @@ import re
 from datetime import datetime
 from typing import List, Tuple, Set
 
-from flask import redirect, url_for, Response
+from flask import redirect, url_for, Response, request
 
+from forms.notes import CustomNoteForm
 from models import SubjectModel, UserModel
 from models.notes import NoteModel
 from models.persons import PersonModel
@@ -108,6 +109,18 @@ class NoteLogic(INoteRouteLogic):
         note = NoteModel.find_by_id(note_id)
         note.delete_from_db()
         return redirect(url_for('home'))
+
+    @classmethod
+    def save_custom_note(cls, data: RequestData) -> Response:
+        pass
+
+    @classmethod
+    def render_custom_note(cls, data: RequestData) -> ResponseData:
+        form = CustomNoteForm(request.form)
+        return ResponseData(
+            'custom_note.html',
+            resource={'form': form}
+        )
 
     @classmethod
     def _change_note_visibility(cls, note: NoteModel, data: RequestPayload):

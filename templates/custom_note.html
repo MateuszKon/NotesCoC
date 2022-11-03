@@ -1,0 +1,23 @@
+{% extends "base_logged.html" %}
+{% block title%}<title>NotesCoC | Nowa notatka</title>{% endblock %}
+
+{% block main %}
+<h2 class="text-center text-primary">Nowa notatka</h2>
+<form action="" method="post" id="noteform">
+    {% for field in resource['form'] %}
+        {{ field.label() }}
+        {{ field() }}
+        {% if field.errors %}
+            <ul class="errors">
+                {% for error in field.errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endfor %}
+    <button class="btn btn-primary btn-lg" type="submit">
+        Zapisz notatkę
+    </button>
+</form>
+
+{% endblock %}

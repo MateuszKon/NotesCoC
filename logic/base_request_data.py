@@ -24,6 +24,7 @@ class BaseRequestData(IRequestData):
         context_data = ContextData()
         context_data.update(cls.get_header_data())  # data from header
         context_data.update(cls.get_cookies_data())  # data from cookies
+        context_data.update(cls.get_other_request_data())  # other data from request
         context_data.update(cls.get_jwt_data())  # data from jwt token
         return RequestData(data, context_data, cls.get_form_data())
 
@@ -69,6 +70,13 @@ class BaseRequestData(IRequestData):
     @classmethod
     def get_cookies_data(cls):
         return request.cookies
+
+    @classmethod
+    def get_other_request_data(cls):
+        return {
+            "url": request.url,
+            "method": request.method,
+        }
 
     @classmethod
     def get_jwt_data(cls):

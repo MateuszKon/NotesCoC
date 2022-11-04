@@ -25,7 +25,7 @@ class BaseRequestData(IRequestData):
         context_data.update(cls.get_header_data())  # data from header
         context_data.update(cls.get_cookies_data())  # data from cookies
         context_data.update(cls.get_jwt_data())  # data from jwt token
-        return RequestData(data, context_data)
+        return RequestData(data, context_data, cls.get_form_data())
 
     @classmethod
     def serialize_response(
@@ -57,6 +57,7 @@ class BaseRequestData(IRequestData):
             "content_type": request.content_type,
             "accept": request.accept_mimetypes.best,
             "args": request.args,
+            "method": request.method,
         }
 
     @classmethod

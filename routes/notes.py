@@ -50,15 +50,7 @@ class INoteRouteLogic(IRequestLogic):
 
     @classmethod
     @abstractmethod
-    def save_custom_note(
-            cls,
-            data: RequestData,
-    ) -> Response:
-        pass
-
-    @classmethod
-    @abstractmethod
-    def render_custom_note(
+    def custom_note(
             cls,
             data: RequestData,
     ) -> ResponseData:
@@ -131,6 +123,4 @@ class NoteRoutes(BaseRoute):
             self,
             data: RequestData,
     ) -> Union[Response, ResponseData]:
-        if request.method == "POST":
-            return self.logic.save_custom_note(data)
-        return self.logic.render_custom_note(data)
+        return self.logic.custom_note(data)

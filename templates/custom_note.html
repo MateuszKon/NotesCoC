@@ -1,19 +1,14 @@
 {% extends "base_logged.html" %}
 {% block title%}<title>NotesCoC | Nowa notatka</title>{% endblock %}
 
+{% import 'includes/form_field.html' as forms %}
+
 {% block main %}
 <h2 class="text-center text-primary">Nowa notatka</h2>
 <form action="" method="post" id="noteform">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
     {% for field in resource['form'] %}
-        {{ field.label() }}
-        {{ field() }}
-        {% if field.errors %}
-            <ul class="errors">
-                {% for error in field.errors %}
-                    <li>{{ error }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
+        {{ forms.field(field) }}
     {% endfor %}
     <button class="btn btn-primary btn-lg" type="submit">
         Zapisz notatkę

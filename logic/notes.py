@@ -2,10 +2,11 @@ import re
 from datetime import datetime
 from typing import List, Tuple, Set
 
-from flask import redirect, url_for, Response, request
+from flask import redirect, url_for, Response
 
 from forms.notes import CustomNoteForm
-from models import SubjectModel, UserModel
+from models import SubjectModel, UserModel, SubjectCategoryModel
+from models.base_resource import ResourceIdentifier
 from models.notes import NoteModel
 from models.persons import PersonModel
 from routes.i_request import RequestPayload, ResponseData, RequestData
@@ -111,12 +112,20 @@ class NoteLogic(INoteRouteLogic):
         return redirect(url_for('home'))
 
     @classmethod
-    def save_custom_note(cls, data: RequestData) -> Response:
-        pass
-
-    @classmethod
-    def render_custom_note(cls, data: RequestData) -> ResponseData:
-        form = CustomNoteForm(request.form)
+    def custom_note(cls, data: RequestData) -> ResponseData:
+        form = CustomNoteForm(data.form)
+        if data.context.method == "POST" and form.validate():
+            person_name = data.context.person_visibility
+            custom_subject = cls._get_custom_subject(person_name)
+            note = NoteModel()
+            form.populate_obj(note)
+            note.add_subjects({custom_subject})
+            note.add_persons_visibility({PersonModel.find_by_name(person_name)})
+            note.save_to_db()
+            return ResponseData(
+                redirect=url_for('edit_note', note_id=note.id),
+                status_code=201,
+            )
         return ResponseData(
             'custom_note.html',
             resource={'form': form}
@@ -225,3 +234,23 @@ class NoteLogic(INoteRouteLogic):
         if admin:
             return note_schema
         return note_schema_without_visibility
+
+    @classmethod
+    def _get_custom_subject(cls, person_name: str):
+        subject_name = f"{person_name} - notatki własne"
+        subject = SubjectModel.find_by_name(subject_name, allow_none=True)
+        if subject is None:
+            subject = SubjectModel(name=subject_name)
+            custom_category = cls._get_custom_category()
+            subject.add_categories({custom_category})
+            subject.save_to_db()
+        return subject
+
+    @classmethod
+    def _get_custom_category(cls):
+        category_name = "notatki własne"
+        category = SubjectCategoryModel.find_by_name(category_name, allow_none=True)
+        if category is None:
+            category = SubjectCategoryModel(name=category_name)
+            category.save_to_db()
+        return category

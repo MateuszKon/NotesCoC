@@ -46,7 +46,7 @@ class RequestData(dict):
     ):
         self.data = data
         self.context = context
-        self.form = form or {}
+        self.form = form
         super().__init__()
 
     def get_data(self, key, default=None):

@@ -1,0 +1,82 @@
+{% macro label(text, required, id) -%}
+{% if id %}
+    <label for="{{ id }}" class="">
+{% endif %}
+    <span class="form-label__text">
+        {{ text }}
+        {% if required %}
+            <span class="red">*</span>
+        {% endif %}
+    </span>
+{% if id %}
+    </label>
+{% endif %}
+{%- endmacro %}
+
+{% macro error(errors, id) -%}
+    {% if errors and id %}
+        {% for error_text in errors %}
+            <label class="control-label red" for="{{ id }}">{{ error_text }}</label>
+        {% endfor %}
+    {% endif %}
+{%- endmacro %}
+
+{% macro field(field, field_name, form_class="form-input", field_class="form-control", field_kwargs={}) -%}
+    {% set label_text = field_name or field.label.text %}
+
+    {% if field.widget.input_type == "checkbox" %}
+        {% if 'table-data__input' in field_class %}
+                <label>
+                    {{ field(class_=field_class, **field_kwargs) }}
+                    <span class="checkmark"></span>
+                </label>
+        {% else %}
+            <div class="form-checkbox">
+                <label for="{{ field.id }}" class="form-label">
+                    {{ label(label_text, field.flags.required) }}
+                    {{ field(class_=field_class, **field_kwargs) }}
+                    <span class="checkmark"></span>
+                </label>
+                {{ error(field.errors, field.id) }}
+            </div>
+        {% endif %}
+    {% elif field.widget.input_type == "number" and 'form-quantity' in field_class %}
+        <div class="form-input-box form-number focused">
+          <div class="field {{ form_class }}{% if field.errors %} has-error{% endif %}" id="id_field_{{ field.id }}">
+                {{ label(label_text, field.flags.required, field.id) }}
+                {{ field(class_=field_class, **field_kwargs) }}
+            </div>
+            <button class="icon-button btn" data-event-type="minus" type="button" title="Decrease quantity value">
+                -
+            </button>
+            <button class="icon-button btn" data-event-type="plus" type="button" title="Increase quantity value">
+                +
+            </button>
+        </div>
+        {{ error(field.errors, field.id) }}
+    {% elif 'table-data__input' in field_class %}
+        <label class="sr-only" for="{{ field.id }}">{{ label_text }}</label>
+        {{ field(class_=field_class, **field_kwargs) }}
+    {% else %}
+        <div class="form-input-box{% if field.data or field.type == 'SelectField' %} focused{% endif %}">
+            <div class="field {{ form_class }}{% if field.errors %} has-error{% endif %}" id="id_field_{{ field.id }}">
+                {{ label(label_text, field.flags.required, field.id) }}
+                {{ field(class_=field_class, **field_kwargs) }}
+            </div>
+            {% if 'form-control-add' in field_class %}
+                <button class="icon-button btn toggle-extra-field-btn" data-event-type="plus" type="button" title="Add phone field">
+                    +
+                    -
+                </button>
+            {% endif %}
+            {% if 'form-control-remove' in field_class %}
+                <button class="icon-button btn remove-extra-field-btn" data-event-type="minus" type="button"
+                        title="Remove phone field">
+                    -
+                </button>
+            {% endif %}
+        </div>
+        {{ error(field.errors, field.id) }}
+    {% endif %}
+{%- endmacro %}
+

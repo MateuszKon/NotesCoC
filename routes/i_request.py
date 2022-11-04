@@ -29,6 +29,10 @@ class ContextData(dict):
     def admin(self):
         return self.get("jwt_admin", False)
 
+    @property
+    def method(self):
+        return self.get("method", None)
+
 
 class RequestData(dict):
     """
@@ -38,9 +42,11 @@ class RequestData(dict):
             self,
             data: RequestPayload,
             context: ContextData,
+            form: dict = None,  # additionally form data stored here
     ):
         self.data = data
         self.context = context
+        self.form = form or {}
         super().__init__()
 
     def get_data(self, key, default=None):

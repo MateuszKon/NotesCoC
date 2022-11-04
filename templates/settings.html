@@ -1,0 +1,22 @@
+{% extends "base_logged.html" %}
+{% block title%}<title>NotesCoC | Settings</title>{% endblock %}
+
+{% block main %}
+<h2 class="text-center text-primary">Ustawienia</h2>
+{% if admin is defined and admin %}
+<form action="" method="post" id="noteform">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <div class="mb-2">
+        <label for="today-date-control">Dzisiejsza data gry</label>
+        <input id="today-date-control" class="form-control" type="date"
+               value="{{ resource['today_game_date']|d('1920-01-01', true) }}"
+               name="today_game_date"/>
+    </div>
+    <button class="btn btn-primary btn-lg" type="submit">
+        Zapisz ustawienia
+    </button>
+</form>
+{% endif %}
+
+
+{% endblock %}

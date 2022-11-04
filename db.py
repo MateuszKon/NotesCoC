@@ -22,5 +22,14 @@ class BaseModel:
         db.session.delete(self)
         db.session.commit()
 
+    def merge(self):
+        db.session.merge(self)
+
+    def add(self):
+        db.session.add(self)
+
+    def commit(self):
+        db.session.commit()
+
 
 db = SQLAlchemy(model_class=BaseModel, metadata=metadata)

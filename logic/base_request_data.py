@@ -26,7 +26,7 @@ class BaseRequestData(IRequestData):
         context_data.update(cls.get_cookies_data())  # data from cookies
         context_data.update(cls.get_other_request_data())  # other data from request
         context_data.update(cls.get_jwt_data())  # data from jwt token
-        return RequestData(data, context_data)
+        return RequestData(data, context_data, cls.get_form_data())
 
     @classmethod
     def serialize_response(
@@ -58,6 +58,7 @@ class BaseRequestData(IRequestData):
             "content_type": request.content_type,
             "accept": request.accept_mimetypes.best,
             "args": request.args,
+            "method": request.method,
         }
 
     @classmethod
@@ -83,7 +84,8 @@ class BaseRequestData(IRequestData):
             jwt_data = get_jwt()
         except RuntimeError:
             jwt_data = {}
-        needed_keys = jwt_data.keys() & {'csrf', 'admin', 'scope', 'jti', 'exp', 'sub'}
+        needed_keys = jwt_data.keys() & {'csrf', 'admin', 'scope', 'jti',
+                                         'exp', 'sub'}
         return {'jwt_' + key: jwt_data[key] for key in needed_keys}
 
     @classmethod

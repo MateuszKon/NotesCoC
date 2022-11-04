@@ -50,6 +50,14 @@ class INoteRouteLogic(IRequestLogic):
     ) -> Union[ResponseData, Response]:
         pass
 
+    @classmethod
+    @abstractmethod
+    def custom_note(
+            cls,
+            data: RequestData,
+    ) -> ResponseData:
+        pass
+
 
 class NoteRoutes(BaseRoute):
 
@@ -76,6 +84,11 @@ class NoteRoutes(BaseRoute):
             "/note/<int:note_id>/delete",
             view_func=self.delete_note,
             methods=["GET", "POST", "DELETE"],
+        )
+        app.add_url_rule(
+            "/custom_note",
+            view_func=self.custom_note,
+            methods=["GET", "POST"],
         )
 
     @jwt_required_with_redirect()
@@ -109,3 +122,11 @@ class NoteRoutes(BaseRoute):
 
         # request.method == "GET"
         return self.logic.render_delete_note_confirmation(data, note_id=note_id)
+
+    @jwt_required_with_redirect()
+    @request_logic
+    def custom_note(
+            self,
+            data: RequestData,
+    ) -> Union[Response, ResponseData]:
+        return self.logic.custom_note(data)

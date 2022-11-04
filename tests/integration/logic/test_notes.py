@@ -25,7 +25,10 @@ class TestNotePageResponseDataPreparation(BaseIntegrationTest):
                     {}
                 ),
                 ContextData(
-                    {"jwt_scope": self.person_logged.name}
+                    {
+                        "jwt_scope": self.person_logged.name,
+                        "jwt_sub": 1,
+                     }
                 )
             )
             response = NoteLogic.render_edit_note(data, self.notes_visible[0].id)
@@ -74,7 +77,10 @@ class TestNotePageResponseDataPreparation(BaseIntegrationTest):
                     {}
                 ),
                 ContextData(
-                    {"jwt_admin": True}
+                    {
+                        "jwt_admin": True,
+                        "jwt_sub": 1,
+                    }
                 )
             )
             response = NoteLogic.render_edit_note(data, self.notes_visible[0].id)
@@ -119,7 +125,10 @@ class TestNotePageResponseDataPreparation(BaseIntegrationTest):
                     {}
                 ),
                 ContextData(
-                    {"jwt_scope": self.person_logged.name}
+                    {
+                        "jwt_scope": self.person_logged.name,
+                        "jwt_sub": 1,
+                    }
                 )
             )
             with self.assertRaises(NotFound):

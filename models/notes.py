@@ -3,6 +3,7 @@ from typing import List, Set
 
 from sqlalchemy import Column, Integer, String, Date, DateTime, or_, func
 from sqlalchemy.orm import relationship
+from wtforms.validators import DataRequired, Length
 
 from db import db
 from models.notes_subjects import notes_subjects
@@ -14,10 +15,23 @@ class NoteModel(db.Model):
     __tablename__ = "notes"
 
     id = Column(Integer, primary_key=True)
-    title = Column(String(80))
-    content = Column(String(5000))
-    game_creation_date = Column(Date, default=date(1920, 1, 1))
-    game_update_date = Column(Date, default=date(1920, 1, 1))
+    title = Column(
+        String(80),
+        info={"label": "Tytuł"})
+    content = Column(
+        String(5000),
+        info={"label": "Treść"}
+    )
+    game_creation_date = Column(
+        Date,
+        default=date(1920, 1, 1),
+        info={"label": "Data gry powstania notatki"}
+    )
+    game_update_date = Column(
+        Date,
+        default=date(1920, 1, 1),
+        info={"label": "Data gry aktualizacji notatki"}
+    )
     real_creation_date = Column(DateTime, default=datetime.now)
     real_update_date = Column(DateTime, default=datetime.now)
     persons_visibility = relationship(

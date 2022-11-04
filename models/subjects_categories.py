@@ -72,3 +72,9 @@ class SubjectCategoryModel(BaseResourceModel):
             ]
         self._subjects_filtered = filtered
         return self
+
+    @classmethod
+    def find_by_name(cls, name: str, allow_none=False) -> "SubjectCategoryModel":
+        if allow_none:
+            return cls.query.filter_by(name=name).one_or_none()
+        return cls.query.filter_by(name=name).one()

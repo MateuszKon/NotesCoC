@@ -3,6 +3,7 @@ from flask import Flask
 from logic.base_request_data import BaseRequestData
 from logic.home import HomeLogic
 from logic.notes import NoteLogic
+from logic.settings import SettingsLogic
 from logic.user_login import UserLoginLogic
 from logic.user_register import UserRegisterLogic
 from models import PersonModel, SubjectModel, SubjectCategoryModel, UserModel
@@ -11,6 +12,7 @@ from routes.admin_resource_route import AdminResourceRoute
 from routes.home import HomeRoutes
 from routes.notes import NoteRoutes
 from routes.base_resource import BaseResourceRoute
+from routes.settings import SettingsRoute
 from routes.subjects import SubjectRoutes
 from routes.users import UserRegister, UserLogin
 from schemas.persons import PersonSchema
@@ -76,6 +78,14 @@ def configure_routing(app: Flask):
         resource_url_name='user',
         resources_url_name='users',
         identifier=ResourceIdentifier("id", "int"),
+    )
+
+    # Settings route
+    # /settings
+    SettingsRoute(
+        app,
+        BaseRequestData,
+        SettingsLogic
     )
 
 

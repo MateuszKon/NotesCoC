@@ -4,7 +4,9 @@ from typing import List, Tuple, Set
 
 from flask import redirect, url_for, Response
 
-from models import SubjectModel
+from forms.notes import CustomNoteForm
+from models import SubjectModel, UserModel, SubjectCategoryModel
+from models.base_resource import ResourceIdentifier
 from models.notes import NoteModel
 from models.persons import PersonModel
 from routes.i_request import RequestPayload, ResponseData, RequestData
@@ -28,13 +30,18 @@ class NoteLogic(INoteRouteLogic):
             data: RequestData,
             note_id: int = None
     ) -> ResponseData:
+        settings = UserModel.get_requester(data).setting
+        admin = data.context.get("jwt_admin")
         if note_id is None:
             note = NoteModel()
+            if settings:
+                note.game_creation_date = settings.today_game_date
+                note.game_update_date = settings.today_game_date
         else:
             scope = data.context.person_visibility
             note = NoteModel.find_by_id_with_scope(note_id, scope)
-
-        admin = data.context.get("jwt_admin")
+            if settings:
+                note.game_update_date = settings.today_game_date
 
         note_schema_ = cls._get_note_schema(admin)
         resource = {'note': note_schema_.dump(note)}
@@ -103,6 +110,26 @@ class NoteLogic(INoteRouteLogic):
         note = NoteModel.find_by_id(note_id)
         note.delete_from_db()
         return redirect(url_for('home'))
+
+    @classmethod
+    def custom_note(cls, data: RequestData) -> ResponseData:
+        form = CustomNoteForm(data.form)
+        if data.context.method == "POST" and form.validate():
+            person_name = data.context.person_visibility
+            custom_subject = cls._get_custom_subject(person_name)
+            note = NoteModel()
+            form.populate_obj(note)
+            note.add_subjects({custom_subject})
+            note.add_persons_visibility({PersonModel.find_by_name(person_name)})
+            note.save_to_db()
+            return ResponseData(
+                redirect=url_for('edit_note', note_id=note.id),
+                status_code=201,
+            )
+        return ResponseData(
+            'custom_note.html',
+            resource={'form': form}
+        )
 
     @classmethod
     def _change_note_visibility(cls, note: NoteModel, data: RequestPayload):
@@ -207,3 +234,23 @@ class NoteLogic(INoteRouteLogic):
         if admin:
             return note_schema
         return note_schema_without_visibility
+
+    @classmethod
+    def _get_custom_subject(cls, person_name: str):
+        subject_name = f"{person_name} - notatki własne"
+        subject = SubjectModel.find_by_name(subject_name, allow_none=True)
+        if subject is None:
+            subject = SubjectModel(name=subject_name)
+            custom_category = cls._get_custom_category()
+            subject.add_categories({custom_category})
+            subject.save_to_db()
+        return subject
+
+    @classmethod
+    def _get_custom_category(cls):
+        category_name = "notatki własne"
+        category = SubjectCategoryModel.find_by_name(category_name, allow_none=True)
+        if category is None:
+            category = SubjectCategoryModel(name=category_name)
+            category.save_to_db()
+        return category

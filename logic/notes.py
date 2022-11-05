@@ -128,7 +128,7 @@ class NoteLogic(INoteRouteLogic):
             )
         return ResponseData(
             'custom_note.html',
-            resource={'form': form}
+            form=form
         )
 
     @classmethod

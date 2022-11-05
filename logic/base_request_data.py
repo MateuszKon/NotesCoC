@@ -115,6 +115,7 @@ class BaseRequestData(IRequestData):
         response = make_response(render_template(
             response_data.template,
             resource=response_data.resource,
+            form=response_data.form,
             **common_data,
             **response_data.kwargs,
         ))

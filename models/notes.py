@@ -15,13 +15,8 @@ class NoteModel(db.Model):
     __tablename__ = "notes"
 
     id = Column(Integer, primary_key=True)
-    title = Column(
-        String(80),
-        info={"label": "Tytuł"})
-    content = Column(
-        String(5000),
-        info={"label": "Treść"}
-    )
+    title = Column(String(80))
+    content = Column(String(5000))
     game_creation_date = Column(
         Date,
         default=date(1920, 1, 1),

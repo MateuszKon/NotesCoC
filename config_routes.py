@@ -1,5 +1,7 @@
 from flask import Flask
 
+from forms.categories import CategoryForm
+from forms.subjects import SubjectForm
 from logic.base_request_data import BaseRequestData
 from logic.home import HomeLogic
 from logic.notes import NoteLogic
@@ -11,7 +13,7 @@ from models.base_resource import ResourceIdentifier
 from routes.admin_resource_route import AdminResourceRoute
 from routes.home import HomeRoutes
 from routes.notes import NoteRoutes
-from routes.base_resource import BaseResourceRoute
+from routes.base_resource import BaseResourceRoute, BaseResourceRouteForm
 from routes.settings import SettingsRoute
 from routes.subjects import SubjectRoutes
 from routes.users import UserRegister, UserLogin
@@ -111,11 +113,12 @@ def configure_subject_routes(app: Flask):
         resource_url_name='subject',
         resources_url_name='subjects',
         identifier=ResourceIdentifier("name", "string"),
+        form=SubjectForm,
     )
 
 
 def configure_subject_categories_routes(app: Flask):
-    return BaseResourceRoute(
+    return BaseResourceRouteForm(
         app,
         BaseRequestData,
         SubjectCategoryModel,
@@ -127,4 +130,5 @@ def configure_subject_categories_routes(app: Flask):
         resource_url_name='subject_category',
         resources_url_name='subject_categories',
         identifier=ResourceIdentifier("name", "string"),
+        form=CategoryForm,
     )

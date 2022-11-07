@@ -31,6 +31,9 @@ class SubjectCategoryModel(BaseResourceModel):
     )
     _subjects_filtered = None
 
+    def __str__(self) -> str:
+        return f"{self.name}"
+
     def read(
             self,
             data: RequestData,

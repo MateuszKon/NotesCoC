@@ -33,6 +33,9 @@ class SubjectModel(BaseResourceModel):
     )
     _notes_filtered = None
 
+    def __str__(self) -> str:
+        return f"{self.name}"
+
     def read(
             self,
             data: RequestData,

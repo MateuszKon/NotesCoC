@@ -114,6 +114,7 @@ class NoteLogic(INoteRouteLogic):
     @classmethod
     def custom_note(cls, data: RequestData) -> ResponseData:
         form = CustomNoteForm(data.form)
+        form.subjects.query = SubjectModel.list(data)
         if data.context.method == "POST" and form.validate():
             person_name = data.context.person_visibility
             custom_subject = cls._get_custom_subject(person_name)
@@ -128,7 +129,7 @@ class NoteLogic(INoteRouteLogic):
             )
         return ResponseData(
             'custom_note.html',
-            resource={'form': form}
+            form=form
         )
 
     @classmethod

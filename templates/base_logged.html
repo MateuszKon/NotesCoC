@@ -15,10 +15,24 @@
      id="collapse-search">
     <ul class="navbar-nav list-group-horizontal-md d-md-flex justify-content-between me-auto">
         {% if admin %}
-        <li class="nav-item">
-            <a class="nav-link text-on-primary" aria-current="page"
-               href="{{ url_for('edit_note') }}">Nowa</a>
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle text-on-primary"
+               href="#"
+               data-bs-toggle="dropdown"
+               aria-expanded="false">Stwórz</a>
+            <ul class="nav-item dropdown dropdown-menu bg-primary">
+                <li>
+                    <a class="nav-link text-on-primary" aria-current="page" href="{{ url_for('edit_note') }}">notatkę</a>
+                </li>
+                <li>
+                    <a class="nav-link text-on-primary" aria-current="page" href="{{ url_for('subject_form') }}">temat</a>
+                </li>
+                <li>
+                    <a class="nav-link text-on-primary" aria-current="page" href="{{ url_for('subject_category_form') }}">kategorię</a>
+                </li>
+            </ul>
         </li>
+
         <li class="nav-item">
             <a class="nav-link text-on-primary" aria-current="page"
                href="{{ url_for('settings') }}">Ustawienia</a>

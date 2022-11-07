@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Union, Tuple, List
 
 from flask import Response
+from wtforms import Form
 
 
 class RequestPayload(dict):
@@ -84,14 +85,14 @@ class ResponseData:
             self,
             template: str = None,
             resource: dict = None,
+            form: Form = None,
             status_code: int = None,
             cookies: List[Cookie] = None,
             **kwargs,
     ):
         self.template = template
-        if resource is None:
-            resource = {}
-        self.resource = resource
+        self.resource = resource or {}
+        self.form = form
         self.status_code = status_code
         self.cookies = cookies or []
         self.kwargs = kwargs

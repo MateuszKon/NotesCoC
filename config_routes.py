@@ -1,6 +1,7 @@
 from flask import Flask
 
 from forms.categories import CategoryForm
+from forms.subjects import SubjectForm
 from logic.base_request_data import BaseRequestData
 from logic.home import HomeLogic
 from logic.notes import NoteLogic
@@ -112,6 +113,7 @@ def configure_subject_routes(app: Flask):
         resource_url_name='subject',
         resources_url_name='subjects',
         identifier=ResourceIdentifier("name", "string"),
+        form=SubjectForm,
     )
 
 

@@ -1,9 +1,12 @@
-from wtforms_alchemy import ModelForm, QuerySelectMultipleField
+from wtforms_alchemy import QuerySelectMultipleField
 
+from forms.base_form import OrderedForm
 from models import SubjectModel
 
 
-class SubjectForm(ModelForm):
+class SubjectForm(OrderedForm):
+
+    _field_order = ['name', 'Kategorie']
 
     class Meta:
         model = SubjectModel

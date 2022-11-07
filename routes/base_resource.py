@@ -190,7 +190,7 @@ class BaseResourceRouteForm(BaseResourceRoute):
             data: RequestData,
     ) -> Union[Response, ResponseData]:
         log_access(logging.WARNING, data)
-        form: ModelForm = self.form(data.form)
+        form: ModelForm = self.populate_form(self.form, data)
         if data.context.method == "POST" and form.validate():
             return self.save_resource(form)
         return ResponseData(
@@ -209,3 +209,5 @@ class BaseResourceRouteForm(BaseResourceRoute):
             resource={"message": f"Zapisano {self.resource_url_name}"}
         )
 
+    def populate_form(self, form: ModelForm, data: RequestData, **kwargs) -> ModelForm:
+        return form(data.form)

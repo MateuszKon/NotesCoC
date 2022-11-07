@@ -2,20 +2,23 @@ import logging
 from typing import Type, Union, List
 
 from flask import request, Flask, Response
+from wtforms_alchemy import ModelForm
 
 from config import log_access
+from forms.subjects import SubjectForm
 from libs.factories import name_factory
 from libs.jwt_functions import jwt_required_with_redirect
 from ma import ma
+from models import SubjectCategoryModel
 from models.base_resource import ResourceIdentifier, BaseResourceModel
 from models.subjects import SubjectModel
-from routes.base_resource import BaseResourceRoute
+from routes.base_resource import BaseResourceRouteForm
 from routes.base_route import request_logic
 from routes.i_request import IRequestData, RequestData, ResponseData
 from schemas.schema_context import SchemaContext
 
 
-class SubjectRoutes(BaseResourceRoute):
+class SubjectRoutes(BaseResourceRouteForm):
 
     logic: Type[SubjectModel]
 
@@ -30,9 +33,11 @@ class SubjectRoutes(BaseResourceRoute):
             resource_url_name: str = 'subject',
             resources_url_name: str = 'subjects',
             identifier: ResourceIdentifier = None,
+            form: SubjectForm = None,
+            form_template: str = 'form_resource.html',
     ):
         super().__init__(app, data, logic, schema, template,
-                         resource_url_name, resources_url_name, identifier)
+                         resource_url_name, resources_url_name, identifier, form, form_template)
         self.child_schema = child_schema
         app.add_url_rule(
             f"/{self.resource_url_name}/<string:name>/category",
@@ -130,3 +135,8 @@ class SubjectRoutes(BaseResourceRoute):
                     many=True
                 )
             return resource_dict
+
+    def populate_form(self, form: ModelForm, data: RequestData, **kwargs) -> ModelForm:
+        form: SubjectForm = super().populate_form(form, data)
+        form.categories.query = SubjectCategoryModel.list(data)
+        return form

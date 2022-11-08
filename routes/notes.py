@@ -16,11 +16,21 @@ class INoteRouteLogic(IRequestLogic):
 
     @classmethod
     @abstractmethod
+    def edit_note(
+            cls,
+            data: RequestData,
+            note_id: int = None,
+    ) -> ResponseData:
+        pass
+
+    @classmethod
+    @abstractmethod
     def render_edit_note(
             cls,
             data: RequestData,
             note_id: int = None,
     ) -> ResponseData:
+        #  Obsolete
         pass
 
     @classmethod
@@ -30,6 +40,7 @@ class INoteRouteLogic(IRequestLogic):
             data: RequestData,
             note_id: int = None,
     ) -> Response:
+        #  Obsolete
         pass
 
     @classmethod
@@ -91,7 +102,7 @@ class NoteRoutes(BaseRoute):
             methods=["GET", "POST"],
         )
 
-    @jwt_required_with_redirect()
+    @jwt_required_with_redirect(admin=True)
     @request_logic
     def edit_note(
             self,
@@ -100,13 +111,9 @@ class NoteRoutes(BaseRoute):
     ) -> Union[Response, ResponseData]:
         level = logging.INFO if request.method == "GET" else logging.WARNING
         log_access(level, data, note_id=note_id)
-        if request.method == "POST":
-            if not data.context.admin:
-                return access_denied_response()
-            return self.logic.save_note(data, note_id=note_id)
-
-        # request.method == "GET"
-        return self.logic.render_edit_note(data, note_id=note_id)
+        if request.method == "POST" and not data.context.admin:
+            return access_denied_response()
+        return self.logic.edit_note(data, note_id=note_id)
 
     @jwt_required_with_redirect(admin=True)
     @request_logic

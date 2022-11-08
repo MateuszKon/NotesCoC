@@ -23,3 +23,11 @@ class CustomNoteForm(OrderedForm):
             "game_update_date": {"format": "%Y-%m-%d", "default": date(1920, 1, 1)},
         }
 
+
+class AdminNoteForm(CustomNoteForm):
+
+    _field_order = ['title', "content", "persons_visibility", "subjects", "game_creation_date",
+                    "game_update_date"]
+
+    persons_visibility = QuerySelectMultipleField("Widoczność postaci")
+

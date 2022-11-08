@@ -95,7 +95,7 @@ class NoteLogic(INoteRouteLogic):
                 )
 
         return ResponseData(
-            'write_note.html',
+            'view_note.html',
             resource=resource,
             submit_callback=url_for('edit_note', note_id=note.id),
         )
@@ -168,13 +168,30 @@ class NoteLogic(INoteRouteLogic):
             note.add_persons_visibility({PersonModel.find_by_name(person_name)})
             note.save_to_db()
             return ResponseData(
-                redirect=url_for('edit_note', note_id=note.id),
+                redirect=url_for('view_note', note_id=note.id),
                 status_code=201,
                 resource={"message": "Notatka zapisana"},
             )
         return ResponseData(
-            'custom_note.html',
-            form=form
+            'form_resource.html',
+            form=form,
+            title="notatka"
+        )
+
+    @classmethod
+    def view_note(
+            cls,
+            data: RequestData,
+            note_id: int,
+    ) -> ResponseData:
+        scope = data.context.person_visibility
+        note = NoteModel.find_by_id_with_scope(note_id, scope)
+        note_schema_ = cls._get_note_schema(data.context.get("jwt_admin"))
+        resource = {'note': note_schema_.dump(note)}
+
+        return ResponseData(
+            "view_note.html",
+            resource=resource,
         )
 
     @classmethod

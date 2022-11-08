@@ -69,6 +69,15 @@ class INoteRouteLogic(IRequestLogic):
     ) -> ResponseData:
         pass
 
+    @classmethod
+    @abstractmethod
+    def view_note(
+            cls,
+            data: RequestData,
+            note_id: int,
+    ) -> ResponseData:
+        pass
+
 
 class NoteRoutes(BaseRoute):
 
@@ -87,7 +96,7 @@ class NoteRoutes(BaseRoute):
             methods=["GET", "POST"],
         )
         app.add_url_rule(
-            "/note/<int:note_id>/view",
+            "/note/<int:note_id>/edit",
             view_func=self.edit_note,
             methods=["GET", "POST"],
         )
@@ -100,6 +109,11 @@ class NoteRoutes(BaseRoute):
             "/custom_note",
             view_func=self.custom_note,
             methods=["GET", "POST"],
+        )
+        app.add_url_rule(
+            "/note/<int:note_id>/view",
+            view_func=self.view_note,
+            methods=["GET"],
         )
 
     @jwt_required_with_redirect(admin=True)
@@ -137,3 +151,12 @@ class NoteRoutes(BaseRoute):
             data: RequestData,
     ) -> Union[Response, ResponseData]:
         return self.logic.custom_note(data)
+
+    @jwt_required_with_redirect()
+    @request_logic
+    def view_note(
+            self,
+            data: RequestData,
+            note_id: int,
+    ) -> Union[Response, ResponseData]:
+        return self.logic.view_note(data, note_id)

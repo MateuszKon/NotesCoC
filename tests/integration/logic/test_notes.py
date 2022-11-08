@@ -36,7 +36,7 @@ class TestNotePageResponseDataPreparation(BaseIntegrationTest):
 
             note = response.resource['note']
             user_note_keys = ['real_update_date', 'title', 'real_creation_date', 'content', 'id',
-                              'game_creation_date', 'subjects', 'game_update_date', ]
+                              'game_creation_date', 'subjects', 'game_update_date', 'categories']
             self.assertEqual(
                 len(note),
                 len(user_note_keys),
@@ -89,7 +89,7 @@ class TestNotePageResponseDataPreparation(BaseIntegrationTest):
             note = response.resource['note']
             user_note_keys = ['real_update_date', 'title', 'real_creation_date', 'content', 'id',
                               'game_creation_date', 'subjects', 'game_update_date',
-                              'persons_visibility']
+                              'persons_visibility', 'categories']
             self.assertEqual(
                 len(note),
                 len(user_note_keys),

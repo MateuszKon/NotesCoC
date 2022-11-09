@@ -1,17 +1,20 @@
 {% extends "base.html" %}
 
 {% block title %}
-<title>Notes | Login</title>
+<title>Notes | Rejestracja</title>
 {% endblock %}
 
 {% block script %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsSHA/2.0.2/sha.js"></script>
 {% endblock %}
 
+{% block header %}
+Zarejestruj jako {{ resource['person_name'] }}
+{% endblock %}
+
 {% block main %}
 <div class="row justify-content-center">
     <div class="col main col-12 col-md-6 col-lg-4">
-        <h1 class="text-center text-primary">Register as {{ resource['person_name'] }}</h1>
         <form onsubmit="mySubmit(this)"
               action="{{ url_for('register_user',registration_hash=resource['hash']) }}"
               method="post" id="register_form">

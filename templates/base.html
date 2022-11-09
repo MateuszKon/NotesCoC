@@ -57,7 +57,10 @@
         {% endfor %}
         {% endif %}
         {% endwith %}
-
+        <h2 class="text-center text-primary">
+            {% block header %}
+            {% endblock %}
+        </h2>
         {% block main %}
         {% endblock %}
 

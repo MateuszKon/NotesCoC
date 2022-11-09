@@ -1,6 +1,10 @@
 {% extends "base_logged.html" %}
 {% block title%}<title>NotesCoC | Tematy</title>{% endblock %}
 
+{% block header %}
+Tematy
+{% endblock %}
+
 {% block main %}
 <div class="row justify-content-center justify-content-sm-start">
     {% for subject in resource['list'] %}

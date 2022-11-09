@@ -175,7 +175,7 @@ class NoteLogic(INoteRouteLogic):
         return ResponseData(
             'form_resource.html',
             form=form,
-            title="notatka"
+            title="Nowa notatka"
         )
 
     @classmethod

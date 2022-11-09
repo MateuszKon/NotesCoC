@@ -1,7 +1,10 @@
 {% extends "base_logged.html" %}
 
+{% block header %}
+Potwierdź usunięcie notatki
+{% endblock %}
+
 {% block main %}
-    <h2 class="text-center text-primary">Confirm note deletion</h2>
     <form action="{{ submit_callback }}" method="post" id="noteform">
         <input type="hidden" name="_method" value="DELETE">
         <input type="hidden" name="csrf_token" value="{{ csrf_token }}">

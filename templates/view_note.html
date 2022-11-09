@@ -5,7 +5,7 @@
 <script src="{{ url_for('static',filename='js/select_subject.js') }}"></script>
 {% endblock %}
 
-{% block main %}
+{% block header %}
 {% if admin %}
 <div class="d-flex align-items-center justify-content-end mb-2">
     <a type="button" class="btn btn-sm btn-success mx-1"
@@ -18,10 +18,10 @@
     </a>
 </div>
 {% endif %}
-<h2 class="text-center text-primary">
-    {{resource['note']['title']|default('Notatka',true) }}
-</h2>
+{{resource['note']['title']|default('Notatka',true) }}
+{% endblock %}
 
+{% block main %}
 <textarea class="form-control" rows="10" readonly="readonly">{{
      resource['note']['content']|d('', true) }}</textarea>
 

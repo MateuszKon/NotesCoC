@@ -53,6 +53,13 @@ class NoteLogic(INoteRouteLogic):
 
         if data.context.method == "POST" and form.validate():
             form.populate_obj(note)
+            if form.new_subjects.data:
+                note.add_subjects(
+                    {
+                        SubjectModel.find_by_name(new_subject['name'])
+                        for new_subject in form.new_subjects.data
+                    }
+                )
             note.save_to_db()
             return ResponseData(
                 redirect=url_for('home'),

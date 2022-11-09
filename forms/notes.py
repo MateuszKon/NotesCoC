@@ -1,10 +1,11 @@
 from datetime import date
 
-from wtforms import StringField, TextAreaField
+from wtforms import StringField, TextAreaField, FieldList
 from wtforms.validators import DataRequired, Length
-from wtforms_alchemy import QuerySelectMultipleField
+from wtforms_alchemy import QuerySelectMultipleField, ModelFormField
 
 from forms.base_form import OrderedForm
+from forms.subjects import SubjectForm
 from models import NoteModel
 
 
@@ -27,7 +28,11 @@ class CustomNoteForm(OrderedForm):
 class AdminNoteForm(CustomNoteForm):
 
     _field_order = ['title', "content", "persons_visibility", "subjects", "game_creation_date",
-                    "game_update_date"]
+                    "game_update_date", "new_subjects"]
 
     persons_visibility = QuerySelectMultipleField("Widoczność postaci")
+    new_subjects = FieldList(
+        ModelFormField(SubjectForm, label="Nowy temat"),
+        label="Nowe tematy",
+    )
 

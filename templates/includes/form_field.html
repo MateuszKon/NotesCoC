@@ -24,16 +24,26 @@
 {% macro field(field, field_name, form_class="form-input", field_class="form-control", field_kwargs={}) -%}
     {% set label_text = field_name or field.label.text %}
     <div class="form-input-box{% if field.data or field.type == 'SelectField' %} focused{% endif %}">
+
         <div class="field {{ form_class }}{% if field.errors %} has-error{% endif %}" id="id_field_{{ field.id }}">
             {{ label(label_text, field.flags.required, field.id) }}
             {{ field(class_=field_class, **field_kwargs) }}
-        </div>
-        {% if 'form-control-add' in field_class %}
-            <button class="icon-button btn toggle-extra-field-btn" data-event-type="plus" type="button" title="Add phone field">
-                +
-                -
+            {% if 'FieldList' in field.type %}
+            <script src="{{ url_for('static',filename='js/select_subject.js') }}"></script>
+            <script>
+                const subjectsGenerator = new NewSubjectFieldCreator(
+                    "{{ field.id }}",
+                    "{{ field | length }}",
+                    '{{ field.append_entry()() }}'
+                );
+            </script>
+            <button class="btn btn-outline-primary" data-event-type="plus" type="button"
+                    onclick="subjectsGenerator.additionalSubject()">
+                <img src="{{ url_for('static',filename='/assets/img/plus-square.svg') }}" alt="Add">
             </button>
-        {% endif %}
+            {% endif %}
+        </div>
+
         {% if 'form-control-remove' in field_class %}
             <button class="icon-button btn remove-extra-field-btn" data-event-type="minus" type="button"
                     title="Remove phone field">

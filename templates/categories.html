@@ -1,6 +1,10 @@
 {% extends "base_logged.html" %}
 {% block title%}<title>NotesCoC | Kategorie</title>{% endblock %}
 
+{% block header %}
+Kategorie
+{% endblock %}
+
 {% block main %}
 <div class="row justify-content-center justify-content-sm-start">
     {% for category in resource['list'] %}

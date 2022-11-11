@@ -3,8 +3,11 @@
 
 {% import 'includes/form_field.html' as forms %}
 
+{% block header %}
+{{title}}
+{% endblock %}
+
 {% block main %}
-<h2 class="text-center text-primary">Nowy {{title}}</h2>
 <form action="" method="post" id="noteform">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
     {% for field in form %}

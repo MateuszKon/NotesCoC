@@ -3,6 +3,7 @@ import logging.config
 import os
 
 import libs.env_import  # Import for loading .env file before other imports
+from libs.path import get_project_directory
 from routes.i_request import ContextData, RequestData
 
 
@@ -36,7 +37,7 @@ class DevelopmentConfig(Config):
     SQLALCHEMY_ECHO = False
 
 
-logging.config.fileConfig('logging.conf')
+logging.config.fileConfig(os.path.join(get_project_directory(), 'logging.conf'))
 logger = logging.getLogger("NotesCoC")
 
 

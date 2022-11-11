@@ -136,7 +136,13 @@ class SubjectRoutes(BaseResourceRouteForm):
                 )
             return resource_dict
 
-    def populate_form(self, form: ModelForm, data: RequestData, **kwargs) -> ModelForm:
-        form: SubjectForm = super().populate_form(form, data)
+    def populate_form(
+            self,
+            form: ModelForm,
+            data: RequestData,
+            obj: BaseResourceModel,
+            **kwargs
+    ) -> ModelForm:
+        form: SubjectForm = super().populate_form(form, data, obj)
         form.categories.query = SubjectCategoryModel.list(data)
         return form

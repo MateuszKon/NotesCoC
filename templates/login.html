@@ -8,23 +8,26 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsSHA/2.0.2/sha.js"></script>
 {% endblock %}
 
+{% block header %}
+Logowanie
+{% endblock %}
+
 {% block main %}
 <div class="row justify-content-center">
     <div class="col main col-12 col-md-6 col-lg-4">
-        <h1 class="text-center text-primary">Login</h1>
         <form onsubmit="myLogin(this)"
               action="{{ url_for('login_user', next=next) }}"
               method="post" id="login_form">
             <input class="form-control my-2" type="text"
-                   placeholder="Enter username"
+                   placeholder="Wprowadź login"
                    name="username"
                    autocomplete="username" required>
             <input class="form-control my-2" type="password"
-                   placeholder="Enter password"
+                   placeholder="Wprowadź hasło"
                    name="current-password" id="current-password"
                    autocomplete="current-password" required>
             <input class="btn btn-primary btn-lg" type="submit"
-                   value="Login user">
+                   value="Zaloguj">
             <script src="{{ url_for('static',filename='js/login.js') }}"></script>
         </form>
     </div>

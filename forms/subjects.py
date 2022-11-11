@@ -1,7 +1,7 @@
 from wtforms_alchemy import QuerySelectMultipleField
 
 from forms.base_form import OrderedForm
-from models import SubjectModel
+from models import SubjectModel, SubjectCategoryModel
 
 
 class SubjectForm(OrderedForm):
@@ -12,4 +12,7 @@ class SubjectForm(OrderedForm):
         model = SubjectModel
         include = ('name',)
 
-    categories = QuerySelectMultipleField("Kategorie")
+    categories = QuerySelectMultipleField(
+        "Kategorie",
+        query_factory=lambda: SubjectCategoryModel.query,
+    )

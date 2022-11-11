@@ -1,8 +1,11 @@
 {% extends "base_logged.html" %}
 {% block title%}<title>NotesCoC | Settings</title>{% endblock %}
 
+{% block header %}
+Ustawienia
+{% endblock %}
+
 {% block main %}
-<h2 class="text-center text-primary">Ustawienia</h2>
 {% if admin is defined and admin %}
 <form action="" method="post" id="noteform">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">

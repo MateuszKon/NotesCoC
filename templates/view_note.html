@@ -1,0 +1,80 @@
+{% extends "base_logged.html" %}
+{% block title%}<title>NotesCoC | {{ resource['note']['title']|default('notatka',true) }}</title>{% endblock %}
+
+{% block script %}
+<script src="{{ url_for('static',filename='js/select_subject.js') }}"></script>
+{% endblock %}
+
+{% block header %}
+{% if admin %}
+<div class="d-flex align-items-center justify-content-end mb-2">
+    <a type="button" class="btn btn-sm btn-success mx-1"
+       href="{{url_for('edit_note', note_id=resource['note']['id']) }}">
+        Edit
+    </a>
+    <a type="button" class="btn btn-sm btn-outline-success mx-1"
+       href="{{ url_for('delete_note', note_id=resource['note']['id']) }}">
+        Delete
+    </a>
+</div>
+{% endif %}
+{{resource['note']['title']|default('Notatka',true) }}
+{% endblock %}
+
+{% block main %}
+<textarea class="form-control" rows="10" readonly="readonly">{{
+     resource['note']['content']|d('', true) }}</textarea>
+
+<span class="text-primary fst-italic">
+    Informacje aktualne na dzień: {{ resource['note']['game_update_date'] }}<br/>
+    Utworzono: {{ resource['note']['real_creation_date'] }} Zaktualizowano: {{ resource['note']['real_update_date'] }}
+</span>
+
+{% set subjects = resource['note']['subjects'] %}
+<div class="card bg-secondary mt-4">
+    <div class="card-header bg-primary">
+        <span class="text-on-primary">
+            Notatka związana z tematami:
+        </span>
+        {% if subjects | length > 3 %}
+        <span
+                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success text-primary">
+            {{ subjects | length }}
+        </span>
+        {% endif %}
+    </div>
+    <ul class="note-group list-group">
+        {% for subject in subjects %}
+        <a class="list-group-item bg-secondary"
+           href="{{url_for('home', subject=subject['name']) }}">
+            {{ subject['name'] }}
+        </a>
+        {% endfor %}
+    </ul>
+</div>
+
+{% set categories = resource['note']['categories'] %}
+<div class="card bg-secondary mt-4">
+    <div class="card-header bg-primary">
+        <span class="text-on-primary">
+            Notatka związana z kategoriami:
+        </span>
+        {% if categories | length > 3 %}
+        <span
+                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success text-primary">
+            {{ categories | length }}
+        </span>
+        {% endif %}
+    </div>
+    <ul class="note-group list-group">
+        {% for category in categories %}
+        <a class="list-group-item bg-secondary"
+           href="{{url_for('subjects', category=category['name']) }}">
+            {{ category['name'] }}
+        </a>
+        {% endfor %}
+    </ul>
+</div>
+
+
+{% endblock %}

@@ -4,7 +4,7 @@ from typing import List, Tuple, Set
 
 from flask import redirect, url_for, Response
 
-from forms.notes import CustomNoteForm
+from forms.notes import CustomNoteForm, AdminNoteForm
 from models import SubjectModel, UserModel, SubjectCategoryModel
 from models.base_resource import ResourceIdentifier
 from models.notes import NoteModel
@@ -25,11 +25,61 @@ NOTE_ID_ERROR = "Note ID messed up."
 class NoteLogic(INoteRouteLogic):
 
     @classmethod
+    def edit_note(
+            cls,
+            data: RequestData,
+            note_id: int = None
+    ) -> ResponseData:
+        # store request parameters in local variables
+        settings = UserModel.get_requester(data).setting
+
+        # create new note object or get existing one
+        if note_id is None:
+            note = NoteModel()
+        else:
+            scope = data.context.person_visibility
+            note = NoteModel.find_by_id_with_scope(note_id, scope)
+
+        # update game dates if settings exists
+        if data.context.method == "GET":
+            if settings:
+                if note_id is None:
+                    note.game_creation_date = settings.today_game_date
+                note.game_update_date = settings.today_game_date
+
+        form = AdminNoteForm(data.form, obj=note)
+        form.subjects.query = SubjectModel.list(data)
+        form.persons_visibility.query = PersonModel.list(data)
+
+        if data.context.method == "POST" and form.validate():
+            form.populate_obj(note)
+            if form.new_subjects.data:
+                note.add_subjects(
+                    {
+                        SubjectModel.find_by_name(new_subject['name'])
+                        for new_subject in form.new_subjects.data
+                    }
+                )
+            note.save_to_db()
+            return ResponseData(
+                redirect=url_for('home'),
+                status_code=202 if note_id else 201,
+                resource={"message": "Notatka zapisana"}
+            )
+
+        return ResponseData(
+            'form_resource.html',
+            form=form,
+            title="notatka"
+        )
+
+    @classmethod
     def render_edit_note(
             cls,
             data: RequestData,
             note_id: int = None
     ) -> ResponseData:
+        # obsolete
         settings = UserModel.get_requester(data).setting
         admin = data.context.get("jwt_admin")
         if note_id is None:
@@ -52,7 +102,7 @@ class NoteLogic(INoteRouteLogic):
                 )
 
         return ResponseData(
-            'write_note.html',
+            'view_note.html',
             resource=resource,
             submit_callback=url_for('edit_note', note_id=note.id),
         )
@@ -63,6 +113,7 @@ class NoteLogic(INoteRouteLogic):
             data: RequestData,
             note_id: int = None
     ) -> Response:
+        # obsolete
         if note_id is None:
             note = NoteModel()
         else:
@@ -124,12 +175,30 @@ class NoteLogic(INoteRouteLogic):
             note.add_persons_visibility({PersonModel.find_by_name(person_name)})
             note.save_to_db()
             return ResponseData(
-                redirect=url_for('edit_note', note_id=note.id),
+                redirect=url_for('view_note', note_id=note.id),
                 status_code=201,
+                resource={"message": "Notatka zapisana"},
             )
         return ResponseData(
-            'custom_note.html',
-            form=form
+            'form_resource.html',
+            form=form,
+            title="Nowa notatka"
+        )
+
+    @classmethod
+    def view_note(
+            cls,
+            data: RequestData,
+            note_id: int,
+    ) -> ResponseData:
+        scope = data.context.person_visibility
+        note = NoteModel.find_by_id_with_scope(note_id, scope)
+        note_schema_ = cls._get_note_schema(data.context.get("jwt_admin"))
+        resource = {'note': note_schema_.dump(note)}
+
+        return ResponseData(
+            "view_note.html",
+            resource=resource,
         )
 
     @classmethod

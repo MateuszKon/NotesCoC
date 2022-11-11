@@ -20,6 +20,9 @@ class PersonModel(BaseResourceModel):
         collection_class=set,
     )
 
+    def __str__(self) -> str:
+        return f"{self.name}"
+
     def is_note_visible(self, note_id: int):
         return bool(self.notes_visible.filter(
             NoteModel.id == note_id).one_or_none())

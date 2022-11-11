@@ -193,7 +193,7 @@ class TestHomePageResponseDataPreparation(BaseIntegrationTest):
 
             note = response.resource[0]
             user_note_keys = ['real_update_date', 'title', 'real_creation_date', 'content', 'id',
-                              'game_creation_date', 'subjects', 'game_update_date', ]
+                              'game_creation_date', 'subjects', 'game_update_date', 'categories']
             self.assertEqual(
                 len(note),
                 len(user_note_keys),
@@ -216,6 +216,17 @@ class TestHomePageResponseDataPreparation(BaseIntegrationTest):
                 'name',
                 subject,
                 "Subject dictionary in note dictionary does not contain key!"
+            )
+            category = note['categories'][0]
+            self.assertEqual(
+                len(category),
+                1,
+                "Number of keys of category dictionary in note dictionary is incorrect!"
+            )
+            self.assertIn(
+                'name',
+                category,
+                "Category dictionary in note dictionary does not contain key!"
             )
 
     def test_home_page_resource_fields_displayed_for_admin(self):
@@ -233,7 +244,7 @@ class TestHomePageResponseDataPreparation(BaseIntegrationTest):
             note = response.resource[0]
             user_note_keys = ['real_update_date', 'title', 'real_creation_date', 'content', 'id',
                               'game_creation_date', 'subjects', 'game_update_date',
-                              'persons_visibility', ]
+                              'persons_visibility', 'categories']
             self.assertEqual(
                 len(note),
                 len(user_note_keys),
@@ -257,3 +268,15 @@ class TestHomePageResponseDataPreparation(BaseIntegrationTest):
                 subject,
                 "Subject dictionary in note dictionary does not contain key!"
             )
+            category = note['categories'][0]
+            self.assertEqual(
+                len(category),
+                1,
+                "Number of keys of category dictionary in note dictionary is incorrect!"
+            )
+            self.assertIn(
+                'name',
+                category,
+                "Category dictionary in note dictionary does not contain key!"
+            )
+

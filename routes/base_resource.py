@@ -177,7 +177,12 @@ class BaseResourceRouteForm(BaseResourceRoute):
         self.form_template = form_template
         if self.form is not None:
             app.add_url_rule(
-                f"/form/{self.resource_url_name}",
+                f"/form/new/{self.resource_url_name}",
+                view_func=self.form_view(f"new_{self.resource_url_name}_form"),
+                methods=["GET", "POST"],
+            )
+            app.add_url_rule(
+                f"/form/{self.resource_url_name}/{self.identifier.type_str}",
                 view_func=self.form_view(f"{self.resource_url_name}_form"),
                 methods=["GET", "POST"],
             )
@@ -188,26 +193,38 @@ class BaseResourceRouteForm(BaseResourceRoute):
     def form_view(
             self,
             data: RequestData,
+            **kwargs,
     ) -> Union[Response, ResponseData]:
+        identifier_value = kwargs.get(self.identifier.key)
+        if identifier_value is None:
+            obj = self.logic()
+        else:
+            identifier = self.identifier.new_value(identifier_value)
+            obj = self.logic.get_by_identifier(identifier)
         log_access(logging.WARNING, data)
-        form: ModelForm = self.populate_form(self.form, data)
+        form: ModelForm = self.populate_form(self.form, data, obj)
         if data.context.method == "POST" and form.validate():
-            return self.save_resource(form)
+            return self.save_resource(form, obj)
         return ResponseData(
             self.form_template,
             form=form,
             title=self.resource_url_name,
         )
 
-    def save_resource(self, form: ModelForm) -> ResponseData:
-        resource = self.logic()
-        form.populate_obj(resource)
-        resource.save_to_db()
+    def save_resource(self, form: ModelForm, obj: BaseResourceModel) -> ResponseData:
+        form.populate_obj(obj)
+        obj.save_to_db()
         return ResponseData(
             redirect=url_for('home'),
             status_code=201,
             resource={"message": f"Zapisano {self.resource_url_name}"}
         )
 
-    def populate_form(self, form: ModelForm, data: RequestData, **kwargs) -> ModelForm:
-        return form(data.form)
+    def populate_form(
+            self,
+            form: ModelForm,
+            data: RequestData,
+            obj: BaseResourceModel,
+            **kwargs
+    ) -> ModelForm:
+        return form(data.form, obj=obj)

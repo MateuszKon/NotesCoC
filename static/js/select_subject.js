@@ -56,3 +56,29 @@ class FormSubjectSelector {
         }
     }
 }
+
+class NewSubjectFieldCreator {
+    constructor(parent_id, id_number, html_template) {
+        this.parent_id = parent_id;
+        this.html_template = html_template;
+        this.id_number = id_number;
+    }
+
+    additionalSubject = (event) => {
+        const parent = document.getElementById(this.parent_id)
+        const replace = this.parent_id + '-\\d+';
+        const regex = new RegExp(replace,"g");
+        const inner = this.html_template.replaceAll(
+            regex,
+            this.parent_id + '-' + this.id_number
+        );
+
+        let li = document.createElement('li');
+        li.innerHTML = inner;
+
+        parent.appendChild(li);
+
+        this.id_number = (Number(this.id_number) + 1).toString();
+    }
+
+}

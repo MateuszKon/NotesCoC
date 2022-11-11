@@ -16,11 +16,21 @@ class INoteRouteLogic(IRequestLogic):
 
     @classmethod
     @abstractmethod
+    def edit_note(
+            cls,
+            data: RequestData,
+            note_id: int = None,
+    ) -> ResponseData:
+        pass
+
+    @classmethod
+    @abstractmethod
     def render_edit_note(
             cls,
             data: RequestData,
             note_id: int = None,
     ) -> ResponseData:
+        #  Obsolete
         pass
 
     @classmethod
@@ -30,6 +40,7 @@ class INoteRouteLogic(IRequestLogic):
             data: RequestData,
             note_id: int = None,
     ) -> Response:
+        #  Obsolete
         pass
 
     @classmethod
@@ -58,6 +69,15 @@ class INoteRouteLogic(IRequestLogic):
     ) -> ResponseData:
         pass
 
+    @classmethod
+    @abstractmethod
+    def view_note(
+            cls,
+            data: RequestData,
+            note_id: int,
+    ) -> ResponseData:
+        pass
+
 
 class NoteRoutes(BaseRoute):
 
@@ -76,7 +96,7 @@ class NoteRoutes(BaseRoute):
             methods=["GET", "POST"],
         )
         app.add_url_rule(
-            "/note/<int:note_id>/view",
+            "/note/<int:note_id>/edit",
             view_func=self.edit_note,
             methods=["GET", "POST"],
         )
@@ -90,8 +110,13 @@ class NoteRoutes(BaseRoute):
             view_func=self.custom_note,
             methods=["GET", "POST"],
         )
+        app.add_url_rule(
+            "/note/<int:note_id>/view",
+            view_func=self.view_note,
+            methods=["GET"],
+        )
 
-    @jwt_required_with_redirect()
+    @jwt_required_with_redirect(admin=True)
     @request_logic
     def edit_note(
             self,
@@ -100,13 +125,9 @@ class NoteRoutes(BaseRoute):
     ) -> Union[Response, ResponseData]:
         level = logging.INFO if request.method == "GET" else logging.WARNING
         log_access(level, data, note_id=note_id)
-        if request.method == "POST":
-            if not data.context.admin:
-                return access_denied_response()
-            return self.logic.save_note(data, note_id=note_id)
-
-        # request.method == "GET"
-        return self.logic.render_edit_note(data, note_id=note_id)
+        if request.method == "POST" and not data.context.admin:
+            return access_denied_response()
+        return self.logic.edit_note(data, note_id=note_id)
 
     @jwt_required_with_redirect(admin=True)
     @request_logic
@@ -130,3 +151,12 @@ class NoteRoutes(BaseRoute):
             data: RequestData,
     ) -> Union[Response, ResponseData]:
         return self.logic.custom_note(data)
+
+    @jwt_required_with_redirect()
+    @request_logic
+    def view_note(
+            self,
+            data: RequestData,
+            note_id: int,
+    ) -> Union[Response, ResponseData]:
+        return self.logic.view_note(data, note_id)

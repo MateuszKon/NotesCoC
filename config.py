@@ -13,10 +13,20 @@ def _translate_postgres_driver(database_url: str):
     return database_url
 
 
+def _create_database_uri(driver, db, user, host, password) -> str:
+    return _translate_postgres_driver(
+        f"{driver}://{user}:{password}@{host}/{db}"
+    )
+
+
 class Config:
     DEBUG = False
-    SQLALCHEMY_DATABASE_URI = _translate_postgres_driver(
-        os.environ.get("DATABASE_URL")
+    SQLALCHEMY_DATABASE_URI = _create_database_uri(
+        os.environ.get("DATABASE_DRIVER"),
+        os.environ.get("DATABASE_DB"),
+        os.environ.get("DATABASE_USER"),
+        os.environ.get("DATABASE_HOST"),
+        os.environ.get("DATABASE_PASSWORD"),
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     PROPAGATE_EXCEPTIONS = True

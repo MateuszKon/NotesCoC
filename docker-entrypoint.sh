@@ -1,4 +1,7 @@
 #!/bin/sh
+echo "CHECKING DATABASE CONNECTION"
+while true; do sleep 5 && python db_connection_test.py && break; done
+echo "DATABASE CONNECTION IS UP"
 
 flask db upgrade
 

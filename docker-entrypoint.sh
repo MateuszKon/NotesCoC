@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#flask db upgrade
+flask db upgrade
 
 service nginx restart
 cat /var/log/nginx/error.log

@@ -13,9 +13,11 @@ def _translate_postgres_driver(database_url: str):
     return database_url
 
 
-def _create_database_uri(driver, db, user, host, password) -> str:
+def _create_database_uri(driver, db, user, host, password, port=None) -> str:
+    if port:
+        port = f":{port}"
     return _translate_postgres_driver(
-        f"{driver}://{user}:{password}@{host}/{db}"
+        f"{driver}://{user}:{password}@{host}{port}/{db}"
     )
 
 
@@ -27,6 +29,7 @@ class Config:
         os.environ.get("DATABASE_USER"),
         os.environ.get("DATABASE_HOST"),
         os.environ.get("DATABASE_PASSWORD"),
+        os.environ.get("DATABASE_PORT", None),
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     PROPAGATE_EXCEPTIONS = True

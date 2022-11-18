@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-secret
+  labels:
+    app: notescoc
+data:
+  POSTGRES_DB: notesdb
+  POSTGRES_USER: notesuser
+  POSTGRES_PASSWORD: notespassword

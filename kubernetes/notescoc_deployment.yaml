@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notescoc-deploy
+  labels:
+    tier: app
+    app: notescoc
+spec:
+  selector:
+    matchLabels:
+      app: notescoc
+      type: app
+  replicas: 1
+  template:
+    metadata:
+      name: notescoc-app
+      labels:
+        app: notescoc
+        type: app
+    spec:
+      containers:
+        - name: notescoc
+          image: notescoc
+          imagePullPolicy: Never

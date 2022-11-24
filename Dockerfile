@@ -6,10 +6,6 @@ RUN pip install --upgrade pip
 # copy the requirements file into the image
 COPY ./requirements.txt /app/requirements.txt
 
-RUN apt-get update && apt-get --quiet --yes --no-install-recommends install \
-    nginx \
-    && rm -rf /var/lib/apt/lists/*
-
 # switch working directory
 WORKDIR /app
 
@@ -18,9 +14,6 @@ RUN pip install -r requirements.txt
 
 # copy every content from the local file to the image
 COPY . /app
-
-RUN rm -rf /etc/nginx/sites-enabled/default
-COPY nginx-local-proxy.conf /etc/nginx/sites-enabled/nginx-local-proxy.conf
 
 RUN chmod +x /app/docker-entrypoint.sh
 

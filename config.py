@@ -14,8 +14,7 @@ def _translate_postgres_driver(database_url: str):
 
 
 def _create_database_uri(driver, db, user, host, password, port=None) -> str:
-    if port:
-        port = f":{port}"
+    port = f":{port}" if port is not None else ""
     return _translate_postgres_driver(
         f"{driver}://{user}:{password}@{host}{port}/{db}"
     )
@@ -48,6 +47,7 @@ class DevelopmentConfig(Config):
     # SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL",
     #                                          "sqlite:///data.db")
     SQLALCHEMY_ECHO = False
+    JWT_COOKIE_SECURE = False
 
 
 logging.config.fileConfig(os.path.join(get_project_directory(), 'logging.conf'))

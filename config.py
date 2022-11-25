@@ -13,10 +13,22 @@ def _translate_postgres_driver(database_url: str):
     return database_url
 
 
+def _create_database_uri(driver, db, user, host, password, port=None) -> str:
+    port = f":{port}" if port is not None and len(port) else ""
+    return _translate_postgres_driver(
+        f"{driver}://{user}:{password}@{host}{port}/{db}"
+    )
+
+
 class Config:
     DEBUG = False
-    SQLALCHEMY_DATABASE_URI = _translate_postgres_driver(
-        os.environ.get("DATABASE_URL")
+    SQLALCHEMY_DATABASE_URI = _create_database_uri(
+        os.environ.get("DATABASE_DRIVER"),
+        os.environ.get("DATABASE_DB"),
+        os.environ.get("DATABASE_USER"),
+        os.environ.get("DATABASE_HOST"),
+        os.environ.get("DATABASE_PASSWORD"),
+        os.environ.get("DATABASE_PORT", None),
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     PROPAGATE_EXCEPTIONS = True
@@ -32,9 +44,10 @@ class Config:
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL",
-                                             "sqlite:///data.db")
+    # SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL",
+    #                                          "sqlite:///data.db")
     SQLALCHEMY_ECHO = False
+    JWT_COOKIE_SECURE = False
 
 
 logging.config.fileConfig(os.path.join(get_project_directory(), 'logging.conf'))

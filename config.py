@@ -14,7 +14,7 @@ def _translate_postgres_driver(database_url: str):
 
 
 def _create_database_uri(driver, db, user, host, password, port=None) -> str:
-    port = f":{port}" if port is not None else ""
+    port = f":{port}" if port is not None and len(port) else ""
     return _translate_postgres_driver(
         f"{driver}://{user}:{password}@{host}{port}/{db}"
     )

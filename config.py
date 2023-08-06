@@ -22,6 +22,7 @@ def _create_database_uri(driver, db, user, host, password, port=None) -> str:
 
 class Config:
     DEBUG = False
+    DATABASE_URL = os.environ.get("DATABASE_URL")
     SQLALCHEMY_DATABASE_URI = _create_database_uri(
         os.environ.get("DATABASE_DRIVER"),
         os.environ.get("DATABASE_DB"),
@@ -29,7 +30,7 @@ class Config:
         os.environ.get("DATABASE_HOST"),
         os.environ.get("DATABASE_PASSWORD"),
         os.environ.get("DATABASE_PORT", None),
-    )
+    ) if DATABASE_URL is None else DATABASE_URL
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     PROPAGATE_EXCEPTIONS = True
     SECRET_KEY = os.environ["APP_SECRET_KEY"]
@@ -44,8 +45,6 @@ class Config:
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    # SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL",
-    #                                          "sqlite:///data.db")
     SQLALCHEMY_ECHO = False
     JWT_COOKIE_SECURE = False
 

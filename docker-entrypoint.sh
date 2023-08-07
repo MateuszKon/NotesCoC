@@ -9,4 +9,4 @@ echo "FLASK DB UPGRADE FINISHED"
 
 cd /app
 echo "STARTING APP"
-gunicorn -b 0.0.0.0:8000 --workers 4 --preload app:app
+gunicorn -b 0.0.0.0:8000 --workers 2 --preload app:app

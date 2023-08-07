@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime
+import pytz
 
 import requests
 from requests.adapters import HTTPAdapter
@@ -46,7 +47,7 @@ class CustomHttpJsonHandler(logging.Handler):
         '''
         log_entry = self.format(record)
         data = {
-            "@timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "@timestamp": datetime.now(pytz.utc).strftime("%Y-%m-%d %H:%M:%S"),
             "level": record.levelname,
             "message": log_entry,
         }

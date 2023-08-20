@@ -97,7 +97,8 @@ class NoteModel(db.Model):
             qs = cls.get_all()
         else:
             qs = cls.add_filter_persons_visibility_query(cls.query, person_name)
-        return qs.order_by(cls.real_update_date.desc())
+        return qs.order_by(cls.game_update_date.desc(),
+            cls.real_update_date.desc())
 
     @classmethod
     def filter_notes(cls, qs, person: str) -> List["NoteModel"]:

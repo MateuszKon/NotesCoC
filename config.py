@@ -31,6 +31,11 @@ class Config:
         os.environ.get("DATABASE_PASSWORD"),
         os.environ.get("DATABASE_PORT", None),
     ) if DATABASE_URL is None else DATABASE_URL
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        'pool_size': 5,
+        'pool_recycle': 60,
+        'pool_pre_ping': True
+    }
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     PROPAGATE_EXCEPTIONS = True
     SECRET_KEY = os.environ["APP_SECRET_KEY"]

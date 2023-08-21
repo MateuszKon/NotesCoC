@@ -7,6 +7,7 @@ from flask_migrate import Migrate
 
 import libs.env_import  # Import for loading .env file before other imports
 from blocklist import BLOCKLIST
+from config import logger
 from db import db
 from libs.jwt_functions import token_expired_redirection_callback
 from ma import ma
@@ -34,6 +35,12 @@ def create_admin_user():
         os.environ.get("USERADMIN_LOGIN"),
         os.environ.get("USERADMIN_PASSWORD"),
     )
+
+
+@app.errorhandler(Exception)
+def handle_exceptions(e):
+    logger.exception(e)
+    raise
 
 
 @jwt.token_in_blocklist_loader

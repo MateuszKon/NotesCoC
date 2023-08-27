@@ -8,7 +8,7 @@ from flask_jwt_extended.exceptions import UserClaimsVerificationError
 from flask_jwt_extended.exceptions import NoAuthorizationError
 from flask_jwt_extended.view_decorators import LocationType
 
-from routes.i_request import ResponseData
+from NotesApp.routes.i_request import ResponseData
 
 
 def token_not_valid(next_url: str = None) -> ResponseReturnValue:

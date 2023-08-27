@@ -132,3 +132,4 @@ dmypy.json
 /db.db
 /.pylintrc
 data.db
+.idea/

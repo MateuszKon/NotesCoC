@@ -7,7 +7,7 @@ from NotesApp.tests.unit.base_unit_database_test import BaseTestUnitDatabase
 
 class TestHomeLogic(BaseTestUnitDatabase):
 
-    @patch("models.notes.NoteModel.get_all_visible")
+    @patch("database.models.notes.NoteModel.get_all_visible")
     def test_get_all_visible_called(self, mock: MagicMock):
         person = 'person_logged'
         data = RequestData(

@@ -9,7 +9,7 @@ class TestPathGeneration(BaseTest):
     def test_generating_project_directory_path(self):
         path = Path.cwd()
         self.assertEqual(
-            path.name, "NotesCoC",
+            path.name, "NotesApp",
             "Project directory should be of specific name!"
         )
         self.assertTrue(

@@ -74,7 +74,7 @@ class TestUserModel(BaseTestUnitDatabase):
             with self.assertRaises(IntegrityError):
                 self.user.save_to_db()
 
-    @patch("models.users.bcrypt.hashpw")
+    @patch("database.models.users.bcrypt.hashpw")
     def test_user_accessing_person_by_relationship(self, mock_hashing):
         # Mocking for faster testing (password is not needed, but we need
         # fresh user)

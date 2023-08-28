@@ -4,8 +4,7 @@ import os
 from pathlib import Path
 
 import libs.env_import  # Import for loading .env file before other imports
-from libs.path import get_project_directory
-from routes.i_request import ContextData, RequestData
+from routes.i_request import RequestData
 
 
 def _translate_postgres_driver(database_url: str):
@@ -32,11 +31,11 @@ class Config:
         os.environ.get("DATABASE_PASSWORD"),
         os.environ.get("DATABASE_PORT", None),
     ) if DATABASE_URL is None else DATABASE_URL
-    SQLALCHEMY_ENGINE_OPTIONS = {
-        'pool_size': 5,
-        'pool_recycle': 60,
-        'pool_pre_ping': True
-    }
+    # SQLALCHEMY_ENGINE_OPTIONS = {
+    #     'pool_size': 5,
+    #     'pool_recycle': 60,
+    #     'pool_pre_ping': True
+    # }
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     MIGRATION_DIR = Path.cwd() / ".." / "database" / "migrations"
     PROPAGATE_EXCEPTIONS = True
@@ -48,7 +47,6 @@ class Config:
     JWT_CSRF_CHECK_FORM = True
     JWT_BLACKLIST_ENABLED = True
     JWT_BLACKLIST_TOKEN_CHECKS = ["access",]
-
 
 
 class DevelopmentConfig(Config):

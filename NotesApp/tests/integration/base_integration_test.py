@@ -22,7 +22,7 @@ class BaseIntegrationTest(BaseTest):
             db.create_all()
 
             # Creating models
-            with patch("models.users.bcrypt.hashpw") as mock_hashing:
+            with patch("database.models.users.bcrypt.hashpw") as mock_hashing:
                 mock_hashing.return_value = "aaa".encode("utf8")
                 self.user = UserModel(login="mym", password='mym', person_name=None)
             self.person_logged = PersonModel(name='logged')

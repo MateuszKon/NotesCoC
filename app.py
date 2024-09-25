@@ -1,9 +1,12 @@
 import os
+import re
 import time
 
-from flask import Flask, g
+from flask import Flask, g, url_for
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
+from flask_vite import Vite
+
 
 import libs.env_import  # Import for loading .env file before other imports
 from blocklist import BLOCKLIST
@@ -23,6 +26,7 @@ jwt = JWTManager(app)
 migrate = Migrate(app, db, compare_type=True)
 db.init_app(app)
 ma.init_app(app)
+vite = Vite(app)
 
 
 jwt.expired_token_loader(token_expired_redirection_callback)
@@ -47,8 +51,22 @@ def handle_exceptions(e):
 def check_if_token_in_blocklist(jwt_header, jwt_payload):
     return jwt_payload["jti"] in BLOCKLIST
 
+INDEX_REGEX = re.compile('index-.*\.js')
+
+@app.context_processor
+def inject_index_js_src():
+    if app.config.get("DEBUG"):
+        return dict(index_js_src="http://localhost:3000/main.js")
+
+    for root, dirs, files in os.walk(os.getcwd() + "/static/js"):
+        for file in files:
+            if INDEX_REGEX.match(file):
+                url = f"/_vite/{file}"
+                return dict(index_js_src=url)
+
 
 configure_routing(app)
+
 
 
 if app.config.get("DEBUG"):

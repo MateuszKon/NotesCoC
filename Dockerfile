@@ -1,4 +1,19 @@
-# start by pulling the python image
+FROM node:18-alpine AS build
+
+COPY /vite/package.json /app/vite/package.json
+
+WORKDIR /app/vite
+
+RUN npm install
+
+RUN npm i -g serve
+
+COPY /vite /app/vite
+
+RUN npm run build
+
+
+
 FROM python:3.10-slim-bullseye
 
 RUN pip install --upgrade pip
@@ -15,10 +30,19 @@ RUN pip install -r requirements.txt
 # copy every content from the local file to the image
 COPY . /app
 
-RUN chmod +x /app/docker-entrypoint.sh
+COPY --from=build /app/vite/dist/assets/index-*.js /app/static/js/index-*.js
 
-RUN echo /app/docker-entrypoint.sh
+CMD ["/bin/bash" ]
 
-EXPOSE 8000
+#
+## rebuild front-end
+#WORKDIR /app/vite
+#RUN npm run build
+#
+##RUN chmod +x /app/docker-entrypoint.sh
+##
+##RUN echo /app/docker-entrypoint.sh
+##
+##EXPOSE 8000
 
-CMD ["/bin/bash" ,"/app/docker-entrypoint.sh"]
+#CMD ["/bin/bash" ,"/app/docker-entrypoint.sh"]

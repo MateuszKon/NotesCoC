@@ -46,6 +46,7 @@ class Config:
     JWT_CSRF_CHECK_FORM = True
     JWT_BLACKLIST_ENABLED = True
     JWT_BLACKLIST_TOKEN_CHECKS = ["access",]
+    VITE_AUTO_INSERT = True
 
 
 class DevelopmentConfig(Config):

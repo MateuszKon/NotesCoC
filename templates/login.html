@@ -4,10 +4,6 @@
 <title>Notes | Login</title>
 {% endblock %}
 
-{% block script %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jsSHA/2.0.2/sha.js"></script>
-{% endblock %}
-
 {% block header %}
 Logowanie
 {% endblock %}
@@ -28,8 +24,19 @@ Logowanie
                    autocomplete="current-password" required>
             <input class="btn btn-primary btn-lg" type="submit"
                    value="Zaloguj">
+            <div id="react_root"></div>
             <script src="{{ url_for('static',filename='js/login.js') }}"></script>
+
         </form>
     </div>
 </div>
+{% endblock %}
+
+{% block script %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsSHA/2.0.2/sha.js"></script>
+     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            window.renderComponent();
+        });
+    </script>
 {% endblock %}

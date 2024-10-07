@@ -30,19 +30,12 @@ RUN pip install -r requirements.txt
 # copy every content from the local file to the image
 COPY . /app
 
-COPY --from=build /app/vite/dist/assets/index-*.js /app/static/js/index-*.js
+COPY --from=build /app/vite/dist/. /app/vite/dist
 
-CMD ["/bin/bash" ]
+RUN chmod +x /app/docker-entrypoint.sh
 
-#
-## rebuild front-end
-#WORKDIR /app/vite
-#RUN npm run build
-#
-##RUN chmod +x /app/docker-entrypoint.sh
-##
-##RUN echo /app/docker-entrypoint.sh
-##
-##EXPOSE 8000
+RUN echo /app/docker-entrypoint.sh
 
-#CMD ["/bin/bash" ,"/app/docker-entrypoint.sh"]
+EXPOSE 8000
+
+CMD ["/bin/bash" ,"/app/docker-entrypoint.sh"]

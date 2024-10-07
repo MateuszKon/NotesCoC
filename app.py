@@ -2,10 +2,11 @@ import os
 import re
 import time
 
-from flask import Flask, g, url_for
+from flask import Flask, g, send_from_directory
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 from flask_vite import Vite
+
 
 
 import libs.env_import  # Import for loading .env file before other imports
@@ -51,22 +52,30 @@ def handle_exceptions(e):
 def check_if_token_in_blocklist(jwt_header, jwt_payload):
     return jwt_payload["jti"] in BLOCKLIST
 
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(
+        os.path.join(app.root_path, 'static'),
+        'assets/favicon.ico', mimetype='image/vnd.microsoft.icon'
+    )
+
+
 INDEX_REGEX = re.compile('index-.*\.js')
 
 @app.context_processor
 def inject_index_js_src():
     if app.config.get("DEBUG"):
         return dict(index_js_src="http://localhost:3000/main.js")
-
-    for root, dirs, files in os.walk(os.getcwd() + "/static/js"):
+    for root, dirs, files in os.walk(os.getcwd() + "/vite/dist/assets/"):
         for file in files:
             if INDEX_REGEX.match(file):
                 url = f"/_vite/{file}"
                 return dict(index_js_src=url)
+    raise FileNotFoundError("Index JS file not found")
 
 
 configure_routing(app)
-
 
 
 if app.config.get("DEBUG"):
